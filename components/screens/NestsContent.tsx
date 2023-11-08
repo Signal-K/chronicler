@@ -1,10 +1,16 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
+import { useHoneyOrders } from '../../hooks/useHoneyOrders';
+import { useHoneyProduction } from '../../hooks/useHoneyProduction';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
+import type { TutorialAction } from '../../hooks/useTutorial';
 import { getCropConfig } from '../../lib/cropConfig';
 import type { HiveData } from '../../types/hive';
+import type { BottledHoney } from '../../types/inventory';
+import type { HoneyOrder } from '../../types/honeyOrders';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 
 interface NestsContentProps {
@@ -21,6 +27,8 @@ interface NestsContentProps {
   inventory?: InventoryData;
   onInventoryUpdate?: (inventory: InventoryData) => void;
   onNectarUpdate?: (nectarLevels: Record<string, number>) => void;
+  onTutorialAction?: (action: TutorialAction) => void;
+  isTutorialActive?: boolean;
 }
 
 // Get gradient colors based on crop proportions from hive data
@@ -88,10 +96,193 @@ export function NestsContent({
   inventory,
   onInventoryUpdate,
   onNectarUpdate,
+  onTutorialAction,
+  isTutorialActive = false,
 }: NestsContentProps) {
   const { experience, loading } = usePlayerExperience();
   const [selectedHive, setSelectedHive] = useState<HiveData | null>(null);
-  const [xpModalVisible, setXPModalVisible] = useState(false);
+  
+  // Honey production and orders for the detail modal
+  const honeyProduction = useHoneyProduction();
+  const { 
+    orders, 
+    fulfillOrder, 
+    refreshDailyOrders, 
+  } = useHoneyOrders();
+  
+  // Local state for bottled honey
+  const [bottledHoney, setBottledHoney] = useState<BottledHoney[]>([]);
+  
+  // Load bottled honey from storage
+  useEffect(() => {
+    const loadBottledHoney = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('bottled_honey');
+        if (stored) {
+          setBottledHoney(JSON.parse(stored));
+        }
+      } catch (error) {
+        console.error('Error loading bottled honey:', error);
+      }
+    };
+    loadBottledHoney();
+  }, [selectedHive]);
+  
+  // Refresh orders when modal opens
+  useEffect(() => {
+    if (selectedHive && inventory) {
+      // During tutorial, include amber honey so order matches the sunflower honey we gave
+      const tutorialBottles: BottledHoney[] = isTutorialActive 
+        ? [{ id: 'tutorial-amber', type: 'amber', color: '#fbbf24', amount: 1 }]
+        : [];
+      refreshDailyOrders([...bottledHoney, ...tutorialBottles], ['sunflower']);
+    }
+  }, [selectedHive, bottledHoney, inventory, refreshDailyOrders, isTutorialActive]);
+  
+  // Local orders state that syncs with hook
+  const [ordersState, setOrdersState] = useState<HoneyOrder[]>(orders);
+  useEffect(() => {
+    setOrdersState(orders);
+  }, [orders]);
+
+  // Handle hive tap with tutorial action reporting
+  const handleHiveTap = (currentHive: HiveData) => {
+    setSelectedHive(currentHive);
+    onTutorialAction?.('tap-hive');
+  };
+  
+  // Handle bottling honey
+  const handleBottleHoney = useCallback(async () => {
+    if (!selectedHive || !inventory) return;
+    
+    const glassBottles = (inventory.items?.glass_bottle as number) || 0;
+    const honeyBottles = selectedHive.honey?.honeyBottles || 0;
+    
+    if (glassBottles === 0 || honeyBottles === 0) return;
+    
+    // Calculate how many we can bottle
+    const bottlesToCollect = Math.min(glassBottles, Math.floor(honeyBottles));
+    if (bottlesToCollect === 0) return;
+    
+    // Get honey type info
+    const { dominant } = honeyProduction.calculateHoneyProgress(selectedHive);
+    let honeyTypeString: 'light' | 'amber' | 'dark' | 'specialty' | 'wildflower' = 'wildflower';
+    
+    if (dominant) {
+      const config = getCropConfig(dominant);
+      if (config?.nectar?.honeyProfile) {
+        honeyTypeString = config.nectar.honeyProfile.type as any;
+      }
+    }
+    
+    // Create new bottled honey entries
+    const newBottledHoney: BottledHoney[] = [];
+    const honeyColors: Record<string, string> = {
+      light: '#fef3c7',
+      amber: '#fbbf24',
+      dark: '#92400e',
+      specialty: '#c084fc',
+      wildflower: '#fcd34d',
+    };
+    for (let i = 0; i < bottlesToCollect; i++) {
+      newBottledHoney.push({
+        id: `bottle-${Date.now()}-${i}`,
+        type: honeyTypeString,
+        color: honeyColors[honeyTypeString] || '#fcd34d',
+        amount: 1,
+      });
+    }
+    
+    // Update bottled honey storage
+    const updatedBottledHoney = [...bottledHoney, ...newBottledHoney];
+    setBottledHoney(updatedBottledHoney);
+    await AsyncStorage.setItem('bottled_honey', JSON.stringify(updatedBottledHoney));
+    
+    // Update inventory (use glass bottles)
+    const updatedInventory = {
+      ...inventory,
+      items: {
+        ...inventory.items,
+        glass_bottle: glassBottles - bottlesToCollect,
+      },
+    };
+    onInventoryUpdate?.(updatedInventory);
+    
+    // Update hive honey bottles in storage
+    try {
+      const stored = await AsyncStorage.getItem('hives');
+      if (stored) {
+        const hivesData = JSON.parse(stored);
+        const updatedHives = hivesData.map((h: HiveData) => {
+          if (h.id === selectedHive.id) {
+            return {
+              ...h,
+              honey: {
+                ...h.honey,
+                honeyBottles: Math.max(0, (h.honey?.honeyBottles || 0) - bottlesToCollect),
+              },
+            };
+          }
+          return h;
+        });
+        await AsyncStorage.setItem('hives', JSON.stringify(updatedHives));
+        await AsyncStorage.setItem('hivesRefreshSignal', Date.now().toString());
+        
+        // Update local selected hive state
+        setSelectedHive(prev => prev ? {
+          ...prev,
+          honey: {
+            ...prev.honey!,
+            honeyBottles: Math.max(0, (prev.honey?.honeyBottles || 0) - bottlesToCollect),
+          },
+        } : null);
+      }
+    } catch (error) {
+      console.error('Error updating hive after bottling:', error);
+    }
+    
+    // Report tutorial action
+    onTutorialAction?.('bottle-honey');
+    
+    console.log(`🍯 Bottled ${bottlesToCollect} bottles of ${honeyTypeString} honey`);
+  }, [selectedHive, inventory, bottledHoney, honeyProduction, onInventoryUpdate, onTutorialAction]);
+  
+  // Handle fulfilling an order
+  const handleFulfillOrder = useCallback(async (orderId: string) => {
+    if (!inventory) return;
+    
+    const glassBottles = (inventory.items?.glass_bottle as number) || 0;
+    const result = fulfillOrder(orderId, bottledHoney, glassBottles);
+    
+    if (result.success) {
+      // Update inventory with coins earned
+      const updatedInventory = {
+        ...inventory,
+        coins: inventory.coins + result.coinsEarned,
+      };
+      onInventoryUpdate?.(updatedInventory);
+      
+      // Remove used honey from bottled honey
+      const order = ordersState.find((o: HoneyOrder) => o.id === orderId);
+      if (order) {
+        let remaining = order.bottlesRequested;
+        const updatedBottledHoney = bottledHoney.filter(h => {
+          if (h.type === order.honeyType && remaining > 0) {
+            remaining--;
+            return false;
+          }
+          return true;
+        });
+        setBottledHoney(updatedBottledHoney);
+        await AsyncStorage.setItem('bottled_honey', JSON.stringify(updatedBottledHoney));
+      }
+      
+      // Report tutorial action
+      onTutorialAction?.('fulfill-order');
+      
+      console.log(`📦 Order fulfilled! Earned ${result.coinsEarned} coins and ${result.xpEarned} XP`);
+    }
+  }, [inventory, bottledHoney, fulfillOrder, ordersState, onInventoryUpdate, onTutorialAction]);
 
   return (
     <ScrollView 
@@ -102,7 +293,7 @@ export function NestsContent({
       {/* Dashboard Row - Compact Stats */}
       <View style={styles.dashboardRow}>
         {/* Experience Card */}
-        <TouchableOpacity style={styles.dashboardCard} activeOpacity={0.85} onPress={() => setXPModalVisible(true)}>
+        <TouchableOpacity style={styles.dashboardCard} activeOpacity={0.85}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardEmoji}>⭐</Text>
             <Text style={styles.cardTitle}>Experience</Text>
@@ -153,7 +344,7 @@ export function NestsContent({
           <TouchableOpacity
             key={currentHive.id}
             style={styles.hiveCard}
-            onPress={() => setSelectedHive(currentHive)}
+            onPress={() => handleHiveTap(currentHive)}
             activeOpacity={0.85}
           >
             <View style={styles.hiveHeader}>
@@ -218,6 +409,170 @@ export function NestsContent({
 
       {/* Bottom padding for scrolling past bottom bar */}
       <View style={{ height: 100 }} />
+      
+      {/* Hive Detail Modal */}
+      <Modal
+        visible={selectedHive !== null}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setSelectedHive(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>🏠 Hive Details</Text>
+              <TouchableOpacity 
+                style={styles.closeButton}
+                onPress={() => setSelectedHive(null)}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            {selectedHive && (
+              <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+                {/* Hive Stats */}
+                <View style={styles.hiveStatsSection}>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statLabel}>🐝 Bees</Text>
+                    <Text style={styles.statValue}>{selectedHive.beeCount}/10</Text>
+                  </View>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statLabel}>🍯 Honey</Text>
+                    <Text style={styles.statValue}>{Math.floor(selectedHive.honey?.honeyBottles || 0)}/15 bottles</Text>
+                  </View>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statLabel}>📦 Glass Bottles</Text>
+                    <Text style={styles.statValue}>{(inventory?.items?.glass_bottle as number) || 0}</Text>
+                  </View>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statLabel}>🫙 Bottled Honey</Text>
+                    <Text style={styles.statValue}>{bottledHoney.length}</Text>
+                  </View>
+                </View>
+                
+                {/* Honey Bar */}
+                <View style={styles.honeySection}>
+                  <Text style={styles.sectionTitle}>Honey Production</Text>
+                  <View style={styles.honeyBarLarge}>
+                    <LinearGradient
+                      colors={getHoneyGradientColors(selectedHive) as [string, string, ...string[]]}
+                      style={[
+                        styles.honeyBarFillLarge, 
+                        { width: `${Math.min(100, ((selectedHive.honey?.honeyBottles || 0) / 15) * 100)}%` }
+                      ]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                    />
+                  </View>
+                  
+                  {/* Bottle Honey Button */}
+                  <TouchableOpacity
+                    style={[
+                      styles.bottleButton,
+                      ((selectedHive.honey?.honeyBottles || 0) < 1 || ((inventory?.items?.glass_bottle as number) || 0) === 0) && styles.bottleButtonDisabled
+                    ]}
+                    onPress={handleBottleHoney}
+                    disabled={(selectedHive.honey?.honeyBottles || 0) < 1 || ((inventory?.items?.glass_bottle as number) || 0) === 0}
+                  >
+                    <Text style={styles.bottleButtonText}>
+                      {((inventory?.items?.glass_bottle as number) || 0) === 0 
+                        ? '🫙 No Glass Bottles' 
+                        : (selectedHive.honey?.honeyBottles || 0) < 1 
+                          ? '🍯 Hive Not Ready' 
+                          : '🍯 Bottle Honey'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                
+                {/* Orders Section */}
+                <View style={styles.ordersSection}>
+                  <Text style={styles.sectionTitle}>📋 Daily Orders</Text>
+                  {ordersState.length === 0 ? (
+                    <View style={styles.noOrders}>
+                      <Text style={styles.noOrdersText}>No orders yet today</Text>
+                    </View>
+                  ) : (
+                    ordersState.map((order: HoneyOrder) => {
+                      const matchingHoney = bottledHoney.filter(h => h.type === order.honeyType);
+                      const canFulfill = matchingHoney.length >= order.bottlesRequested && !order.isCompleted;
+                      
+                      return (
+                        <View 
+                          key={order.id} 
+                          style={[
+                            styles.orderCard,
+                            order.isCompleted && styles.orderCardCompleted,
+                            canFulfill && styles.orderCardReady,
+                          ]}
+                        >
+                          <View style={styles.orderHeader}>
+                            <Text style={styles.orderEmoji}>{order.characterEmoji}</Text>
+                            <View style={styles.orderInfo}>
+                              <Text style={styles.orderName}>{order.characterName}</Text>
+                              <Text style={styles.orderRequest}>
+                                Wants {order.bottlesRequested}× {order.honeyType} honey
+                              </Text>
+                            </View>
+                          </View>
+                          <View style={styles.orderRewards}>
+                            <Text style={styles.orderReward}>🪙 {order.coinReward}</Text>
+                            <Text style={styles.orderReward}>⭐ +{order.xpReward} XP</Text>
+                          </View>
+                          {order.isCompleted ? (
+                            <View style={styles.completedBadge}>
+                              <Text style={styles.completedText}>✓ Completed</Text>
+                            </View>
+                          ) : (
+                            <TouchableOpacity
+                              style={[
+                                styles.fulfillButton,
+                                !canFulfill && styles.fulfillButtonDisabled,
+                              ]}
+                              onPress={() => handleFulfillOrder(order.id)}
+                              disabled={!canFulfill}
+                            >
+                              <Text style={[
+                                styles.fulfillButtonText,
+                                !canFulfill && styles.fulfillButtonTextDisabled,
+                              ]}>
+                                {canFulfill ? '📦 Fulfill' : `Need ${order.bottlesRequested} ${order.honeyType}`}
+                              </Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      );
+                    })
+                  )}
+                </View>
+                
+                {/* Bottled Honey Inventory */}
+                {bottledHoney.length > 0 && (
+                  <View style={styles.inventorySection}>
+                    <Text style={styles.sectionTitle}>🫙 Your Bottled Honey</Text>
+                    <View style={styles.honeyInventory}>
+                      {['light', 'amber', 'dark', 'specialty', 'wildflower'].map(type => {
+                        const count = bottledHoney.filter(h => h.type === type).length;
+                        if (count === 0) return null;
+                        return (
+                          <View key={type} style={styles.honeyTypeItem}>
+                            <Text style={styles.honeyTypeEmoji}>🍯</Text>
+                            <Text style={styles.honeyTypeName}>{type}</Text>
+                            <Text style={styles.honeyTypeCount}>×{count}</Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
+                
+                <View style={{ height: 40 }} />
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -432,5 +787,238 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#dc2626',
     textAlign: 'center',
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fef3c7',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '85%',
+    paddingBottom: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#d97706',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#fee2e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: '#dc2626',
+  },
+  modalScroll: {
+    padding: 16,
+  },
+  hiveStatsSection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d97706',
+  },
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fef3c7',
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#78350f',
+  },
+  statValue: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  honeySection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d97706',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 12,
+  },
+  honeyBarLarge: {
+    height: 20,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  honeyBarFillLarge: {
+    height: '100%',
+    borderRadius: 10,
+  },
+  bottleButton: {
+    backgroundColor: '#fbbf24',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  bottleButtonDisabled: {
+    backgroundColor: '#d1d5db',
+  },
+  bottleButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#78350f',
+  },
+  ordersSection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d97706',
+  },
+  noOrders: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  noOrdersText: {
+    color: '#78350f',
+    fontSize: 14,
+  },
+  orderCard: {
+    backgroundColor: '#fef9c3',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+  },
+  orderCardCompleted: {
+    opacity: 0.6,
+    borderColor: '#10b981',
+  },
+  orderCardReady: {
+    borderColor: '#10b981',
+    borderWidth: 2,
+  },
+  orderHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  orderEmoji: {
+    fontSize: 28,
+    marginRight: 10,
+  },
+  orderInfo: {
+    flex: 1,
+  },
+  orderName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  orderRequest: {
+    fontSize: 12,
+    color: '#78350f',
+  },
+  orderRewards: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 8,
+  },
+  orderReward: {
+    fontSize: 12,
+    color: '#b45309',
+    fontWeight: '600',
+  },
+  completedBadge: {
+    backgroundColor: '#d1fae5',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  completedText: {
+    color: '#065f46',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  fulfillButton: {
+    backgroundColor: '#22c55e',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  fulfillButtonDisabled: {
+    backgroundColor: '#d1d5db',
+  },
+  fulfillButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  fulfillButtonTextDisabled: {
+    color: '#6b7280',
+  },
+  inventorySection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d97706',
+  },
+  honeyInventory: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  honeyTypeItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef9c3',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    gap: 4,
+  },
+  honeyTypeEmoji: {
+    fontSize: 16,
+  },
+  honeyTypeName: {
+    fontSize: 12,
+    color: '#78350f',
+    textTransform: 'capitalize',
+  },
+  honeyTypeCount: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#92400e',
   },
 });

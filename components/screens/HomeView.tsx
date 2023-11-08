@@ -19,10 +19,10 @@ import { BottomPanels } from '../garden/BottomPanels';
 import { SimpleToolbar } from '../garden/SimpleToolbar';
 // Orders removed
 import { SiloModal } from '../modals/SiloModal';
+import { InteractiveTutorial } from '../tutorial';
 import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
 import { Toast } from '../ui/Toast';
-import { InteractiveTutorial } from '../tutorial';
 import { HomeContent } from './HomeContent';
 import { NestsContent } from './NestsContent';
 
@@ -99,22 +99,52 @@ export function HomeView() {
       delete (globalThis as any).showBeeHatchAlert;
     };
   }, [showBeeHatchAlert]);
-  const { hive, hives, addBees, buildNewHive, canBuildNewHive, getAvailableHives, hiveCost, addHarvestToHive } = useHiveState();
+  const { hive, hives, addBees, buildNewHive, canBuildNewHive, hiveCost, addHarvestToHive } = useHiveState();
   const { isDaytime } = useDayNightCycle();
 
-  // Tutorial helper: Setup hive with bees and add harvests to produce honey
-  const setupTutorialHive = useCallback(() => {
+  // Tutorial helper: Setup hive with bees and fill with honey for tutorial
+  const setupTutorialHive = useCallback(async () => {
     if (hives.length > 0) {
+      console.log('🎓 Setting up tutorial hive with bees and honey');
+      
       // Add 5 bees to the hive
       addBees(5);
       
-      // Add some harvests to trigger honey production
-      // Adding multiple harvests of different crops
-      addHarvestToHive('sunflower', 0);
-      addHarvestToHive('sunflower', 0);
-      addHarvestToHive('sunflower', 0);
+      // Directly set honey bottles in storage to ensure hive is full
+      try {
+        const stored = await AsyncStorage.getItem('hives');
+        if (stored) {
+          const hivesData = JSON.parse(stored);
+          const updatedHives = hivesData.map((h: any, index: number) => {
+            if (index === 0) {
+              return {
+                ...h,
+                beeCount: Math.max(h.beeCount || 0, 5),
+                honey: {
+                  ...h.honey,
+                  currentCapacity: 100,
+                  maxCapacity: 20,
+                  honeyBottles: 15, // Full hive
+                  productionActive: true,
+                  dailyHarvests: [
+                    { cropId: 'sunflower', timestamp: Date.now(), amount: 10, halved: false },
+                    { cropId: 'sunflower', timestamp: Date.now(), amount: 8, halved: false },
+                  ],
+                },
+              };
+            }
+            return h;
+          });
+          await AsyncStorage.setItem('hives', JSON.stringify(updatedHives));
+          // Trigger a refresh
+          await AsyncStorage.setItem('hivesRefreshSignal', Date.now().toString());
+          console.log('🎓 Tutorial hive setup complete - hive filled with honey');
+        }
+      } catch (error) {
+        console.error('Error setting up tutorial hive:', error);
+      }
     }
-  }, [hives, addBees, addHarvestToHive]);
+  }, [hives, addBees]);
 
   const updateHiveBeeCount = useCallback((count: number) => { const currentCount = hive.beeCount; const diff = count - currentCount; if (diff !== 0) setTimeout(() => addBees(diff), 0); }, [hive.beeCount, addBees]);
   const handleWeatherPress = useCallback(() => { router.push('/settings'); }, [router]);
@@ -230,6 +260,8 @@ export function HomeView() {
             maxNectar={15}
             inventory={inventory}
             onInventoryUpdate={setInventory}
+            onTutorialAction={reportTutorialAction}
+            isTutorialActive={shouldShowTutorial}
           />
         );
       case 'landscape':
@@ -366,18 +398,18 @@ export function HomeView() {
             if (processedTutorialSteps.current.has(step.id)) return;
             processedTutorialSteps.current.add(step.id);
             
-            // When user reaches honey bottles intro, setup the hive for demonstration
-            if (step.id === 'honey-bottles-intro') {
+            // When user reaches hive setup step, setup the hive for demonstration
+            if (step.id === 'hive-setup') {
               // Give 5 free glass bottles for bottling honey later
               setInventory(prev => ({
                 ...prev,
                 items: {
                   ...prev.items,
-                  glassBottles: ((prev.items?.glassBottles as number) || 0) + 5
+                  glass_bottle: ((prev.items?.glass_bottle as number) || 0) + 5
                 }
               }));
               
-              // Setup the hive with bees and harvests so honey can be produced
+              // Setup the hive with bees and fill it with honey
               setupTutorialHive();
             }
           }}

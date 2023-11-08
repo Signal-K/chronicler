@@ -12,7 +12,10 @@ export type TutorialAction =
   | 'water-plant' 
   | 'harvest-crop' 
   | 'open-shop' 
-  | 'view-hives';
+  | 'view-hives'
+  | 'tap-hive'
+  | 'bottle-honey'
+  | 'fulfill-order';
 
 export interface UseTutorialReturn {
   /** Whether the new user tutorial should be shown */
