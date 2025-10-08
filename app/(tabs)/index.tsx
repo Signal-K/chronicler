@@ -33,7 +33,7 @@ export default function HomeScreen() {
       </ThemedView>
       
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">You're logged in!</ThemedText>
+        <ThemedText type="subtitle">You are logged in!</ThemedText>
         <ThemedText>
           This is your main app screen. You have successfully signed in to your Bee Garden account.
         </ThemedText>
