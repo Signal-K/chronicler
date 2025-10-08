@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -11,10 +12,19 @@ export default function SettingsScreen() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [locationPermission, setLocationPermission] = useState<string>('unknown');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
 
   useEffect(() => {
     checkAuthState();
     checkLocationPermission();
+    loadPlotStates();
+    
+    // Auto-refresh timer display every second for watered plots
+    const interval = setInterval(() => {
+      loadPlotStates();
+    }, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const checkAuthState = async () => {
@@ -31,6 +41,34 @@ export default function SettingsScreen() {
   const checkLocationPermission = async () => {
     const { status } = await Location.getForegroundPermissionsAsync();
     setLocationPermission(status);
+  };
+
+  const loadPlotStates = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('plotStates');
+      if (saved) {
+        setPlotStates(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.log('Error loading plot states:', error);
+    }
+  };
+
+  // Format remaining time for watered plots
+  const formatTimeRemaining = (wateredAt: number) => {
+    const now = Date.now();
+    const elapsed = now - wateredAt;
+    const twentyMinutes = 20 * 60 * 1000; // 20 minutes in milliseconds
+    const remaining = twentyMinutes - elapsed;
+    
+    if (remaining <= 0) {
+      return 'Expired';
+    }
+    
+    const minutes = Math.floor(remaining / (1000 * 60));
+    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleSignOut = async () => {
@@ -249,6 +287,40 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Debugging Section - Plot States */}
+        <View style={[styles.section, isDarkMode && styles.darkSection]}>
+          <View style={styles.debugHeader}>
+            <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>🐛 Plot Debug Info</Text>
+            <TouchableOpacity 
+              style={[styles.refreshButton, isDarkMode && styles.darkRefreshButton]}
+              onPress={loadPlotStates}
+            >
+              <Text style={[styles.refreshText, isDarkMode && styles.darkText]}>🔄 Refresh</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.debugGrid}>
+            {[0, 1, 2, 3, 4, 5].map(plotId => (
+              <View key={plotId} style={[styles.debugPlot, isDarkMode && styles.darkDebugPlot]}>
+                <Text style={[styles.debugPlotTitle, isDarkMode && styles.darkText]}>
+                  Plot {plotId + 1}
+                </Text>
+                <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                  💧 Watered: {plotStates[plotId]?.watered ? '✅' : '❌'}
+                </Text>
+                <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                  🌱 Planted: {plotStates[plotId]?.planted ? '✅' : '❌'}
+                </Text>
+                {plotStates[plotId]?.watered && plotStates[plotId]?.wateredAt && (
+                  <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                    ⏱️ Timer: {formatTimeRemaining(plotStates[plotId].wateredAt!)}
+                  </Text>
+                )}
+              </View>
+            ))}
+          </View>
+        </View>
+
       </View>
     </View>
   );
@@ -425,5 +497,54 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'monospace',
     lineHeight: 20,
+  },
+  debugGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  debugPlot: {
+    width: '48%',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  darkDebugPlot: {
+    backgroundColor: '#2a2a2a',
+    borderColor: '#444',
+  },
+  debugPlotTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  debugHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  refreshButton: {
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  darkRefreshButton: {
+    backgroundColor: '#5BA2F2',
+  },
+  refreshText: {
+    fontSize: 12,
+    color: 'white',
+    fontWeight: '600',
   },
 });

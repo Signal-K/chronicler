@@ -10,6 +10,7 @@ import PlanetIcon from '@/components/PlanetIcon';
 import { generateStarField, getMoonAstronomyData, getStarVisibility, getSunData, getTimeOfDay, MoonAstronomyData, shouldBeesBeActive, StarVisibility, SunData } from '@/lib/astronomy';
 import { supabase } from '@/lib/supabase';
 import { getCurrentWeather, getSkyColors, WeatherData } from '@/lib/weather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -17,9 +18,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { gardenViewStyles as styles } from '../../styles/screens/GardenViewStyles';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-interface CloudData {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  
+  // Plot positions array for cleaner code
+  const plotPositions = [
+    { x: 40, y: screenHeight * 0.58, width: 80, height: 60 },
+    { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 80, height: 60 },
+    { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 80, height: 60 },
+    { x: 60, y: screenHeight * 0.72, width: 80, height: 60 },
+    { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 80, height: 60 },
+    { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 80, height: 60 },
+  ];interface CloudData {
   id: number;
   x: number;
   y: number;
@@ -42,6 +51,17 @@ export default function GardenView() {
   const [currentPlanet, setCurrentPlanet] = useState<string>('Earth');
 
   const [showFlowers, setShowFlowers] = useState<boolean>(true);
+  
+  // Plot state management with timestamps
+  const [selectedTool, setSelectedTool] = useState<ToolType>(null);
+  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({
+    0: { watered: false, planted: false },
+    1: { watered: false, planted: false },
+    2: { watered: false, planted: false },
+    3: { watered: false, planted: false },
+    4: { watered: false, planted: false },
+    5: { watered: false, planted: false },
+  });
   
   // Weather and astronomy data
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -69,9 +89,32 @@ export default function GardenView() {
   ]);
 
   const handleToolSelect = (tool: ToolType) => {
-    // Tool selection is managed by the PlantingToolbar component itself
+    setSelectedTool(tool);
     setShowFlowers(tool === null);
     console.log('Selected tool:', tool);
+  };
+
+  const handlePlotPress = (plotId: number) => {
+    console.log('handlePlotPress called with plotId:', plotId, 'selectedTool:', selectedTool);
+    if (selectedTool === 'watering-can') {
+      const now = Date.now();
+      const newPlotStates = {
+        ...plotStates,
+        [plotId]: {
+          ...plotStates[plotId],
+          watered: true,
+          wateredAt: now
+        }
+      };
+      setPlotStates(newPlotStates);
+      
+      // Save to AsyncStorage for debugging in settings
+      AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+      
+      console.log(`Plot ${plotId} watered!`, newPlotStates);
+    } else {
+      console.log('Not in watering mode, selectedTool is:', selectedTool);
+    }
   };
   
   const [bees] = useState<BeeData[]>([
@@ -284,6 +327,46 @@ export default function GardenView() {
     Alert.alert('Identify', 'Plant identification coming soon!');
   };
 
+  // Timer to check for expired watered plots (20 minutes = 1200000ms)
+  useEffect(() => {
+    const checkWateredPlots = () => {
+      const now = Date.now();
+      const twentyMinutes = 20 * 60 * 1000; // 20 minutes in milliseconds
+      
+      setPlotStates(prevStates => {
+        const newStates = { ...prevStates };
+        let hasChanges = false;
+        
+        Object.keys(newStates).forEach(plotId => {
+          const plot = newStates[parseInt(plotId)];
+          if (plot.watered && plot.wateredAt && (now - plot.wateredAt) > twentyMinutes) {
+            newStates[parseInt(plotId)] = {
+              ...plot,
+              watered: false,
+              wateredAt: undefined
+            };
+            hasChanges = true;
+            console.log(`Plot ${plotId} dried out after 20 minutes`);
+          }
+        });
+        
+        if (hasChanges) {
+          AsyncStorage.setItem('plotStates', JSON.stringify(newStates));
+        }
+        
+        return hasChanges ? newStates : prevStates;
+      });
+    };
+    
+    // Check every 30 seconds
+    const interval = setInterval(checkWateredPlots, 30000);
+    
+    // Also check immediately on mount
+    checkWateredPlots();
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const handlePlanetPress = () => {
     router.push('/settings');
   };
@@ -310,10 +393,7 @@ export default function GardenView() {
         {/* Grass terrain strip (foreground) - covers bottom 45% */}
         <GrassTerrain />
         
-        {/* Garden plots and flowers */}
-        <GardenPlots showFlowers={showFlowers} />
-
-        {/* Bees */}
+        {/* Bees - render before plots so they don't block touches */}
         <Bees 
           bees={bees} 
           beesActive={beesActive} 
@@ -321,7 +401,66 @@ export default function GardenView() {
           weatherData={weatherData} 
         />
 
+        {/* Garden plots and flowers */}
+        <GardenPlots 
+          showFlowers={showFlowers} 
+          selectedTool={selectedTool}
+          plotStates={plotStates}
+          onPlotPress={handlePlotPress}
+        />
+
         <PlantingToolbar onToolSelect={handleToolSelect} />
+
+        {/* DEBUG: Test button that should definitely work */}
+        {selectedTool === 'watering-can' && (
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              top: 200,
+              right: 20,
+              backgroundColor: 'red',
+              padding: 20,
+              zIndex: 9999,
+            }}
+            onPress={() => {
+              console.log('🔥 TEST BUTTON WORKS!');
+              handlePlotPress(0); // Test plot 0
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>TEST WATER</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Direct plot touch areas - render at very end to be on top */}
+        {plotPositions.map((position, i) => (
+          <TouchableOpacity
+            key={`plot-${i}`}
+            style={{
+              position: 'absolute',
+              left: position.x,
+              top: position.y,
+              width: position.width,
+              height: position.height,
+              backgroundColor: selectedTool === 'watering-can' && !plotStates[i]?.watered
+                ? 'rgba(0, 255, 0, 0.6)'
+                : plotStates[i]?.watered
+                  ? 'rgba(139, 69, 19, 0.5)' // Darker brown for watered plots
+                  : 'transparent',
+              borderRadius: 20,
+              zIndex: 10000,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={() => {
+              console.log(`🚰 PLOT ${i} TOUCHED!`);
+              handlePlotPress(i);
+            }}
+          >
+            {selectedTool === 'watering-can' && !plotStates[i]?.watered && (
+              <Text style={{ fontSize: 24, color: 'green' }}>💧</Text>
+            )}
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* HUD Overlay */}

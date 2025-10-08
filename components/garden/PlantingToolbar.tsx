@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { plantingToolbarStyles as styles } from '../../styles/garden/PlantingToolbarStyles';
 import ToolbarIcon from "./ToolbarIcon";
 
-export type ToolType = "till" | "grass" | "lilac" | null;
+export type ToolType = "till" | "grass" | "lilac" | "watering-can" | null;
 
 interface PlantingToolbarProps {
   onToolSelect: (tool: ToolType) => void;
@@ -35,6 +35,11 @@ export default function PlantingToolbar({
       id: "lilac" as ToolType,
       icon: "🌸",
       label: "Lilac",
+    },
+    {
+      id: "watering-can" as ToolType,
+      icon: "🚿",
+      label: "Water",
     },
   ];
 

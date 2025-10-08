@@ -19,12 +19,7 @@ interface BeesProps {
 }
 
 export default function Bees({ bees, beesActive, sunData, weatherData }: BeesProps) {
-  // Log weather data for debugging
-  if (weatherData) {
-    console.log(weatherData);
-  }
-
-  if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
+    if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
     // Bees are sleeping - show fewer bees or make them stationary
     return (
       <>

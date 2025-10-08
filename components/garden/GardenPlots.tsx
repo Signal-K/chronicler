@@ -1,47 +1,77 @@
 import React from 'react';
-import { Dimensions, Image, View } from 'react-native';
+import { Dimensions, Image, Text, View } from 'react-native';
 import { gardenPlotsStyles as styles } from '../../styles/garden/GardenPlotsStyles';
+import { ToolType } from './PlantingToolbar';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface GardenPlotsProps {
   showFlowers: boolean;
+  selectedTool: ToolType;
+  plotStates: {[key: number]: {watered: boolean, planted: boolean}};
+  onPlotPress: (plotId: number) => void;
 }
 
-export default function GardenPlots({ showFlowers }: GardenPlotsProps) {
+export default function GardenPlots({ showFlowers, selectedTool, plotStates, onPlotPress }: GardenPlotsProps) {
+  const plotPositions = [
+    { left: 40, top: screenHeight * 0.58 },
+    { left: screenWidth * 0.3, top: screenHeight * 0.62 },
+    { left: screenWidth * 0.6, top: screenHeight * 0.59 },
+    { left: 60, top: screenHeight * 0.72 },
+    { left: screenWidth * 0.4, top: screenHeight * 0.75 },
+    { left: screenWidth * 0.75, top: screenHeight * 0.7 },
+  ];
+
+  const isWateringMode = selectedTool === 'watering-can';
+
   return (
     <>
-      {/* Plots using sand_07 sprite */}
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: 40, top: screenHeight * 0.58 }]}
-        resizeMode="cover"
-      />
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: screenWidth * 0.3, top: screenHeight * 0.62 }]}
-        resizeMode="cover"
-      />
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: screenWidth * 0.6, top: screenHeight * 0.59 }]}
-        resizeMode="cover"
-      />
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: 60, top: screenHeight * 0.72 }]}
-        resizeMode="cover"
-      />
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: screenWidth * 0.4, top: screenHeight * 0.75 }]}
-        resizeMode="cover"
-      />
-      <Image 
-        source={require('@/assets/Sprites/Sand/sand_07.png')}
-        style={[styles.plotContainer, { left: screenWidth * 0.75, top: screenHeight * 0.7 }]}
-        resizeMode="cover"
-      />
+      {/* Render each plot */}
+      {plotPositions.map((position, index) => (
+        <View key={`plot-${index}`}>
+          {/* Highlight border when watering can is selected */}
+          {isWateringMode && (
+            <View 
+              style={[
+                styles.plotHighlight,
+                { 
+                  left: position.left - 2, 
+                  top: position.top - 2 
+                }
+              ]}
+            />
+          )}
+          
+          {/* Arrow pointing to plot when watering can is selected */}
+          {isWateringMode && (
+            <Text 
+              style={[
+                styles.plotArrow,
+                { 
+                  left: position.left + 40, 
+                  top: position.top - 35 
+                }
+              ]}
+            >
+              ↓
+            </Text>
+          )}
+
+          {/* Base plot sprite */}
+          <Image 
+            source={require('@/assets/Sprites/Sand/sand_07.png')}
+            style={[styles.plotContainer, position]}
+            resizeMode="cover"
+          />
+
+          {/* Watered overlay */}
+          {plotStates[index]?.watered && (
+            <View 
+              style={[styles.wateredOverlay, position]}
+            />
+          )}
+        </View>
+      ))}
 
       {/* Flowers on the plots - only show when no tool is selected */}
       {showFlowers && (
