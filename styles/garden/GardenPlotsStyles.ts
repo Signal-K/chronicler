@@ -38,9 +38,19 @@ export const gardenPlotsStyles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 60,
-    borderRadius: 20,
+    borderRadius: 22,
     backgroundColor: 'rgba(0, 0, 100, 0.3)',
     zIndex: 8,
+    overflow: 'hidden',
+  },
+  tilledOverlay: {
+    position: 'absolute',
+    width: 80,
+    height: 60,
+    borderRadius: 22,
+    backgroundColor: 'rgba(92, 51, 23, 0.5)',
+    zIndex: 9,
+    overflow: 'hidden',
   },
   flowerContainer: {
     position: 'absolute',
@@ -72,6 +82,21 @@ export const gardenPlotsStyles = StyleSheet.create({
   },
   blueFlower: {
     backgroundColor: '#4169E1',
+  },
+    // Single hatch line element; we'll position and rotate multiples programmatically
+  tilledHatchLine: {
+    position: 'absolute',
+    width: 4,
+    height: 140,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 0,
+    zIndex: 10,
+  },
+  // Image inside plot wrapper should fill completely
+  plotImage: {
+    width: 96,
+    height: 72,
+    borderRadius: 22,
   },
   flowerCenter: {
     position: 'absolute',

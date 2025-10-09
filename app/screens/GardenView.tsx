@@ -54,7 +54,7 @@ export default function GardenView() {
   
   // Plot state management with timestamps
   const [selectedTool, setSelectedTool] = useState<ToolType>(null);
-  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({
+  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number, tilled?: boolean}}>({
     0: { watered: false, planted: false },
     1: { watered: false, planted: false },
     2: { watered: false, planted: false },
@@ -95,26 +95,38 @@ export default function GardenView() {
   };
 
   const handlePlotPress = (plotId: number) => {
-    console.log('handlePlotPress called with plotId:', plotId, 'selectedTool:', selectedTool);
     if (selectedTool === 'watering-can') {
       const now = Date.now();
       const newPlotStates = {
-        ...plotStates,
+      ...plotStates,
         [plotId]: {
           ...plotStates[plotId],
           watered: true,
-          wateredAt: now
+          wateredAt: now,
         }
       };
+
       setPlotStates(newPlotStates);
-      
-      // Save to AsyncStorage for debugging in settings
+
       AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
-      
-      console.log(`Plot ${plotId} watered!`, newPlotStates);
-    } else {
-      console.log('Not in watering mode, selectedTool is:', selectedTool);
-    }
+    } else if (selectedTool === 'till') {
+      const plot = plotStates[plotId];
+      if (!plot?.watered) {
+        console.log("Plot needs to be watered before it can be tilled");
+        return;
+      };
+
+      const newPlotStates = {
+        ...plotStates,
+        [plotId]: {
+          ...plot,
+          tilled: true,
+        }
+      };
+
+      setPlotStates(newPlotStates);
+      AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+    };
   };
   
   const [bees] = useState<BeeData[]>([
@@ -344,6 +356,7 @@ export default function GardenView() {
               ...plot,
               watered: false,
               wateredAt: undefined
+              ,tilled: undefined,
             };
             hasChanges = true;
             console.log(`Plot ${plotId} dried out after 20 minutes`);
@@ -409,27 +422,7 @@ export default function GardenView() {
           onPlotPress={handlePlotPress}
         />
 
-        <PlantingToolbar onToolSelect={handleToolSelect} />
-
-        {/* DEBUG: Test button that should definitely work */}
-        {selectedTool === 'watering-can' && (
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              top: 200,
-              right: 20,
-              backgroundColor: 'red',
-              padding: 20,
-              zIndex: 9999,
-            }}
-            onPress={() => {
-              console.log('🔥 TEST BUTTON WORKS!');
-              handlePlotPress(0); // Test plot 0
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>TEST WATER</Text>
-          </TouchableOpacity>
-        )}
+        <PlantingToolbar onToolSelect={handleToolSelect} showTill={Object.values(plotStates).some(s => s.watered)} toolbarTop={screenHeight * 0.06} />
 
         {/* Direct plot touch areas - render at very end to be on top */}
         {plotPositions.map((position, i) => (

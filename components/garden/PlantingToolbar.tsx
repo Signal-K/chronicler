@@ -7,10 +7,14 @@ export type ToolType = "till" | "grass" | "lilac" | "watering-can" | null;
 
 interface PlantingToolbarProps {
   onToolSelect: (tool: ToolType) => void;
-}
+  showTill?: boolean;
+  toolbarTop?: number;
+};
 
 export default function PlantingToolbar({
   onToolSelect,
+  showTill = false,
+  toolbarTop,
 }: PlantingToolbarProps) {
   const [selectedTool, setSelectedTool] = useState<ToolType>(null);
 
@@ -20,12 +24,7 @@ export default function PlantingToolbar({
     onToolSelect(newTool);
   };
 
-  const tools = [
-    {
-      id: "till" as ToolType,
-      icon: "🔨",
-      label: "Till",
-    },
+  const baseTools = [
     {
       id: "grass" as ToolType,
       icon: "🌱",
@@ -41,6 +40,11 @@ export default function PlantingToolbar({
       icon: "🚿",
       label: "Water",
     },
+  ];
+
+ const tools = [
+    ...(showTill ? [{ id: 'till' as ToolType, icon: '🔨', label: 'Till' }] : []),
+    ...baseTools,
   ];
 
   return (
