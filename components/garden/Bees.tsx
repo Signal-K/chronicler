@@ -1,7 +1,7 @@
 import { SunData, getTimeOfDay } from '@/lib/astronomy';
 import { WeatherData } from '@/lib/weather';
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Text, View } from 'react-native';
 import { beesStyles as styles } from '../../styles/garden/BeesStyles';
 
 interface BeeData {
@@ -11,15 +11,68 @@ interface BeeData {
   direction: number;
 }
 
+interface PollenDrop {
+  id: number;
+  x: number;
+  y: number;
+  createdAt: number;
+}
+
 interface BeesProps {
   bees: BeeData[];
   beesActive: boolean;
   sunData: SunData | null;
   weatherData: WeatherData | null;
+  fullyGrownPlantCount: number;
+  fullyGrownPlantPositions: { x: number; y: number }[];
 }
 
-export default function Bees({ bees, beesActive, sunData, weatherData }: BeesProps) {
-    if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
+export default function Bees({ bees, beesActive, sunData, weatherData, fullyGrownPlantCount, fullyGrownPlantPositions }: BeesProps) {
+  const [pollenDrops, setPollenDrops] = useState<PollenDrop[]>([]);
+  const [showBreedingMessage, setShowBreedingMessage] = useState(false);
+  const isPollinationActive = fullyGrownPlantCount >= 2;
+
+  // Generate pollen drops when pollination is active
+  useEffect(() => {
+    if (!isPollinationActive || !beesActive) {
+      setPollenDrops([]);
+      setShowBreedingMessage(false);
+      return;
+    }
+
+    setShowBreedingMessage(true);
+
+    // Add new pollen drops sporadically
+    const pollenInterval = setInterval(() => {
+      if (fullyGrownPlantPositions.length >= 2) {
+        const randomPlantIndex = Math.floor(Math.random() * fullyGrownPlantPositions.length);
+        const plantPos = fullyGrownPlantPositions[randomPlantIndex];
+        
+        // Create pollen drop near the plant
+        const newPollen: PollenDrop = {
+          id: Date.now() + Math.random(),
+          x: plantPos.x + Math.random() * 80 - 40, // Spread around plant
+          y: plantPos.y + Math.random() * 60 - 30,
+          createdAt: Date.now(),
+        };
+        
+        setPollenDrops(prev => [...prev, newPollen]);
+      }
+    }, 3000); // Drop pollen every 3 seconds
+
+    // Clean up old pollen drops
+    const cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      setPollenDrops(prev => prev.filter(p => now - p.createdAt < 5000)); // Remove after 5 seconds
+    }, 1000);
+
+    return () => {
+      clearInterval(pollenInterval);
+      clearInterval(cleanupInterval);
+    };
+  }, [isPollinationActive, beesActive, fullyGrownPlantPositions]);
+
+  if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
     // Bees are sleeping - show fewer bees or make them stationary
     return (
       <>
@@ -303,6 +356,82 @@ export default function Bees({ bees, beesActive, sunData, weatherData }: BeesPro
           </View>
         );
       })}
+
+      {/* Pollen drops */}
+      {pollenDrops.map((pollen) => (
+        <Image
+          key={pollen.id}
+          source={require('@/assets/Sprites/Growing Plants/tile062.png')}
+          style={{
+            position: 'absolute',
+            left: pollen.x,
+            top: pollen.y,
+            width: 24,
+            height: 24,
+            zIndex: 100,
+          }}
+          resizeMode="contain"
+        />
+      ))}
+
+      {/* Breeding notification speech bubble */}
+      {showBreedingMessage && (
+        <View
+          style={{
+            position: 'absolute',
+            left: bees[0]?.x + 20 || 100,
+            top: bees[0]?.y - 60 || 100,
+            zIndex: 101,
+          }}
+        >
+          {/* Speech bubble tail */}
+          <View style={{
+            position: 'absolute',
+            bottom: -8,
+            left: 20,
+            width: 0,
+            height: 0,
+            borderLeftWidth: 8,
+            borderRightWidth: 8,
+            borderTopWidth: 10,
+            borderLeftColor: 'transparent',
+            borderRightColor: 'transparent',
+            borderTopColor: '#FFF3CD',
+          }} />
+          
+          {/* Speech bubble */}
+          <View style={{
+            backgroundColor: '#FFF3CD',
+            borderRadius: 15,
+            padding: 12,
+            borderWidth: 2,
+            borderColor: '#FFD700',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 5,
+            minWidth: 150,
+          }}>
+            <Text style={{ 
+              fontSize: 12, 
+              fontWeight: 'bold', 
+              color: '#856404',
+              textAlign: 'center',
+            }}>
+              🐝 Ready to breed!
+            </Text>
+            <Text style={{ 
+              fontSize: 10, 
+              color: '#856404',
+              textAlign: 'center',
+              marginTop: 4,
+            }}>
+              Identify to create new plant
+            </Text>
+          </View>
+        </View>
+      )}
     </>
   );
 }

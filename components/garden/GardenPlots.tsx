@@ -14,6 +14,9 @@ interface GardenPlotsProps {
       planted: boolean;
       wateredAt?: number;
       tilled?: boolean;
+      plantedAt?: number;
+      growthStage?: number;
+      needsWater?: boolean;
     };
   };
   onPlotPress: (plotId: number) => void;
@@ -35,6 +38,20 @@ export default function GardenPlots({
   ];
 
   const isWateringMode = selectedTool === "watering-can";
+
+  // Plant sprite mapping based on growth stage
+  const getPlantSprite = (growthStage: number = 0) => {
+    switch (growthStage) {
+      case 0:
+        return require("@/assets/Sprites/Growing Plants/tile000.png");
+      case 1:
+        return require("@/assets/Sprites/Growing Plants/tile001.png");
+      case 2:
+        return require("@/assets/Sprites/Growing Plants/tile009.png");
+      default:
+        return require("@/assets/Sprites/Growing Plants/tile000.png");
+    }
+  };
 
   // Debug: log tilled states
   React.useEffect(() => {
@@ -80,29 +97,56 @@ export default function GardenPlots({
           )}
 
           {/* Base plot sprite */}
-          <Image
-            source={require("@/assets/Sprites/Sand/sand_07.png")}
-            style={[styles.plotContainer, position]}
-            resizeMode="cover"
-          />
+          <View
+            style={{
+              position: 'absolute',
+              left: position.left,
+              top: position.top,
+              width: 120,
+              height: 90,
+              borderRadius: 30,
+              backgroundColor: '#D4C4B0',
+              overflow: 'hidden',
+            }}
+          >
+            <Image
+              source={require("@/assets/Sprites/Sand/sand_07.png")}
+              style={{ width: 120, height: 90 }}
+              resizeMode="stretch"
+            />
+          </View>
 
           {/* Watered overlay - positioned identically */}
           {plotStates[index]?.watered && (
             <View 
-              style={[
-                styles.wateredOverlay, 
-                position
-              ]} 
+              style={{
+                position: 'absolute',
+                left: position.left,
+                top: position.top,
+                width: 120,
+                height: 90,
+                borderRadius: 30,
+                backgroundColor: 'rgba(0, 100, 200, 0.4)',
+                zIndex: 8,
+                overflow: 'hidden',
+              }} 
             />
           )}
 
           {/* Tilled overlay - positioned identically */}
-          {plotStates[index]?.tilled && (
+          {plotStates[index]?.tilled && !plotStates[index]?.planted && (
             <View 
-              style={[
-                styles.tilledOverlay, 
-                position
-              ]} 
+              style={{
+                position: 'absolute',
+                left: position.left,
+                top: position.top,
+                width: 120,
+                height: 90,
+                borderRadius: 30,
+                backgroundColor: 'rgba(92, 51, 23, 0.6)',
+                zIndex: 9,
+                overflow: 'hidden',
+              }} 
               pointerEvents="none"
             >
               {/* Diagonal lines at 45deg */}
@@ -133,6 +177,33 @@ export default function GardenPlots({
                   ]}
                 />
               ))}
+            </View>
+          )}
+
+          {/* Planted grass overlay */}
+          {plotStates[index]?.planted && (
+            <View
+              style={{
+                position: 'absolute',
+                left: position.left - 30,
+                top: position.top - 22.5,
+                width: 180,
+                height: 135,
+                zIndex: 10001,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              pointerEvents="none"
+            >
+              <Image
+                source={getPlantSprite(plotStates[index]?.growthStage || 0)}
+                style={{
+                  width: 180,
+                  height: 135,
+                  opacity: 1.0,
+                }}
+                resizeMode="contain"
+              />
             </View>
           )}
         </View>

@@ -22,12 +22,12 @@ import { gardenViewStyles as styles } from '../../styles/screens/GardenViewStyle
   
   // Plot positions array for cleaner code
   const plotPositions = [
-    { x: 40, y: screenHeight * 0.58, width: 80, height: 60 },
-    { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 80, height: 60 },
-    { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 80, height: 60 },
-    { x: 60, y: screenHeight * 0.72, width: 80, height: 60 },
-    { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 80, height: 60 },
-    { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 80, height: 60 },
+    { x: 40, y: screenHeight * 0.58, width: 120, height: 90 },
+    { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 120, height: 90 },
+    { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 120, height: 90 },
+    { x: 60, y: screenHeight * 0.72, width: 120, height: 90 },
+    { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 120, height: 90 },
+    { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 120, height: 90 },
   ];interface CloudData {
   id: number;
   x: number;
@@ -54,7 +54,7 @@ export default function GardenView() {
   
   // Plot state management with timestamps
   const [selectedTool, setSelectedTool] = useState<ToolType>(null);
-  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number, tilled?: boolean}}>({
+  const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number, tilled?: boolean, plantedAt?: number, growthStage?: number, needsWater?: boolean}}>({
     0: { watered: false, planted: false },
     1: { watered: false, planted: false },
     2: { watered: false, planted: false },
@@ -77,6 +77,7 @@ export default function GardenView() {
   }[]>([]);
   const [skyColors, setSkyColors] = useState({ primary: '#87CEEB', secondary: '#B0E0E6' });
   const [beesActive, setBeesActive] = useState(true);
+  const [currentTime, setCurrentTime] = useState(Date.now());
   
   // Animation values
   const animationFrame = useRef<number | null>(null);
@@ -96,19 +97,37 @@ export default function GardenView() {
 
   const handlePlotPress = (plotId: number) => {
     if (selectedTool === 'watering-can') {
+      const plot = plotStates[plotId];
       const now = Date.now();
-      const newPlotStates = {
-      ...plotStates,
-        [plotId]: {
-          ...plotStates[plotId],
-          watered: true,
-          wateredAt: now,
-        }
-      };
-
-      setPlotStates(newPlotStates);
-
-      AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+      
+      // Check if this is a planted plot that needs water for growth
+      if (plot?.planted && plot.needsWater && plot.growthStage !== undefined && plot.growthStage < 2) {
+        // Water the plant to progress to next growth stage
+        const newPlotStates = {
+          ...plotStates,
+          [plotId]: {
+            ...plot,
+            needsWater: false,
+            growthStage: plot.growthStage + 1,
+            wateredAt: now,
+          }
+        };
+        setPlotStates(newPlotStates);
+        AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+        console.log(`💧 Watered plant on plot ${plotId}, grew to stage ${plot.growthStage + 1}`);
+      } else {
+        // Regular plot watering (for tilling)
+        const newPlotStates = {
+          ...plotStates,
+          [plotId]: {
+            ...plot,
+            watered: true,
+            wateredAt: now,
+          }
+        };
+        setPlotStates(newPlotStates);
+        AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+      }
     } else if (selectedTool === 'till') {
       const plot = plotStates[plotId];
       if (!plot?.watered) {
@@ -126,16 +145,101 @@ export default function GardenView() {
 
       setPlotStates(newPlotStates);
       AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+    } else if (selectedTool === 'grass') {
+      const plot = plotStates[plotId];
+      if (!plot?.tilled) {
+        console.log("Plot needs to be tilled before planting grass");
+        return;
+      }
+      if (plot.planted) {
+        console.log("Plot already has a plant");
+        return;
+      }
+
+      const now = Date.now();
+      const newPlotStates = {
+        ...plotStates,
+        [plotId]: {
+          ...plot,
+          planted: true,
+          plantedAt: now,
+          growthStage: 0,
+          needsWater: false,
+          wateredAt: now,
+        }
+      };
+
+      setPlotStates(newPlotStates);
+      AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+      console.log(`🌱 Planted grass on plot ${plotId}`);
+    } else if (selectedTool === 'shovel') {
+      // Reset plot to default state
+      const newPlotStates = {
+        ...plotStates,
+        [plotId]: {
+          watered: false,
+          planted: false,
+        }
+      };
+
+      setPlotStates(newPlotStates);
+      AsyncStorage.setItem('plotStates', JSON.stringify(newPlotStates));
+      console.log(`🪣 Reset plot ${plotId} to default state`);
     };
   };
   
-  const [bees] = useState<BeeData[]>([
+  const [bees, setBees] = useState<BeeData[]>([
     { id: 1, x: screenWidth * 0.3, y: screenHeight * 0.4, direction: 1 },
     { id: 2, x: screenWidth * 0.7, y: screenHeight * 0.6, direction: -1 },
     { id: 3, x: screenWidth * 0.2, y: screenHeight * 0.3, direction: 1 },
     { id: 4, x: screenWidth * 0.8, y: screenHeight * 0.5, direction: -1 },
     { id: 5, x: screenWidth * 0.5, y: screenHeight * 0.35, direction: 1 },
   ]);
+
+  // Load saved plot states on mount
+  useEffect(() => {
+    const loadPlotStates = async () => {
+      try {
+        const savedStates = await AsyncStorage.getItem('plotStates');
+        if (savedStates) {
+          const parsedStates = JSON.parse(savedStates);
+          console.log('📦 Loaded plot states from storage:', parsedStates);
+          
+          // Migrate old planted plots to include plantedAt and growthStage
+          const now = Date.now();
+          const migratedStates = { ...parsedStates };
+          let needsMigration = false;
+          
+          Object.keys(migratedStates).forEach(plotId => {
+            const plot = migratedStates[parseInt(plotId)];
+            if (plot.planted && (plot.plantedAt === undefined || plot.growthStage === undefined || plot.needsWater === undefined)) {
+              migratedStates[parseInt(plotId)] = {
+                ...plot,
+                plantedAt: plot.plantedAt || now,
+                growthStage: plot.growthStage !== undefined ? plot.growthStage : 0,
+                needsWater: plot.needsWater !== undefined ? plot.needsWater : false,
+                wateredAt: plot.wateredAt || now,
+              };
+              needsMigration = true;
+              console.log(`🔄 Migrated plot ${plotId} with plantedAt, growthStage, and needsWater`);
+            }
+          });
+          
+          if (needsMigration) {
+            await AsyncStorage.setItem('plotStates', JSON.stringify(migratedStates));
+            setPlotStates(migratedStates);
+          } else {
+            setPlotStates(parsedStates);
+          }
+        } else {
+          console.log('📦 No saved plot states found');
+        }
+      } catch (error) {
+        console.error('Error loading plot states:', error);
+      }
+    };
+    loadPlotStates();
+  }, []);
 
   // Get user session on mount
   useEffect(() => {
@@ -331,6 +435,43 @@ export default function GardenView() {
     };
   }, []);
 
+  // Bee animation - make bees fly around and between plants
+  useEffect(() => {
+    if (!beesActive) return;
+
+    const beeAnimationInterval = setInterval(() => {
+      setBees(prevBees => 
+        prevBees.map(bee => {
+          // Random movement
+          const speedX = (Math.random() - 0.5) * 4;
+          const speedY = (Math.random() - 0.5) * 3;
+          
+          let newX = bee.x + speedX * bee.direction;
+          let newY = bee.y + speedY;
+          
+          // Bounce off edges
+          let newDirection = bee.direction;
+          if (newX < 20 || newX > screenWidth - 20) {
+            newDirection *= -1;
+            newX = Math.max(20, Math.min(screenWidth - 20, newX));
+          }
+          
+          // Keep bees in the garden area (upper portion)
+          newY = Math.max(screenHeight * 0.2, Math.min(screenHeight * 0.55, newY));
+          
+          return {
+            ...bee,
+            x: newX,
+            y: newY,
+            direction: newDirection,
+          };
+        })
+      );
+    }, 100); // Update every 100ms for smooth movement
+
+    return () => clearInterval(beeAnimationInterval);
+  }, [beesActive]);
+
   const handlePlanetsPress = () => {
     router.push('/planets');
   };
@@ -352,14 +493,17 @@ export default function GardenView() {
         Object.keys(newStates).forEach(plotId => {
           const plot = newStates[parseInt(plotId)];
           if (plot.watered && plot.wateredAt && (now - plot.wateredAt) > twentyMinutes) {
-            newStates[parseInt(plotId)] = {
-              ...plot,
-              watered: false,
-              wateredAt: undefined
-              ,tilled: undefined,
-            };
-            hasChanges = true;
-            console.log(`Plot ${plotId} dried out after 20 minutes`);
+            // Only clear watered state if plot hasn't been tilled or planted yet
+            // If tilled or planted, keep those states permanent
+            if (!plot.tilled && !plot.planted) {
+              newStates[parseInt(plotId)] = {
+                ...plot,
+                watered: false,
+                wateredAt: undefined,
+              };
+              hasChanges = true;
+              console.log(`Plot ${plotId} dried out after 20 minutes`);
+            }
           }
         });
         
@@ -380,8 +524,120 @@ export default function GardenView() {
     return () => clearInterval(interval);
   }, []);
 
+  // Update current time every second for countdown display
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Check for plant growth progression
+  useEffect(() => {
+    const checkPlantGrowth = () => {
+      const now = Date.now();
+      const growthInterval = 20 * 60 * 1000; // 20 minutes per growth stage
+      
+      setPlotStates(prevStates => {
+        const newStates = { ...prevStates };
+        let hasChanges = false;
+        
+        Object.keys(newStates).forEach(plotId => {
+          const plot = newStates[parseInt(plotId)];
+          if (plot.planted && plot.plantedAt && plot.growthStage !== undefined) {
+            const timeSinceLastWatered = plot.wateredAt ? now - plot.wateredAt : now - plot.plantedAt;
+            
+            // Check if it's been 20 minutes since last watering and plant hasn't reached max growth
+            if (timeSinceLastWatered >= growthInterval && !plot.needsWater && plot.growthStage < 2) {
+              // Plant needs water to progress to next stage
+              newStates[parseInt(plotId)] = {
+                ...plot,
+                needsWater: true,
+              };
+              hasChanges = true;
+              console.log(`💧 Plot ${plotId} needs water to grow from stage ${plot.growthStage} to ${plot.growthStage + 1}`);
+            }
+          }
+        });
+        
+        if (hasChanges) {
+          AsyncStorage.setItem('plotStates', JSON.stringify(newStates));
+        }
+        
+        return hasChanges ? newStates : prevStates;
+      });
+    };
+    
+    // Check every 10 seconds
+    const interval = setInterval(checkPlantGrowth, 10000);
+    
+    // Also check immediately on mount
+    checkPlantGrowth();
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const handlePlanetPress = () => {
     router.push('/settings');
+  };
+
+  // Debug function to fast-forward all plant growth
+  const handleFastForwardGrowth = async () => {
+    const newStates = { ...plotStates };
+    let hasChanges = false;
+
+    Object.keys(newStates).forEach(plotId => {
+      const plot = newStates[parseInt(plotId)];
+      if (plot.planted && plot.growthStage !== undefined && plot.growthStage < 2) {
+        // Set plant to need water for next growth
+        newStates[parseInt(plotId)] = {
+          ...plot,
+          needsWater: true,
+          wateredAt: Date.now() - (20 * 60 * 1000), // Set as if 20 minutes have passed
+        };
+        hasChanges = true;
+        console.log(`⏩ Fast-forwarded plot ${plotId} - now needs water to grow`);
+      }
+    });
+
+    if (hasChanges) {
+      setPlotStates(newStates);
+      await AsyncStorage.setItem('plotStates', JSON.stringify(newStates));
+      Alert.alert('🌱 Growth Ready', 'All plants are ready to be watered for next growth stage!');
+    } else {
+      Alert.alert('🌱 No Plants to Fast-Forward', 'All plants are either fully grown or no plants exist.');
+    }
+  };
+
+  // Helper function to format time remaining until next growth stage
+  const getTimeUntilNextGrowth = (plot: typeof plotStates[0]): string => {
+    if (!plot.planted || !plot.plantedAt || plot.growthStage === undefined) {
+      return '';
+    }
+    
+    // If plant needs water, don't show timer
+    if (plot.needsWater) {
+      return '';
+    }
+    
+    // If fully grown (stage 2), no more growth
+    if (plot.growthStage >= 2) {
+      return 'Fully Grown';
+    }
+    
+    const growthInterval = 20 * 60 * 1000; // 20 minutes
+    const timeSinceLastWatered = plot.wateredAt ? currentTime - plot.wateredAt : currentTime - plot.plantedAt;
+    const timeToNextStage = growthInterval - timeSinceLastWatered;
+    
+    if (timeToNextStage <= 0) {
+      return '';
+    }
+    
+    const minutes = Math.floor(timeToNextStage / 60000);
+    const seconds = Math.floor((timeToNextStage % 60000) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -411,7 +667,12 @@ export default function GardenView() {
           bees={bees} 
           beesActive={beesActive} 
           sunData={sunData} 
-          weatherData={weatherData} 
+          weatherData={weatherData}
+          fullyGrownPlantCount={Object.values(plotStates).filter(p => p.planted && p.growthStage === 2).length}
+          fullyGrownPlantPositions={plotPositions
+            .map((pos, i) => ({ ...pos, plotId: i }))
+            .filter(p => plotStates[p.plotId]?.planted && plotStates[p.plotId]?.growthStage === 2)
+            .map(p => ({ x: p.x + 60, y: p.y + 45 }))} // Center of plot
         />
 
         {/* Garden plots and flowers */}
@@ -436,6 +697,10 @@ export default function GardenView() {
               height: position.height,
               backgroundColor: selectedTool === 'watering-can' && !plotStates[i]?.watered
                 ? 'rgba(0, 255, 0, 0.6)'
+                : selectedTool === 'grass' && plotStates[i]?.tilled && !plotStates[i]?.planted
+                  ? 'rgba(0, 200, 0, 0.4)' // Green tint for plantable plots
+                : selectedTool === 'shovel'
+                  ? 'rgba(255, 0, 0, 0.4)' // Red tint for reset
                 : plotStates[i]?.watered
                   ? 'rgba(139, 69, 19, 0.5)' // Darker brown for watered plots
                   : 'transparent',
@@ -452,8 +717,112 @@ export default function GardenView() {
             {selectedTool === 'watering-can' && !plotStates[i]?.watered && (
               <Text style={{ fontSize: 24, color: 'green' }}>💧</Text>
             )}
+            {selectedTool === 'grass' && plotStates[i]?.tilled && !plotStates[i]?.planted && (
+              <Text style={{ fontSize: 24, color: 'green' }}>🌱</Text>
+            )}
+            {selectedTool === 'shovel' && (
+              <Text style={{ fontSize: 24, color: 'red' }}>🪣</Text>
+            )}
           </TouchableOpacity>
         ))}
+
+        {/* Growth timers below planted plots */}
+        {plotPositions.map((position, i) => {
+          const plot = plotStates[i];
+          
+          console.log(`Plot ${i} check:`, {
+            planted: plot?.planted,
+            plantedAt: plot?.plantedAt,
+            growthStage: plot?.growthStage,
+          });
+          
+          if (!plot?.planted) return null;
+          
+          const timeText = getTimeUntilNextGrowth(plot);
+          console.log(`Plot ${i} timeText:`, timeText);
+          
+          if (!timeText) return null;
+          
+          return (
+            <View
+              key={`timer-${i}`}
+              style={{
+                position: 'absolute',
+                left: position.x,
+                top: position.y + position.height + 5,
+                width: position.width,
+                alignItems: 'center',
+                zIndex: 10001,
+              }}
+            >
+              <View style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 8,
+              }}>
+                <Text style={{
+                  color: plot.growthStage === 2 ? '#4CAF50' : '#FFD700',
+                  fontSize: 12,
+                  fontWeight: 'bold',
+                }}>
+                  {timeText}
+                </Text>
+              </View>
+            </View>
+          );
+        })}
+
+        {/* Water bubble indicators for plants that need water */}
+        {plotPositions.map((position, i) => {
+          const plot = plotStates[i];
+          
+          if (!plot?.planted || !plot.needsWater) return null;
+          
+          return (
+            <View
+              key={`water-bubble-${i}`}
+              style={{
+                position: 'absolute',
+                left: position.x + position.width - 10,
+                top: position.y - 30,
+                zIndex: 10002,
+              }}
+            >
+              {/* Speech bubble tail (triangle) */}
+              <View style={{
+                position: 'absolute',
+                bottom: -8,
+                left: 12,
+                width: 0,
+                height: 0,
+                borderLeftWidth: 8,
+                borderRightWidth: 8,
+                borderTopWidth: 10,
+                borderLeftColor: 'transparent',
+                borderRightColor: 'transparent',
+                borderTopColor: 'white',
+              }} />
+              
+              {/* Speech bubble */}
+              <View style={{
+                backgroundColor: 'white',
+                borderRadius: 20,
+                padding: 8,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 5,
+                minWidth: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Text style={{ fontSize: 20 }}>💧</Text>
+              </View>
+            </View>
+          );
+        })}
       </View>
 
       {/* HUD Overlay */}
@@ -464,6 +833,28 @@ export default function GardenView() {
         currentPlanet={currentPlanet}
         calculateGrowthRate={calculateGrowthRate}
       />
+
+      {/* Debug: Fast-forward button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          top: 50,
+          right: 20,
+          backgroundColor: 'rgba(255, 152, 0, 0.9)',
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          borderRadius: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+          zIndex: 10002,
+        }}
+        onPress={handleFastForwardGrowth}
+      >
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>⏩ Fast Forward</Text>
+      </TouchableOpacity>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>

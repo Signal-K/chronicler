@@ -4,8 +4,8 @@ export const plantingToolbarStyles = StyleSheet.create({
   toolbar: {
     position: "absolute",
     left: 10,
-    top: "10%",
-    bottom: "25%",
+    top: "5%",
+    bottom: "30%",
     width: 80,
     justifyContent: "center",
     zIndex: 100,

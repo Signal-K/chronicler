@@ -4,22 +4,22 @@ export const gardenPlotsStyles = StyleSheet.create({
   // Uniform squircle-shaped plots using sand sprite
   plotContainer: {
     position: 'absolute',
-    width: 80,
-    height: 60,
-    borderRadius: 20, // Squircle shape (rounded rectangle)
+    width: 120,
+    height: 90,
+    borderRadius: 30, // Squircle shape (rounded rectangle)
     overflow: 'hidden', // Ensures sprite stays within bounds
   },
   plotInteractive: {
-    width: 80,
-    height: 60,
-    borderRadius: 20,
+    width: 120,
+    height: 90,
+    borderRadius: 30,
     zIndex: 1000, // Much higher zIndex
   },
   plotHighlight: {
     position: 'absolute',
-    width: 84,
-    height: 64,
-    borderRadius: 22,
+    width: 126,
+    height: 96,
+    borderRadius: 33,
     borderWidth: 3,
     borderColor: '#4A90E2',
     backgroundColor: 'rgba(74, 144, 226, 0.2)',
@@ -36,54 +36,50 @@ export const gardenPlotsStyles = StyleSheet.create({
   },
   wateredOverlay: {
     position: 'absolute',
-    width: 80,
-    height: 60,
-    borderRadius: 22,
+    width: 120,
+    height: 90,
+    borderRadius: 30,
     backgroundColor: 'rgba(0, 0, 100, 0.3)',
     zIndex: 8,
-    overflow: 'hidden',
   },
   tilledOverlay: {
     position: 'absolute',
-    width: 80,
-    height: 60,
-    borderRadius: 22,
+    width: 120,
+    height: 90,
+    borderRadius: 30,
     backgroundColor: 'rgba(92, 51, 23, 0.5)',
     zIndex: 9,
-    overflow: 'hidden',
   },
+  // Hide flower elements across all screens to remove flower dots
   flowerContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    display: 'none',
   },
   flower: {
-    position: 'absolute',
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    display: 'none',
+    // kept keys to avoid runtime undefined style references
+    width: 0,
+    height: 0,
+    borderRadius: 0,
   },
   pinkFlower: {
-    backgroundColor: '#FF69B4',
+    display: 'none',
   },
   orangeFlower: {
-    backgroundColor: '#FF4500',
+    display: 'none',
   },
   purpleFlower: {
-    backgroundColor: '#9370DB',
+    display: 'none',
   },
   yellowFlower: {
-    backgroundColor: '#FFD700',
+    display: 'none',
   },
   redFlower: {
-    backgroundColor: '#DC143C',
+    display: 'none',
   },
   blueFlower: {
-    backgroundColor: '#4169E1',
+    display: 'none',
   },
-    // Single hatch line element; we'll position and rotate multiples programmatically
+  // Single hatch line element; we'll position and rotate multiples programmatically
   tilledHatchLine: {
     position: 'absolute',
     width: 4,
@@ -94,15 +90,15 @@ export const gardenPlotsStyles = StyleSheet.create({
   },
   // Image inside plot wrapper should fill completely
   plotImage: {
-    width: 96,
-    height: 72,
-    borderRadius: 22,
+    width: 120,
+    height: 90,
+    borderRadius: 30,
   },
+  // hide flower center as well
   flowerCenter: {
-    position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#FFD700',
+    display: 'none',
+    width: 0,
+    height: 0,
+    borderRadius: 0,
   },
 });

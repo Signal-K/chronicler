@@ -7,7 +7,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 export default function GrassTerrain() {
   const renderGrassTiles = () => {
     const tiles = [];
-    const tileSize = 60; // Increased tile size to reduce total number of tiles for better performance
+    const tileSize = 90; // Increased tile size to match plot sizes
     const tilesPerRow = Math.ceil(screenWidth / tileSize) + 1;
     const tilesPerColumn = Math.ceil((screenHeight * 0.45) / tileSize) + 1;
     
