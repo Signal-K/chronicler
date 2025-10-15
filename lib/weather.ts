@@ -11,6 +11,9 @@ const DEFAULT_LOCATION = {
   name: 'Port Melbourne'
 };
 
+// DEBUG: Force bees to always be active (for testing animation)
+export const DEBUG_FORCE_BEES_ACTIVE = true;
+
 export interface WeatherData {
   temperature: number; // Celsius
   humidity: number; // Percentage

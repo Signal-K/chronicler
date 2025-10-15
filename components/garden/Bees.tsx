@@ -1,7 +1,7 @@
 import { SunData, getTimeOfDay } from '@/lib/astronomy';
 import { WeatherData } from '@/lib/weather';
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { beesStyles as styles } from '../../styles/garden/BeesStyles';
 
 interface BeeData {
@@ -24,52 +24,55 @@ interface BeesProps {
   sunData: SunData | null;
   weatherData: WeatherData | null;
   fullyGrownPlantCount: number;
-  fullyGrownPlantPositions: { x: number; y: number }[];
-}
+  fullyGrownPlantPositions: { x: number; y: number; plotId: number }[];
+  onPollinationPress: (plot1: number, plot2: number) => void;
+};
 
-export default function Bees({ bees, beesActive, sunData, weatherData, fullyGrownPlantCount, fullyGrownPlantPositions }: BeesProps) {
-  const [pollenDrops, setPollenDrops] = useState<PollenDrop[]>([]);
-  const [showBreedingMessage, setShowBreedingMessage] = useState(false);
+interface PollinationIndicator {
+  id: string;
+  x: number;
+  y: number;
+  plot1: number;
+  plot2: number;
+};
+
+export default function Bees({ 
+  bees, 
+  beesActive, 
+  sunData, 
+  weatherData, 
+  fullyGrownPlantCount, 
+  fullyGrownPlantPositions,
+  onPollinationPress 
+}: BeesProps) {
+  const [pollinationIndicators, setPollinationIndicators] = useState<PollinationIndicator[]>([]);
   const isPollinationActive = fullyGrownPlantCount >= 2;
 
-  // Generate pollen drops when pollination is active
   useEffect(() => {
-    if (!isPollinationActive || !beesActive) {
-      setPollenDrops([]);
-      setShowBreedingMessage(false);
+    if (!isPollinationActive || !beesActive || fullyGrownPlantPositions.length < 2) {
+      setPollinationIndicators([]);
       return;
-    }
-
-    setShowBreedingMessage(true);
-
-    // Add new pollen drops sporadically
-    const pollenInterval = setInterval(() => {
-      if (fullyGrownPlantPositions.length >= 2) {
-        const randomPlantIndex = Math.floor(Math.random() * fullyGrownPlantPositions.length);
-        const plantPos = fullyGrownPlantPositions[randomPlantIndex];
-        
-        // Create pollen drop near the plant
-        const newPollen: PollenDrop = {
-          id: Date.now() + Math.random(),
-          x: plantPos.x + Math.random() * 80 - 40, // Spread around plant
-          y: plantPos.y + Math.random() * 60 - 30,
-          createdAt: Date.now(),
-        };
-        
-        setPollenDrops(prev => [...prev, newPollen]);
-      }
-    }, 3000); // Drop pollen every 3 seconds
-
-    // Clean up old pollen drops
-    const cleanupInterval = setInterval(() => {
-      const now = Date.now();
-      setPollenDrops(prev => prev.filter(p => now - p.createdAt < 5000)); // Remove after 5 seconds
-    }, 1000);
-
-    return () => {
-      clearInterval(pollenInterval);
-      clearInterval(cleanupInterval);
     };
+
+    const indicators: PollinationIndicator[] = [];
+
+    for (let i = 0; i < fullyGrownPlantPositions.length - 1; i++) {
+      const plant1 = fullyGrownPlantPositions[i];
+      const plant2 = fullyGrownPlantPositions[i + 1];
+
+      const midX = (plant1.x + plant2.x) / 2;
+      const midY = (plant1.y + plant2.y) / 2;
+
+      indicators.push({
+        id: `pollination-${plant1.plotId}-${plant2.plotId}`,
+        x: midX,
+        y: midY,
+        plot1: plant1.plotId,
+        plot2: plant2.plotId,
+      });
+    };
+
+    setPollinationIndicators(indicators);
   }, [isPollinationActive, beesActive, fullyGrownPlantPositions]);
 
   if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
@@ -357,43 +360,29 @@ export default function Bees({ bees, beesActive, sunData, weatherData, fullyGrow
         );
       })}
 
-      {/* Pollen drops */}
-      {pollenDrops.map((pollen) => (
-        <Image
-          key={pollen.id}
-          source={require('@/assets/Sprites/Growing Plants/tile062.png')}
+            {/* Pollination indicators */}
+      {pollinationIndicators.map((indicator) => (
+        <TouchableOpacity
+          key={indicator.id}
           style={{
             position: 'absolute',
-            left: pollen.x,
-            top: pollen.y,
-            width: 24,
-            height: 24,
-            zIndex: 100,
+            left: indicator.x - 40,
+            top: indicator.y - 80,
+            zIndex: 10003,
           }}
-          resizeMode="contain"
-        />
-      ))}
-
-      {/* Breeding notification speech bubble */}
-      {showBreedingMessage && (
-        <View
-          style={{
-            position: 'absolute',
-            left: bees[0]?.x + 20 || 100,
-            top: bees[0]?.y - 60 || 100,
-            zIndex: 101,
-          }}
+          onPress={() => onPollinationPress(indicator.plot1, indicator.plot2)}
+          activeOpacity={0.7}
         >
           {/* Speech bubble tail */}
           <View style={{
             position: 'absolute',
             bottom: -8,
-            left: 20,
+            left: 32,
             width: 0,
             height: 0,
-            borderLeftWidth: 8,
-            borderRightWidth: 8,
-            borderTopWidth: 10,
+            borderLeftWidth: 10,
+            borderRightWidth: 10,
+            borderTopWidth: 12,
             borderLeftColor: 'transparent',
             borderRightColor: 'transparent',
             borderTopColor: '#FFF3CD',
@@ -402,36 +391,35 @@ export default function Bees({ bees, beesActive, sunData, weatherData, fullyGrow
           {/* Speech bubble */}
           <View style={{
             backgroundColor: '#FFF3CD',
-            borderRadius: 15,
-            padding: 12,
-            borderWidth: 2,
+            borderRadius: 20,
+            padding: 16,
+            borderWidth: 3,
             borderColor: '#FFD700',
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-            elevation: 5,
-            minWidth: 150,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.4,
+            shadowRadius: 6,
+            elevation: 8,
+            minWidth: 80,
+            alignItems: 'center',
           }}>
             <Text style={{ 
-              fontSize: 12, 
+              fontSize: 32,
+            }}>
+              🐝
+            </Text>
+            <Text style={{ 
+              fontSize: 11, 
               fontWeight: 'bold', 
               color: '#856404',
               textAlign: 'center',
+              marginTop: 6,
             }}>
-              🐝 Ready to breed!
-            </Text>
-            <Text style={{ 
-              fontSize: 10, 
-              color: '#856404',
-              textAlign: 'center',
-              marginTop: 4,
-            }}>
-              Identify to create new plant
+              Tap to identify!
             </Text>
           </View>
-        </View>
-      )}
+        </TouchableOpacity>
+      ))}
     </>
   );
 }

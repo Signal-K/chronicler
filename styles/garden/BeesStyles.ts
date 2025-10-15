@@ -10,9 +10,9 @@ export const beesStyles = StyleSheet.create({
   },
   sleepingBee: {
     position: 'absolute',
-    width: 32,
-    height: 20,
-    borderRadius: 16,
+    width: 16,
+    height: 10,
+    borderRadius: 8,
     backgroundColor: '#B8860B', // Darker bee when sleeping
   },
   sleepIndicator: {
@@ -23,74 +23,74 @@ export const beesStyles = StyleSheet.create({
   // Bee head - brown/dark yellow
   beeHead: {
     position: 'absolute',
-    width: 24,
-    height: 20,
-    borderRadius: 12,
+    width: 12,
+    height: 10,
+    borderRadius: 6,
     backgroundColor: '#B8860B', // Dark golden rod
   },
   // Large compound eyes - dark red/brown
   beeEye: {
     position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
     backgroundColor: '#8B0000', // Dark red
   },
   // Antennae - thin dark lines
   antenna: {
     position: 'absolute',
-    width: 2,
-    height: 12,
+    width: 1,
+    height: 6,
     backgroundColor: '#654321', // Dark brown
   },
   // Thorax - fuzzy middle section
   beeThorax: {
     position: 'absolute',
-    width: 24,
-    height: 16,
-    borderRadius: 8,
+    width: 12,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#DAA520', // Golden rod - fuzzy appearance
   },
   // Abdomen - main body with yellow base
   beeAbdomen: {
     position: 'absolute',
-    width: 36,
-    height: 24,
-    borderRadius: 12,
+    width: 18,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#FFD700', // Gold
   },
   // Black stripes on abdomen
   beeStripe: {
     position: 'absolute',
-    width: 36,
-    height: 4,
+    width: 18,
+    height: 2,
     backgroundColor: '#000000',
   },
   // Large forewings - translucent with veining
   beeWingLarge: {
     position: 'absolute',
-    width: 32,
-    height: 24,
-    borderRadius: 16,
+    width: 16,
+    height: 12,
+    borderRadius: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'rgba(139, 69, 19, 0.3)', // Subtle brown veining
   },
   // Smaller hindwings
   beeWingSmall: {
     position: 'absolute',
-    width: 20,
-    height: 16,
-    borderRadius: 10,
+    width: 10,
+    height: 8,
+    borderRadius: 5,
     backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'rgba(139, 69, 19, 0.2)',
   },
   // Six legs - thin and jointed
   beeLeg: {
     position: 'absolute',
-    width: 2,
-    height: 16,
+    width: 1,
+    height: 8,
     backgroundColor: '#654321', // Dark brown
   },
 });

@@ -134,7 +134,7 @@ export default function GardenPlots({
           )}
 
           {/* Tilled overlay - positioned identically */}
-          {plotStates[index]?.tilled && !plotStates[index]?.planted && (
+          {plotStates[index]?.tilled && (
             <View 
               style={{
                 position: 'absolute',

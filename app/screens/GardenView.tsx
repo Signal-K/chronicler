@@ -9,26 +9,28 @@ import WeatherHUD from '@/components/garden/WeatherHUD';
 import PlanetIcon from '@/components/PlanetIcon';
 import { generateStarField, getMoonAstronomyData, getStarVisibility, getSunData, getTimeOfDay, MoonAstronomyData, shouldBeesBeActive, StarVisibility, SunData } from '@/lib/astronomy';
 import { supabase } from '@/lib/supabase';
-import { getCurrentWeather, getSkyColors, WeatherData } from '@/lib/weather';
+import { addHarvestedPlant } from '@/lib/userStats';
+import { DEBUG_FORCE_BEES_ACTIVE, getCurrentWeather, getSkyColors, WeatherData } from '@/lib/weather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import ClassificationModal from '../../components/actions/ClassificationModal';
 import { gardenViewStyles as styles } from '../../styles/screens/GardenViewStyles';
 
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-  
-  // Plot positions array for cleaner code
-  const plotPositions = [
-    { x: 40, y: screenHeight * 0.58, width: 120, height: 90 },
-    { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 120, height: 90 },
-    { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 120, height: 90 },
-    { x: 60, y: screenHeight * 0.72, width: 120, height: 90 },
-    { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 120, height: 90 },
-    { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 120, height: 90 },
-  ];interface CloudData {
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Plot positions array for cleaner code
+const plotPositions = [
+  { x: 40, y: screenHeight * 0.58, width: 120, height: 90 },
+  { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 120, height: 90 },
+  { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 120, height: 90 },
+  { x: 60, y: screenHeight * 0.72, width: 120, height: 90 },
+  { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 120, height: 90 },
+  { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 120, height: 90 },
+];interface CloudData {
   id: number;
   x: number;
   y: number;
@@ -40,8 +42,12 @@ interface BeeData {
   id: number;
   x: number;
   y: number;
+  targetX: number;
+  targetY: number;
   direction: number;
 }
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
 export default function GardenView() {
   const params = useLocalSearchParams();
@@ -78,6 +84,16 @@ export default function GardenView() {
   const [skyColors, setSkyColors] = useState({ primary: '#87CEEB', secondary: '#B0E0E6' });
   const [beesActive, setBeesActive] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  
+  // Classification modal state
+  const [classificationModalVisible, setClassificationModalVisible] = useState(false);
+  const [selectedAnomaly, setSelectedAnomaly] = useState<{
+    id: number;
+    imageUrl: string;
+    plot1: number;
+    plot2: number;
+  } | null>(null);
+  const [availableAnomalies, setAvailableAnomalies] = useState<any[]>([]);
   
   // Animation values
   const animationFrame = useRef<number | null>(null);
@@ -189,11 +205,11 @@ export default function GardenView() {
   };
   
   const [bees, setBees] = useState<BeeData[]>([
-    { id: 1, x: screenWidth * 0.3, y: screenHeight * 0.4, direction: 1 },
-    { id: 2, x: screenWidth * 0.7, y: screenHeight * 0.6, direction: -1 },
-    { id: 3, x: screenWidth * 0.2, y: screenHeight * 0.3, direction: 1 },
-    { id: 4, x: screenWidth * 0.8, y: screenHeight * 0.5, direction: -1 },
-    { id: 5, x: screenWidth * 0.5, y: screenHeight * 0.35, direction: 1 },
+    { id: 1, x: screenWidth * 0.3, y: screenHeight * 0.4, targetX: screenWidth * 0.5, targetY: screenHeight * 0.5, direction: 1 },
+    { id: 2, x: screenWidth * 0.7, y: screenHeight * 0.6, targetX: screenWidth * 0.4, targetY: screenHeight * 0.4, direction: -1 },
+    { id: 3, x: screenWidth * 0.2, y: screenHeight * 0.3, targetX: screenWidth * 0.6, targetY: screenHeight * 0.5, direction: 1 },
+    { id: 4, x: screenWidth * 0.8, y: screenHeight * 0.5, targetX: screenWidth * 0.3, targetY: screenHeight * 0.6, direction: -1 },
+    { id: 5, x: screenWidth * 0.5, y: screenHeight * 0.35, targetX: screenWidth * 0.7, targetY: screenHeight * 0.4, direction: 1 },
   ]);
 
   // Load saved plot states on mount
@@ -329,7 +345,8 @@ export default function GardenView() {
         // Check if bees should be active
         const temperature = currentWeatherData?.temperature || 20;
         const windSpeed = currentWeatherData?.windSpeed || 5;
-        const active = shouldBeesBeActive(currentSunData, temperature, windSpeed);
+        const active = DEBUG_FORCE_BEES_ACTIVE || shouldBeesBeActive(currentSunData, temperature, windSpeed);
+        console.log('🐝 Bees active status:', active, '(DEBUG_FORCE_BEES_ACTIVE:', DEBUG_FORCE_BEES_ACTIVE, ')');
         setBeesActive(active);
 
       } catch (error) {
@@ -348,6 +365,11 @@ export default function GardenView() {
           weatherCondition: 'Clear'
         } as WeatherData, fallbackTimeOfDay);
         setSkyColors(fallbackColors);
+        
+        // Force bees active in debug mode
+        const fallbackActive = DEBUG_FORCE_BEES_ACTIVE || shouldBeesBeActive(fallbackSunData, 20, 5);
+        console.log('🐝 Fallback bees active status:', fallbackActive);
+        setBeesActive(fallbackActive);
       }
     };
 
@@ -357,6 +379,32 @@ export default function GardenView() {
     const interval = setInterval(getLocationAndData, 5 * 60 * 1000);
     
     return () => clearInterval(interval);
+  }, []);
+
+  // Fetch available bee anomalies from Supabase
+  useEffect(() => {
+    const fetchAnomalies = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('anomalies')
+          .select('*')
+          .eq('anomalytype', 'bumble');
+
+        if (error) {
+          console.error('Error fetching anomalies:', error);
+          return;
+        }
+
+        if (data) {
+          console.log('📦 Loaded bee anomalies:', data.length);
+          setAvailableAnomalies(data);
+        }
+      } catch (error) {
+        console.error('Error fetching anomalies:', error);
+      }
+    };
+
+    fetchAnomalies();
   }, []);
 
   // Calculate plant growth rate based on temperature, humidity, and planet
@@ -437,40 +485,190 @@ export default function GardenView() {
 
   // Bee animation - make bees fly around and between plants
   useEffect(() => {
-    if (!beesActive) return;
+    console.log('🐝 Bee animation effect triggered. beesActive:', beesActive);
+    
+    if (!beesActive) {
+      console.log('🐝 Bees not active - skipping animation');
+      return;
+    }
+
+    console.log('🐝 Starting bee animation interval');
+    let frameCount = 0;
+
+    // Get positions of fully grown plants
+    const fullyGrownPositions = plotPositions
+      .map((pos, i) => ({ ...pos, plotId: i }))
+      .filter(p => plotStates[p.plotId]?.planted && plotStates[p.plotId]?.growthStage === 2)
+      .map(p => ({ x: p.x + 60, y: p.y + 45 })); // Center of plot
 
     const beeAnimationInterval = setInterval(() => {
-      setBees(prevBees => 
-        prevBees.map(bee => {
-          // Random movement
-          const speedX = (Math.random() - 0.5) * 4;
-          const speedY = (Math.random() - 0.5) * 3;
-          
-          let newX = bee.x + speedX * bee.direction;
-          let newY = bee.y + speedY;
-          
-          // Bounce off edges
-          let newDirection = bee.direction;
-          if (newX < 20 || newX > screenWidth - 20) {
-            newDirection *= -1;
-            newX = Math.max(20, Math.min(screenWidth - 20, newX));
-          }
-          
-          // Keep bees in the garden area (upper portion)
-          newY = Math.max(screenHeight * 0.2, Math.min(screenHeight * 0.55, newY));
-          
-          return {
-            ...bee,
-            x: newX,
-            y: newY,
-            direction: newDirection,
-          };
-        })
-      );
-    }, 100); // Update every 100ms for smooth movement
+      frameCount++;
+      
+      setBees(prevBees => {
+        const newBees = prevBees.map(bee => {
+          let targetX = bee.targetX;
+          let targetY = bee.targetY;
 
-    return () => clearInterval(beeAnimationInterval);
-  }, [beesActive]);
+          // If bee has reached target or no target set, pick a new target
+          const distanceToTarget = Math.sqrt(
+            Math.pow(bee.x - targetX, 2) + Math.pow(bee.y - targetY, 2)
+          );
+
+          if (distanceToTarget < 20 || !targetX) {
+            // Pick a new target
+            if (fullyGrownPositions.length > 0) {
+              // Fly to a random fully grown plant
+              const randomPlant = fullyGrownPositions[Math.floor(Math.random() * fullyGrownPositions.length)];
+              targetX = randomPlant.x + (Math.random() - 0.5) * 40; // Add some variance
+              targetY = randomPlant.y + (Math.random() - 0.5) * 40;
+            } else {
+              // No fully grown plants, fly around randomly
+              targetX = Math.random() * screenWidth * 0.8 + screenWidth * 0.1;
+              targetY = Math.random() * (screenHeight * 0.45) + screenHeight * 0.2;
+            }
+          }
+
+          // Move toward target
+          const dx = targetX - bee.x;
+          const dy = targetY - bee.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance > 5) {
+            const speed = 3; // Smooth, consistent speed
+            const moveX = (dx / distance) * speed;
+            const moveY = (dy / distance) * speed;
+
+            const newX = bee.x + moveX;
+            const newY = bee.y + moveY;
+
+            // Update direction based on movement
+            const newDirection = moveX > 0 ? 1 : -1;
+
+            return {
+              ...bee,
+              x: newX,
+              y: newY,
+              targetX,
+              targetY,
+              direction: newDirection,
+            };
+          }
+
+          return { ...bee, targetX, targetY };
+        });
+        
+        return newBees;
+      });
+    }, 50); // Update every 50ms for smooth movement
+
+    return () => {
+      console.log('🐝 Stopping bee animation, total frames:', frameCount);
+      clearInterval(beeAnimationInterval);
+    };
+  }, [beesActive, plotStates]); // Re-run when plotStates change
+
+  const handlePollinationPress = (plot1: number, plot2: number) => {
+    console.log(`🐝 Pollination pressed between plots ${plot1} and ${plot2}`);
+
+    // Select a random anomaly
+    if (availableAnomalies.length === 0) {
+        console.log('No anomalies available for pollination.');
+        return;
+    }
+
+    const randomAnomaly = availableAnomalies[Math.floor(Math.random() * availableAnomalies.length)];
+    const imageUrl = `${supabaseUrl}/storage/v1/object/public/bumble//${randomAnomaly.id}.jpeg`;
+
+    setSelectedAnomaly({
+        id: randomAnomaly.id,
+        imageUrl: imageUrl,
+        plot1,
+        plot2,
+    });
+
+    setClassificationModalVisible(true);
+  };
+
+  const handleClassificationSubmit = async (beeType: string) => {
+    if (!selectedAnomaly) return;
+
+    console.log(`🐝 Classification submitted: ${beeType} for anomaly ${selectedAnomaly.id}`);
+
+    try {
+      // Get current user session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        Alert.alert('Error', 'You must be logged in to submit classifications.');
+        return;
+      }
+
+      // Save classification to Supabase
+      const { data, error } = await supabase
+        .from('classifications')
+        .insert({
+          author: session.user.id,
+          anomaly: selectedAnomaly.id,
+          media: selectedAnomaly.imageUrl,
+          // Always mark this as a 'bumble' classification type
+          classificationtype: 'bumble',
+          // Store the user's chosen option inside classificationConfiguration
+          classificationConfiguration: JSON.stringify({
+            plots: [selectedAnomaly.plot1, selectedAnomaly.plot2],
+            timestamp: Date.now(),
+            // user's chosen option (e.g., 'western-honey-bee', 'something-else', etc.)
+            selected: beeType,
+          }),
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving classification:', error);
+        Alert.alert('Error', 'Failed to save classification. Please try again.');
+        return;
+      }
+
+      console.log('✅ Classification saved:', data);
+
+      // Save to user stats
+      await addHarvestedPlant('grass', selectedAnomaly.plot1, selectedAnomaly.plot2, data.id, beeType);
+
+      // Animate plants shrinking and remove from plots
+      await animatePlantHarvest(selectedAnomaly.plot1, selectedAnomaly.plot2);
+
+      Alert.alert('🎉 Success!', `You identified a ${beeType.replace('-', ' ')}! Both plants have been harvested.`);
+    } catch (error) {
+      console.error('Error in classification submission:', error);
+      Alert.alert('Error', 'An unexpected error occurred.');
+    }
+  };
+
+  const animatePlantHarvest = async (plot1: number, plot2: number): Promise<void> => {
+    return new Promise((resolve) => {
+      // Remove both plants from plots
+      const newStates = { ...plotStates };
+      
+      // Reset both plots to initial state
+      newStates[plot1] = {
+        watered: false,
+        planted: false,
+      };
+      
+      newStates[plot2] = {
+        watered: false,
+        planted: false,
+      };
+
+      setPlotStates(newStates);
+      AsyncStorage.setItem('plotStates', JSON.stringify(newStates));
+
+      console.log(`🌾 Harvested plants from plots ${plot1} and ${plot2}`);
+
+      // TODO: Add visual shrinking animation here if desired
+      // For now, just resolve after a short delay
+      setTimeout(resolve, 500);
+    });
+  };
 
   const handlePlanetsPress = () => {
     router.push('/planets');
@@ -672,7 +870,8 @@ export default function GardenView() {
           fullyGrownPlantPositions={plotPositions
             .map((pos, i) => ({ ...pos, plotId: i }))
             .filter(p => plotStates[p.plotId]?.planted && plotStates[p.plotId]?.growthStage === 2)
-            .map(p => ({ x: p.x + 60, y: p.y + 45 }))} // Center of plot
+            .map(p => ({ x: p.x + 60, y: p.y + 45, plotId: p.plotId }))}
+          onPollinationPress={handlePollinationPress}
         />
 
         {/* Garden plots and flowers */}
@@ -875,6 +1074,18 @@ export default function GardenView() {
           <Text style={styles.navText}>Settings</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Classification Modal */}
+      <ClassificationModal
+        visible={classificationModalVisible}
+        onClose={() => {
+          setClassificationModalVisible(false);
+          setSelectedAnomaly(null);
+        }}
+        onClassify={handleClassificationSubmit}
+        anomalyId={selectedAnomaly?.id || 0}
+        anomalyImageUrl={selectedAnomaly?.imageUrl}
+      />
     </View>
   );
 }
