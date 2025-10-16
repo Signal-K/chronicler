@@ -1,22 +1,9 @@
-import { StarVisibility } from '@/lib/astronomy';
+import type { StarsProps } from '@/types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { starsStyles as styles } from '../../styles/garden/StarsStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-interface Star {
-  x: number;
-  y: number;
-  magnitude: number;
-  size: number;
-  visible: boolean;
-}
-
-interface StarsProps {
-  starVisibility: StarVisibility | null;
-  starField: Star[];
-}
 
 export default function Stars({ starVisibility, starField }: StarsProps) {
   if (!starVisibility?.isVisible || starField.length === 0) return null;

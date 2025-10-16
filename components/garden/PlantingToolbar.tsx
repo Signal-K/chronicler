@@ -1,15 +1,8 @@
+import type { PlantingToolbarProps, ToolType } from '@/types/garden';
 import React, { useState } from "react";
 import { View } from "react-native";
 import { plantingToolbarStyles as styles } from "../../styles/garden/PlantingToolbarStyles";
 import ToolbarIcon from "./ToolbarIcon";
-
-export type ToolType = "till" | "grass" | "lilac" | "watering-can" | "shovel" | null;
-
-interface PlantingToolbarProps {
-  onToolSelect: (tool: ToolType) => void;
-  showTill?: boolean;
-  toolbarTop?: number;
-}
 
 export default function PlantingToolbar({
   onToolSelect,

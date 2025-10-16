@@ -1,40 +1,8 @@
-import { SunData, getTimeOfDay } from '@/lib/astronomy';
-import { WeatherData } from '@/lib/weather';
+import { getTimeOfDay } from '@/lib/astronomy';
+import type { BeesProps, PollinationIndicator } from '@/types/garden';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { beesStyles as styles } from '../../styles/garden/BeesStyles';
-
-interface BeeData {
-  id: number;
-  x: number;
-  y: number;
-  direction: number;
-}
-
-interface PollenDrop {
-  id: number;
-  x: number;
-  y: number;
-  createdAt: number;
-}
-
-interface BeesProps {
-  bees: BeeData[];
-  beesActive: boolean;
-  sunData: SunData | null;
-  weatherData: WeatherData | null;
-  fullyGrownPlantCount: number;
-  fullyGrownPlantPositions: { x: number; y: number; plotId: number }[];
-  onPollinationPress: (plot1: number, plot2: number) => void;
-};
-
-interface PollinationIndicator {
-  id: string;
-  x: number;
-  y: number;
-  plot1: number;
-  plot2: number;
-};
 
 export default function Bees({ 
   bees, 

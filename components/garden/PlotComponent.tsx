@@ -1,11 +1,5 @@
-import { PlantComponent, Plot } from './Plant';
-
-interface PlotComponentProps {
-  plot: Plot;
-  selectedTool: 'grass' | null;
-  onPlant: (plotId: string) => void;
-  onWater: (plotId: string) => void;
-}
+import type { PlotComponentProps } from '@/types/plant';
+import { PlantComponent } from './Plant';
 
 export function PlotComponent({ plot, selectedTool, onPlant, onWater }: PlotComponentProps) {
   const handleClick = () => {

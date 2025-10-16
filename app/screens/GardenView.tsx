@@ -1,9 +1,10 @@
+import AlmanacModal from '@/components/almanac/AlmanacModal';
 import Bees from '@/components/garden/Bees';
 import Clouds from '@/components/garden/Clouds';
 import GardenPlots from '@/components/garden/GardenPlots';
 import GrassTerrain from '@/components/garden/GrassTerrain';
 import Moon from '@/components/garden/Moon';
-import PlantingToolbar, { ToolType } from '@/components/garden/PlantingToolbar';
+import PlantingToolbar from '@/components/garden/PlantingToolbar';
 import Stars from '@/components/garden/Stars';
 import WeatherHUD from '@/components/garden/WeatherHUD';
 import PlanetIcon from '@/components/PlanetIcon';
@@ -11,6 +12,7 @@ import { generateStarField, getMoonAstronomyData, getStarVisibility, getSunData,
 import { supabase } from '@/lib/supabase';
 import { addHarvestedPlant } from '@/lib/userStats';
 import { DEBUG_FORCE_BEES_ACTIVE, getCurrentWeather, getSkyColors, WeatherData } from '@/lib/weather';
+import type { BeeData, CloudData, ToolType } from '@/types/garden';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -30,22 +32,7 @@ const plotPositions = [
   { x: 60, y: screenHeight * 0.72, width: 120, height: 90 },
   { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 120, height: 90 },
   { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 120, height: 90 },
-];interface CloudData {
-  id: number;
-  x: number;
-  y: number;
-  speed: number;
-  size: number;
-}
-
-interface BeeData {
-  id: number;
-  x: number;
-  y: number;
-  targetX: number;
-  targetY: number;
-  direction: number;
-}
+];
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -84,6 +71,8 @@ export default function GardenView() {
   const [skyColors, setSkyColors] = useState({ primary: '#87CEEB', secondary: '#B0E0E6' });
   const [beesActive, setBeesActive] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
+
+  const [alamancModalVisible, setAlmanacModalVisible] = useState<boolean>(false);
   
   // Classification modal state
   const [classificationModalVisible, setClassificationModalVisible] = useState(false);
@@ -506,8 +495,8 @@ export default function GardenView() {
       
       setBees(prevBees => {
         const newBees = prevBees.map(bee => {
-          let targetX = bee.targetX;
-          let targetY = bee.targetY;
+          let targetX = bee.targetX ?? bee.x;
+          let targetY = bee.targetY ?? bee.y;
 
           // If bee has reached target or no target set, pick a new target
           const distanceToTarget = Math.sqrt(
@@ -1063,6 +1052,11 @@ export default function GardenView() {
           </View>
           <Text style={styles.navText}>Planets</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navButton} onPress={() => setAlmanacModalVisible(true)}>
+          <Text style={styles.navIcon}>📖</Text>
+          <Text style={styles.navText}>Almanac</Text>
+        </TouchableOpacity>
         
         <TouchableOpacity style={styles.navButton} onPress={handleIdentifyPress}>
           <Text style={styles.navIcon}>🔍</Text>
@@ -1085,6 +1079,11 @@ export default function GardenView() {
         onClassify={handleClassificationSubmit}
         anomalyId={selectedAnomaly?.id || 0}
         anomalyImageUrl={selectedAnomaly?.imageUrl}
+      />
+
+      <AlmanacModal
+        visible={alamancModalVisible}
+        onClose={() => setAlmanacModalVisible(false)}
       />
     </View>
   );

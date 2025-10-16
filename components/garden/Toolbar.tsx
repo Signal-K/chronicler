@@ -1,7 +1,4 @@
-interface ToolbarProps {
-  selectedTool: 'grass' | null;
-  onSelectTool: (tool: 'grass' | null) => void;
-}
+import type { ToolbarProps } from '@/types/ui';
 
 export function Toolbar({ selectedTool, onSelectTool }: ToolbarProps) {
   return (

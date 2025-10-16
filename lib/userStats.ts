@@ -77,6 +77,24 @@ export async function addHarvestedPlant(
   await saveUserStats(stats);
 }
 
+// Get unique plant types that have been harvested
+export async function getUniqueHarvestedPlantTypes(): Promise<string[]> {
+  const stats = await getUserStats();
+  const uniqueTypes = new Set<string>();
+
+  stats.harvestedPlants.forEach((plant) => {
+    uniqueTypes.add(plant.plantType);
+  });
+
+  return Array.from(uniqueTypes);
+};
+
+// Count - times a plant type has been harvested
+export async function getPlantHarvestCount(plantType: string): Promise<number> {
+  const stats = await getUserStats();
+  return stats.harvestedPlants.filter((plant) => plant.plantType === plantType).length;
+};
+
 /**
  * Increment plants grown counter
  */

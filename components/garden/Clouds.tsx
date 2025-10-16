@@ -1,21 +1,9 @@
+import type { CloudsProps } from '@/types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { cloudsStyles as styles } from '../../styles/garden/CloudsStyles';
 
 const { width: screenWidth } = Dimensions.get('window');
-
-interface CloudData {
-  id: number;
-  x: number;
-  y: number;
-  speed: number;
-  size: number;
-}
-
-interface CloudsProps {
-  clouds: CloudData[];
-  cloudOffset: number;
-}
 
 export default function Clouds({ clouds, cloudOffset }: CloudsProps) {
   return (

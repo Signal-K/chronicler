@@ -1,14 +1,10 @@
-import { MoonAstronomyData, SunData, getTimeOfDay } from '@/lib/astronomy';
+import { getTimeOfDay } from '@/lib/astronomy';
+import type { MoonProps } from '@/types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { moonStyles as styles } from '../../styles/garden/MoonStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-interface MoonProps {
-  moonData: MoonAstronomyData | null;
-  sunData: SunData | null;
-}
 
 export default function Moon({ moonData, sunData }: MoonProps) {
   if (!moonData || !sunData) return null;

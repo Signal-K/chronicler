@@ -1,21 +1,6 @@
+import type { Plant, PlantComponentProps, Plot } from '@/types/plant';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-
-export interface Plant {
-    type: 'grass';
-    stage: 0 | 1 | 2;
-    plantedAt: number;
-    lastWateredAt: number;
-    needsWater: boolean;
-}
-
-export interface Plot {
-  id: string;
-  x: number;
-  y: number;
-  isTilled: boolean;
-  plant?: Plant;
-}
 
 // Growth time in milliseconds (20 minutes)
 export const GROWTH_TIME = 20 * 60 * 1000;
@@ -26,11 +11,6 @@ const PLANT_SPRITES: Record<number, any> = {
   1: require('../../assets/Sprites/Growing Plants/tile001.png'),
   2: require('../../assets/Sprites/Growing Plants/tile009.png'),
 };
-
-interface PlantComponentProps {
-  plant: Plant;
-  onWater?: () => void;
-}
 
 export function PlantComponent({ plant, onWater }: PlantComponentProps) {
   return (

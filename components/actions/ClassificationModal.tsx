@@ -1,31 +1,18 @@
+import type { BeeOption, ClassificationModalProps } from '@/types/actions';
 import React, { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-export interface BeeOption {
-  id: string;
-  label: string;
-  imageUrl: string;
-}
-
-interface ClassificationModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onClassify: (beeType: string) => void;
-  anomalyId: number;
-  anomalyImageUrl?: string;
-}
 
 const BEE_OPTIONS: BeeOption[] = [
   {
@@ -90,7 +77,7 @@ export default function ClassificationModal({
         }),
       ]).start();
     }
-  }, [visible]);
+  }, [visible, scaleAnim, fadeAnim]);
 
   const handleClose = () => {
     Animated.parallel([

@@ -1,15 +1,7 @@
-import { WeatherData } from '@/lib/weather';
+import type { WeatherHUDProps } from '@/types/garden';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { weatherHUDStyles as styles } from '../../styles/garden/WeatherHUDStyles';
-
-interface WeatherHUDProps {
-  weather: string;
-  weatherData: WeatherData | null;
-  userEmail: string;
-  currentPlanet: string;
-  calculateGrowthRate: (temperature: number, humidity: number, planetName: string) => { rate: number; description: string };
-}
 
 export default function WeatherHUD({ 
   weather, 

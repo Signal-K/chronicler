@@ -1,26 +1,9 @@
+import type { GardenPlotsProps } from '@/types/garden';
 import React from "react";
 import { Dimensions, Image, Text, View } from "react-native";
 import { gardenPlotsStyles as styles } from "../../styles/garden/GardenPlotsStyles";
-import { ToolType } from "./PlantingToolbar";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
-interface GardenPlotsProps {
-  showFlowers: boolean;
-  selectedTool: ToolType;
-  plotStates: {
-    [key: number]: {
-      watered: boolean;
-      planted: boolean;
-      wateredAt?: number;
-      tilled?: boolean;
-      plantedAt?: number;
-      growthStage?: number;
-      needsWater?: boolean;
-    };
-  };
-  onPlotPress: (plotId: number) => void;
-};
 
 export default function GardenPlots({
   showFlowers,
