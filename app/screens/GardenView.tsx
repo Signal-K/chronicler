@@ -1,4 +1,3 @@
-import AlmanacModal from '@/components/almanac/AlmanacModal';
 import Bees from '@/components/garden/Bees';
 import Clouds from '@/components/garden/Clouds';
 import GardenPlots from '@/components/garden/GardenPlots';
@@ -71,8 +70,6 @@ export default function GardenView() {
   const [skyColors, setSkyColors] = useState({ primary: '#87CEEB', secondary: '#B0E0E6' });
   const [beesActive, setBeesActive] = useState(true);
   const [currentTime, setCurrentTime] = useState(Date.now());
-
-  const [alamancModalVisible, setAlmanacModalVisible] = useState<boolean>(false);
   
   // Classification modal state
   const [classificationModalVisible, setClassificationModalVisible] = useState(false);
@@ -663,8 +660,8 @@ export default function GardenView() {
     router.push('/planets');
   };
 
-  const handleIdentifyPress = () => {
-    Alert.alert('Identify', 'Plant identification coming soon!');
+  const handleAlmanacPress = () => {
+    router.push('/almanac');
   };
 
   // Timer to check for expired watered plots (20 minutes = 1200000ms)
@@ -1053,14 +1050,9 @@ export default function GardenView() {
           <Text style={styles.navText}>Planets</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton} onPress={() => setAlmanacModalVisible(true)}>
+        <TouchableOpacity style={styles.navButton} onPress={handleAlmanacPress}>
           <Text style={styles.navIcon}>📖</Text>
           <Text style={styles.navText}>Almanac</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navButton} onPress={handleIdentifyPress}>
-          <Text style={styles.navIcon}>🔍</Text>
-          <Text style={styles.navText}>Identify</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.navButton} onPress={handlePlanetPress}>
@@ -1079,11 +1071,6 @@ export default function GardenView() {
         onClassify={handleClassificationSubmit}
         anomalyId={selectedAnomaly?.id || 0}
         anomalyImageUrl={selectedAnomaly?.imageUrl}
-      />
-
-      <AlmanacModal
-        visible={alamancModalVisible}
-        onClose={() => setAlmanacModalVisible(false)}
       />
     </View>
   );
