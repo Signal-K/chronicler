@@ -11,14 +11,14 @@ export default function GardenPlots({
   plotStates,
   onPlotPress,
 }: GardenPlotsProps) {
-  const plotPositions = [
-    { left: 40, top: screenHeight * 0.58 },
-    { left: screenWidth * 0.3, top: screenHeight * 0.62 },
-    { left: screenWidth * 0.6, top: screenHeight * 0.59 },
-    { left: 60, top: screenHeight * 0.72 },
-    { left: screenWidth * 0.4, top: screenHeight * 0.75 },
-    { left: screenWidth * 0.75, top: screenHeight * 0.7 },
-  ];
+const plotPositions = [
+  { left: screenWidth * 0.2, top: screenHeight * 0.6 },
+  { left: screenWidth * 0.4, top: screenHeight * 0.6 },
+  { left: screenWidth * 0.6, top: screenHeight * 0.6 },
+  { left: screenWidth * 0.2, top: screenHeight * 0.7 },
+  { left: screenWidth * 0.4, top: screenHeight * 0.7 },
+  { left: screenWidth * 0.6, top: screenHeight * 0.7 },
+];
 
   const isWateringMode = selectedTool === "watering-can";
 
