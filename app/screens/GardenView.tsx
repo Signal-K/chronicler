@@ -25,12 +25,12 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 // Plot positions array for cleaner code
 const plotPositions = [
-  { x: 40, y: screenHeight * 0.58, width: 120, height: 90 },
-  { x: screenWidth * 0.3, y: screenHeight * 0.62, width: 120, height: 90 },
-  { x: screenWidth * 0.6, y: screenHeight * 0.59, width: 120, height: 90 },
-  { x: 60, y: screenHeight * 0.72, width: 120, height: 90 },
-  { x: screenWidth * 0.4, y: screenHeight * 0.75, width: 120, height: 90 },
-  { x: screenWidth * 0.75, y: screenHeight * 0.7, width: 120, height: 90 },
+  { x: screenWidth * 0.2, y: screenHeight * 0.6, width: 120, height: 90 },
+  { x: screenWidth * 0.4, y: screenHeight * 0.6, width: 120, height: 90 },
+  { x: screenWidth * 0.6, y: screenHeight * 0.6, width: 120, height: 90 },
+  { x: screenWidth * 0.2, y: screenHeight * 0.7, width: 120, height: 90 },
+  { x: screenWidth * 0.4, y: screenHeight * 0.7, width: 120, height: 90 },
+  { x: screenWidth * 0.6, y: screenHeight * 0.7, width: 120, height: 90 },
 ];
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -660,6 +660,10 @@ export default function GardenView() {
     router.push('/planets');
   };
 
+  const handleInventoryPress = () => {
+    router.push('/Inventory');
+  }
+
   const handleAlmanacPress = () => {
     router.push('/almanac');
   };
@@ -1048,6 +1052,13 @@ export default function GardenView() {
             <PlanetIcon size={28} color="#4A90E2" />
           </View>
           <Text style={styles.navText}>Planets</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navButton} onPress={handleInventoryPress}>
+          <View style={styles.navIconContainer}>
+            {/* < size={28} color="#4A90E2" /> */}
+          </View>
+          <Text style={styles.navText}>Inventory</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navButton} onPress={handleAlmanacPress}>
