@@ -14,3 +14,9 @@ export type PlotState = {
   lastWateredAt: number | null
   needsWater: boolean
 };
+
+export type GardenGridProps = {
+  plots: PlotState[]
+  onPlotClick: (index: number) => void
+  selectedTool: Tool
+};

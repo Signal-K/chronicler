@@ -3,16 +3,16 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-    Alert,
-    ImageBackground,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export default function AuthScreen() {
@@ -53,14 +53,45 @@ export default function AuthScreen() {
 
   const signInAsGuest = async () => {
     setIsLoading(true);
-    const { error } = await supabase.auth.signInAnonymously();
+    try {
+      // Generate a random guest email and password
+      const randomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const guestEmail = `guest_${randomId}@beegarden.app`;
+      const guestPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      
+      console.log('🔵 Creating guest account:', guestEmail);
+      
+      // Try to sign up as guest
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: guestEmail,
+        password: guestPassword,
+        options: {
+          data: {
+            is_guest: true,
+            display_name: 'Guest User'
+          }
+        }
+      });
 
-    if (error) {
-      Alert.alert('Error', error.message);
-    } else {
+      if (signUpError) {
+        console.error('🔵 Guest signup error:', signUpError);
+        
+        // If anonymous auth is enabled, try that as fallback
+        const { error: anonError } = await supabase.auth.signInAnonymously();
+        if (anonError) {
+          console.error('🔵 Anonymous signin error:', anonError);
+          throw anonError;
+        }
+      }
+
+      console.log('🔵 Guest account created successfully');
       router.replace('/home');
+    } catch (error: any) {
+      console.error('🔵 Error creating guest account:', error);
+      Alert.alert('Error', error?.message || 'Failed to create guest account. Please try signing up with an email.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleSubmit = () => {
