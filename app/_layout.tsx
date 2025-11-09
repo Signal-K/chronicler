@@ -16,6 +16,8 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="home" options={{ headerShown: false }} />
+          <Stack.Screen name="nests" options={{ headerShown: false }} />
+          <Stack.Screen name="expand" options={{ headerShown: false }} />
           <Stack.Screen name="planets" options={{ headerShown: false }} />
           <Stack.Screen name="almanac" options={{ headerShown: false }} />
           <Stack.Screen name="inventory" options={{ headerShown: false }} />

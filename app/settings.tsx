@@ -4,7 +4,7 @@ import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 export default function SettingsScreen() {
   const [userEmail, setUserEmail] = useState<string>('');
@@ -72,27 +72,16 @@ export default function SettingsScreen() {
   };
 
   const handleSignOut = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Sign Out', 
-          style: 'destructive',
-          onPress: async () => {
-            setIsLoading(true);
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-              Alert.alert('Error', error.message);
-            } else {
-              router.replace('/auth');
-            }
-            setIsLoading(false);
-          }
-        }
-      ]
-    );
+    console.log('Sign Out: Are you sure you want to sign out?');
+    // Automatically proceed with sign out
+    setIsLoading(true);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.log('Error:', error.message);
+    } else {
+      router.replace('/auth');
+    }
+    setIsLoading(false);
   };
 
   const handleConnectAccount = () => {
@@ -105,23 +94,20 @@ export default function SettingsScreen() {
       setLocationPermission(status);
       
       if (status === 'granted') {
-        Alert.alert('Success', 'Location permission granted!');
+        console.log('Success: Location permission granted!');
       } else {
-        Alert.alert(
-          'Permission Denied', 
-          'Location permission is needed for weather features. You can enable it in your device settings.'
-        );
+        console.log('Permission Denied: Location permission is needed for weather features.');
       }
     } catch (error) {
       console.error('Error requesting location permission:', error);
-      Alert.alert('Error', 'Failed to request location permission');
+      console.log('Error: Failed to request location permission');
     }
   };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     // TODO: Implement actual dark mode functionality
-    Alert.alert('Dark Mode', `Dark mode ${!isDarkMode ? 'enabled' : 'disabled'} (Coming soon!)`);
+    console.log(`Dark Mode: ${!isDarkMode ? 'enabled' : 'disabled'} (Coming soon!)`);
   };
 
   const getPermissionStatusText = () => {

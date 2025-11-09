@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import React, { useState } from "react"
-import { ActivityIndicator, Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Switch } from "../../components/ui/switch"
 import { supabase } from '../../lib/supabase'
 
@@ -79,107 +79,70 @@ export function Settings({
   }
 
   // Function to reset all local game state
-  const handleResetGame = () => {
-    console.log('🔴 handleResetGame called, onResetGame exists:', !!onResetGame)
-    Alert.alert(
-      "Reset Game",
-      "Are you sure you want to reset all game progress? This will clear all plots, inventory, and statistics. This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-          onPress: () => console.log('Reset cancelled')
-        },
-        {
-          text: "Reset",
-          style: "destructive",
-          onPress: async () => {
-            console.log('🔴 Reset confirmed, starting...')
-            try {
-              // Clear all AsyncStorage keys
-              console.log('🔴 Clearing AsyncStorage...')
-              await AsyncStorage.multiRemove([
-                'plotStates',
-                'user_stats',
-                'inventory'
-              ])
-              console.log('🔴 AsyncStorage cleared')
-              
-              // Close the modal
-              console.log('🔴 Closing modal...')
-              onClose()
-              
-              // Notify parent to reset state
-              console.log('🔴 Calling onResetGame...')
-              if (onResetGame) {
-                onResetGame()
-                console.log('🔴 onResetGame called successfully')
-              } else {
-                console.log('🔴 WARNING: onResetGame is undefined!')
-              }
-              
-              // Show success message
-              Alert.alert(
-                "Game Reset",
-                "Your game has been reset successfully!",
-                [
-                  {
-                    text: "OK"
-                  }
-                ]
-              )
-              console.log('🔴 Reset complete')
-            } catch (error) {
-              console.error('🔴 Error resetting game:', error)
-              Alert.alert("Error", "Failed to reset game. Please try again.")
-            }
-          }
-        }
-      ]
-    )
-  }
+  const handleResetGame = async () => {
+    console.log('🔴 handleResetGame called, onResetGame exists:', !!onResetGame);
+    console.log('Reset Game: Are you sure you want to reset all game progress?');
+    
+    // Automatically proceed with reset
+    try {
+      console.log('🔴 Reset confirmed, starting...');
+      // Clear all AsyncStorage keys
+      console.log('🔴 Clearing AsyncStorage...');
+      await AsyncStorage.multiRemove([
+        'plotStates',
+        'user_stats',
+        'inventory'
+      ]);
+      console.log('🔴 AsyncStorage cleared');
+      
+      // Close the modal
+      console.log('🔴 Closing modal...');
+      onClose();
+      
+      // Notify parent to reset state
+      console.log('🔴 Calling onResetGame...');
+      if (onResetGame) {
+        onResetGame();
+        console.log('🔴 onResetGame called successfully');
+      } else {
+        console.log('🔴 WARNING: onResetGame is undefined!');
+      }
+      
+      // Show success message
+      console.log('Game Reset: Your game has been reset successfully!');
+      console.log('🔴 Reset complete');
+    } catch (error) {
+      console.error('🔴 Error resetting game:', error);
+      console.log('Error: Failed to reset game. Please try again.');
+    }
+  };
 
   // Function to logout
-  const handleLogout = () => {
-    console.log('🔵 handleLogout called')
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-          onPress: () => console.log('Logout cancelled')
-        },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            console.log('🔵 Logout confirmed, starting...')
-            try {
-              console.log('🔵 Calling supabase.auth.signOut()...')
-              const { error } = await supabase.auth.signOut()
-              if (error) {
-                console.error('🔵 Supabase signOut error:', error)
-                throw error
-              }
-              console.log('🔵 Supabase signOut successful')
-              console.log('🔵 Closing modal...')
-              onClose()
-              console.log('🔵 Forcing redirect to /auth')
-              setTimeout(() => {
-                router.replace('/auth')
-              }, 100)
-              console.log('🔵 Logout complete')
-            } catch (error) {
-              console.error('🔵 Error logging out:', error)
-              Alert.alert("Error", "Failed to logout. Please try again.")
-            }
-          }
-        }
-      ]
-    )
-  }
+  const handleLogout = async () => {
+    console.log('🔵 handleLogout called');
+    console.log('Logout: Are you sure you want to logout?');
+    
+    // Automatically proceed with logout
+    try {
+      console.log('🔵 Calling supabase.auth.signOut()...');
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('🔵 Supabase signOut error:', error);
+        throw error;
+      }
+      console.log('🔵 Supabase signOut successful');
+      console.log('🔵 Closing modal...');
+      onClose();
+      console.log('🔵 Forcing redirect to /auth');
+      setTimeout(() => {
+        router.replace('/auth');
+      }, 100);
+      console.log('🔵 Logout complete');
+    } catch (error) {
+      console.error('🔵 Error logging out:', error);
+      console.log('Error: Failed to logout. Please try again.');
+    }
+  };
 
   const content = (
     <View style={[styles.container, isExpanded && styles.expandedContainer]}>
@@ -278,7 +241,7 @@ export function Settings({
                   console.log('🟣 onResetGame called')
                 }
                 onClose()
-                Alert.alert("Debug", "Direct reset executed")
+                console.log('Debug: Direct reset executed');
               } catch (error) {
                 console.error('🟣 Error:', error)
               }

@@ -1,0 +1,184 @@
+import type { HiveData, HiveType } from '@/types/hive';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { GardenBottomBar } from '../components/garden/GardenBottomBar';
+import { SimpleToolbar } from '../components/garden/SimpleToolbar';
+import { HiveGrid } from '../components/hives/HiveGrid';
+import { HiveSelectionModal } from '../components/hives/HiveSelectionModal';
+import { GameHeader } from '../components/ui/GameHeader';
+import { useHiveState } from '../hooks/useHiveState';
+import { getQualityRating, usePollinatorQuality } from '../hooks/usePollinatorQuality';
+
+export default function NestsScreen() {
+  const router = useRouter();
+  
+  // State management
+  const { hives, inventory, placeHive } = useHiveState();
+  const [selectedPosition, setSelectedPosition] = useState<{ q: number; r: number } | null>(null);
+  
+  // Pollinator quality calculation
+  // TODO: Integrate with actual weather system from locationWeather.ts
+  // TODO: Integrate with season from astronomy.ts
+  // TODO: Calculate airborne nectar from nearby flowering plants
+  const pollinatorQuality = usePollinatorQuality({
+    hives,
+    weather: {
+      temperature: 22, // Placeholder
+      precipitation: 10,
+      windSpeed: 5,
+      condition: 'sunny',
+    },
+    season: 'spring', // Placeholder
+    airborneNectar: 60, // Placeholder
+  });
+  
+  const qualityRating = getQualityRating(pollinatorQuality.overall);
+  
+  // Handle hive press - either select existing hive or show placement modal
+  const handleHivePress = (position: { q: number; r: number }, hive: HiveData | null) => {
+    if (hive) {
+      // TODO: Show hive details modal instead of just logging
+      console.log('Tapped existing hive:', hive);
+      // For now, just log
+    } else {
+      // Show selection modal for empty position
+      setSelectedPosition(position);
+    }
+  };
+  
+  const handleSelectHive = (hiveType: HiveType) => {
+    if (!selectedPosition) return;
+    
+    // placeHive signature is (position, hiveType)
+    placeHive(selectedPosition, hiveType);
+    setSelectedPosition(null);
+  };
+  
+  const handleCloseModal = () => {
+    setSelectedPosition(null);
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      
+      {/* Header */}
+      <GameHeader 
+        coins={0} // TODO: Connect to user stats
+        water={100} 
+        maxWater={100}
+        weather="sunny"
+        onHarvestClick={() => {}}
+        onShovelClick={() => {}}
+        canHarvest={false}
+        canShovel={false} 
+        isHarvestSelected={false}
+        isShovelSelected={false}
+      />
+      
+      {/* Background */}
+      <LinearGradient 
+        colors={['#86efac', '#4ade80', '#22c55e']} 
+        style={StyleSheet.absoluteFillObject} 
+      />
+      
+      {/* Minimal Pollinator Quality Display - Floating over header */}
+      <View style={styles.qualityBanner}>
+        <View style={styles.qualityContent}>
+          <Text style={styles.qualityEmoji}>{qualityRating.emoji}</Text>
+          <View style={styles.qualityInfo}>
+            <Text style={[styles.qualityScore, { color: qualityRating.color }]}>
+              {pollinatorQuality.overall}
+            </Text>
+            <Text style={styles.qualityLabel}>Quality</Text>
+          </View>
+        </View>
+      </View>
+      
+      {/* Hive Grid */}
+      <HiveGrid 
+        hives={hives}
+        onHivePress={handleHivePress}
+      />
+
+      {/* Hive Selection Modal */}
+      <HiveSelectionModal
+        visible={selectedPosition !== null}
+        inventory={inventory}
+        onSelectHive={handleSelectHive}
+        onClose={handleCloseModal}
+        position={selectedPosition}
+      />
+
+      {/* Toolbar with navigation */}
+      <SimpleToolbar 
+        selectedTool={null}
+        onToolSelect={() => {}}
+        onPlantSelect={() => {}}
+        canTill={false}
+        canPlant={false}
+        canWater={false}
+        canShovel={false}
+        seedInventory={{}}
+        currentRoute="nests"
+        onNavigate={(route) => router.push(route as any)}
+      />
+      
+      <GardenBottomBar 
+        onOpenAlmanac={() => {}}
+        onOpenInventory={() => {}}
+        onOpenShop={() => {}}
+        onOpenSettings={() => {}}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  qualityBanner: {
+    position: 'absolute',
+    top: 12, // Inside the GameHeader area
+    left: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 2,
+    borderColor: '#b45309',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+    zIndex: 100, // Above everything including header
+  },
+  qualityContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  qualityEmoji: {
+    fontSize: 24,
+  },
+  qualityInfo: {
+    alignItems: 'center',
+  },
+  qualityScore: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    lineHeight: 22,
+  },
+  qualityLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#78350f',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+});

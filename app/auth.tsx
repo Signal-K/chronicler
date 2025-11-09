@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  Alert,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -29,9 +28,9 @@ export default function AuthScreen() {
     });
 
     if (error) {
-      Alert.alert('Error', error.message);
+      console.log('Error:', error.message);
     } else {
-      Alert.alert('Success', 'Please check your email for verification link');
+      console.log('Success: Please check your email for verification link');
     }
     setIsLoading(false);
   };
@@ -44,7 +43,7 @@ export default function AuthScreen() {
     });
 
     if (error) {
-      Alert.alert('Error', error.message);
+      console.log('Error:', error.message);
     } else {
       router.replace('/home');
     }
@@ -54,41 +53,23 @@ export default function AuthScreen() {
   const signInAsGuest = async () => {
     setIsLoading(true);
     try {
-      // Generate a random guest email and password
-      const randomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      const guestEmail = `guest_${randomId}@beegarden.app`;
-      const guestPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      console.log('🔵 Creating anonymous guest account...');
       
-      console.log('🔵 Creating guest account:', guestEmail);
-      
-      // Try to sign up as guest
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: guestEmail,
-        password: guestPassword,
-        options: {
-          data: {
-            is_guest: true,
-            display_name: 'Guest User'
-          }
-        }
-      });
+      // Use Supabase's built-in anonymous authentication
+      const { data, error } = await supabase.auth.signInAnonymously();
 
-      if (signUpError) {
-        console.error('🔵 Guest signup error:', signUpError);
-        
-        // If anonymous auth is enabled, try that as fallback
-        const { error: anonError } = await supabase.auth.signInAnonymously();
-        if (anonError) {
-          console.error('🔵 Anonymous signin error:', anonError);
-          throw anonError;
-        }
+      if (error) {
+        console.error('🔵 Anonymous signin error:', error);
+        throw error;
       }
 
-      console.log('🔵 Guest account created successfully');
+      console.log('🔵 Anonymous guest account created successfully');
+      console.log('🔵 User ID:', data.user?.id);
+      
       router.replace('/home');
     } catch (error: any) {
       console.error('🔵 Error creating guest account:', error);
-      Alert.alert('Error', error?.message || 'Failed to create guest account. Please try signing up with an email.');
+      console.log('Error:', error?.message || 'Failed to create guest account. Please try signing up with an email.');
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +77,7 @@ export default function AuthScreen() {
 
   const handleSubmit = () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      console.log('Error: Please fill in all fields');
       return;
     }
     if (isSignUp) {

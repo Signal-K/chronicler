@@ -1,8 +1,12 @@
-
 import { CROP_CONFIGS } from "@/lib/cropConfig";
 import { CROP_PRICES, InventoryProps } from "@/types/inventory";
 import React, { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CoinsDisplay } from "./CoinsDisplay";
+import { CropsTab } from "./CropsTab";
+import { ExpansionsTab, ToolsTab } from "./InventoryExtras";
+import { InventoryTabs } from "./InventoryTabs";
+import { SeedsTab } from "./SeedsTab";
 
 // Placeholder icons for React Native (replace with vector-icons or images as needed)
 type IconProps = {
@@ -55,132 +59,14 @@ export function Inventory({ inventory, setInventory, onClose, isExpanded, onTogg
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.cardCoins}>
-          <View style={styles.coinsRow}>
-            <View style={styles.coinsIcon}>
-              <View style={styles.coinOuter} />
-              <View style={styles.coinInner} />
-            </View>
-            <View>
-              <Text style={styles.coinsLabel}>Coins</Text>
-              <Text style={styles.coinsValue}>{inventory.coins}</Text>
-            </View>
-          </View>
-        </View>
+        <CoinsDisplay coins={inventory.coins} />
+        
+        <InventoryTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'seeds' && styles.tabActive]}
-            onPress={() => setActiveTab('seeds')}
-          >
-            <Text style={[styles.tabText, activeTab === 'seeds' && styles.tabTextActive]}>🌱 Seeds</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'crops' && styles.tabActive]}
-            onPress={() => setActiveTab('crops')}
-          >
-            <Text style={[styles.tabText, activeTab === 'crops' && styles.tabTextActive]}>🌾 Crops</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'tools' && styles.tabActive]}
-            onPress={() => setActiveTab('tools')}
-          >
-            <Text style={[styles.tabText, activeTab === 'tools' && styles.tabTextActive]}>🔧 Tools</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'expansions' && styles.tabActive]}
-            onPress={() => setActiveTab('expansions')}
-          >
-            <Text style={[styles.tabText, activeTab === 'expansions' && styles.tabTextActive]}>📦 Expansions</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Seeds Tab */}
-        {activeTab === 'seeds' && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <Icon name="🌱" size={18} />
-              <Text style={styles.sectionTitle}>Seeds</Text>
-            </View>
-            {Object.entries(inventory.seeds).map(([seed, count]) => {
-              const config = CROP_CONFIGS[seed];
-              return (
-                <View key={seed} style={styles.cardSeed}>
-                  <View style={styles.itemInfo}>
-                    <Text style={styles.itemEmoji}>{config?.emoji || '🌱'}</Text>
-                    <View>
-                      <Text style={styles.seedName}>{config?.name || seed} Seeds</Text>
-                      <Text style={styles.itemCategory}>{config?.category || 'seed'}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.seedCount}>{count}</Text>
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        {/* Crops Tab */}
-        {activeTab === 'crops' && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <Icon name="🌾" size={18} />
-              <Text style={styles.sectionTitle}>Harvested Crops</Text>
-            </View>
-            {Object.entries(inventory.harvested).map(([crop, count]) => {
-              const config = CROP_CONFIGS[crop];
-              return (
-                <View key={crop} style={styles.cardCrop}>
-                  <View style={styles.itemInfo}>
-                    <Text style={styles.itemEmoji}>{config?.emoji || '🌾'}</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.cropName}>{config?.name || crop}</Text>
-                      <Text style={styles.cropSell}>Sell for {config?.sellPrice || CROP_PRICES[crop] || 10} coins</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.cropCount}>{count}</Text>
-                  <TouchableOpacity
-                    onPress={() => handleSell(crop)}
-                    disabled={count === 0}
-                    style={[styles.sellButton, count === 0 && styles.sellButtonDisabled]}
-                  >
-                    <Icon name="💰" size={16} />
-                    <Text style={styles.sellButtonText}>Sell</Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        {/* Tools Tab */}
-        {activeTab === 'tools' && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <Icon name="🔧" size={18} />
-              <Text style={styles.sectionTitle}>Tools</Text>
-            </View>
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No tools yet</Text>
-              <Text style={styles.emptySubtext}>Visit the shop to buy tools</Text>
-            </View>
-          </View>
-        )}
-
-        {/* Expansions Tab */}
-        {activeTab === 'expansions' && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <Icon name="📦" size={18} />
-              <Text style={styles.sectionTitle}>Expansions</Text>
-            </View>
-            <View style={styles.cardExpansion}>
-              <Text style={styles.expansionTitle}>Garden Plots</Text>
-              <Text style={styles.expansionCount}>6 plots available</Text>
-            </View>
-          </View>
-        )}
+        {activeTab === 'seeds' && <SeedsTab seeds={inventory.seeds} />}
+        {activeTab === 'crops' && <CropsTab harvested={inventory.harvested} onSell={handleSell} />}
+        {activeTab === 'tools' && <ToolsTab />}
+        {activeTab === 'expansions' && <ExpansionsTab />}
       </ScrollView>
     </View>
   )

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const getPlotWidth = () => {
+  const screenWidth = Dimensions.get('window').width;
+  // Calculate width for 2 columns with padding and gaps
+  // Accounting for: padding (48*2) + gap (16) + borders
+  return Math.min((screenWidth - 96 - 16 - 40) / 2, 160);
+};
 
 type PlotData = {
   state: 'empty' | 'tilled' | 'planted' | 'growing';
@@ -21,6 +28,16 @@ type PlotProps = {
 
 export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [plotWidth, setPlotWidth] = useState(getPlotWidth());
+
+  // Update plot width on dimension changes
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', () => {
+      setPlotWidth(getPlotWidth());
+    });
+    
+    return () => subscription?.remove();
+  }, []);
 
   // Calculate time remaining until next stage
   useEffect(() => {
@@ -100,7 +117,7 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
   return (
     <TouchableOpacity 
       onPress={onPress} 
-      style={[styles.plot, plotStyle]}
+      style={[styles.plot, plotStyle, { width: plotWidth, height: plotWidth }]}
       activeOpacity={0.7}
     >
       {/* Tilled lines */}
@@ -159,8 +176,7 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
 
 const styles = StyleSheet.create({
   plot: {
-    width: 160,
-    height: 160,
+    // width and height will be set dynamically
     borderRadius: 16,
     borderWidth: 5,
     justifyContent: 'center',
