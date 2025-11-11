@@ -22,29 +22,35 @@ export default function AuthScreen() {
 
   const signUp = async () => {
     setIsLoading(true);
-    const { error } = await supabase.auth.signUp({
+    console.log('🟢 Attempting sign up with:', email);
+    const { error, data } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
 
     if (error) {
-      console.log('Error:', error.message);
+      console.error('🔴 Sign up error:', error);
+      alert(`Sign up failed: ${error.message}`);
     } else {
-      console.log('Success: Please check your email for verification link');
+      console.log('🟢 Sign up success:', data);
+      alert('Success! Please check your email for verification link');
     }
     setIsLoading(false);
   };
 
   const signIn = async () => {
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    console.log('🟢 Attempting sign in with:', email);
+    const { error, data } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
     if (error) {
-      console.log('Error:', error.message);
+      console.error('🔴 Sign in error:', error);
+      alert(`Sign in failed: ${error.message}`);
     } else {
+      console.log('🟢 Sign in success:', data);
       router.replace('/home');
     }
     setIsLoading(false);
@@ -54,22 +60,24 @@ export default function AuthScreen() {
     setIsLoading(true);
     try {
       console.log('🔵 Creating anonymous guest account...');
+      console.log('🔵 Supabase URL:', process.env.EXPO_PUBLIC_SUPABASE_URL);
       
       // Use Supabase's built-in anonymous authentication
       const { data, error } = await supabase.auth.signInAnonymously();
 
       if (error) {
-        console.error('🔵 Anonymous signin error:', error);
+        console.error('� Anonymous signin error:', error);
+        alert(`Guest sign in failed: ${error.message}`);
         throw error;
       }
 
-      console.log('🔵 Anonymous guest account created successfully');
-      console.log('🔵 User ID:', data.user?.id);
+      console.log('� Anonymous guest account created successfully');
+      console.log('� User ID:', data.user?.id);
       
       router.replace('/home');
     } catch (error: any) {
-      console.error('🔵 Error creating guest account:', error);
-      console.log('Error:', error?.message || 'Failed to create guest account. Please try signing up with an email.');
+      console.error('� Error creating guest account:', error);
+      alert(error?.message || 'Failed to create guest account. Please try signing up with an email.');
     } finally {
       setIsLoading(false);
     }

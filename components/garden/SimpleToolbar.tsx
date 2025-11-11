@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export type FarmRoute = '/nests' | '/home' | '/expand';
+export type FarmRoute = '/nests' | '/home' | '/expand' | '/godot';
 
 type ToolbarProps = {
   selectedTool: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
@@ -13,7 +13,7 @@ type ToolbarProps = {
   canShovel?: boolean;
   seedInventory?: Record<string, number>;
   // Navigation props
-  currentRoute?: 'nests' | 'home' | 'expand';
+  currentRoute?: 'nests' | 'home' | 'expand' | 'godot';
   onNavigate?: (route: FarmRoute) => void;
   // For future: array of farm IDs for cycling through multiple farms
   farmIds?: string[];

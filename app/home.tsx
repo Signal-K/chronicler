@@ -209,6 +209,7 @@ export default function HomeScreen() {
         onOpenInventory={() => openPanel('inventory')}
         onOpenShop={() => openPanel('shop')}
         onOpenSettings={() => openPanel('settings')}
+        onOpenGodot={() => router.push('/godot' as any)}
       />
 
       {/* Classification Modal - Full screen */}

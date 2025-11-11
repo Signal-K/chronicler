@@ -70,6 +70,7 @@ export default function ExpandScreen() {
         onOpenInventory={() => {}}
         onOpenShop={() => {}}
         onOpenSettings={() => {}}
+        onOpenGodot={() => router.push('/godot' as any)}
       />
     </View>
   );

@@ -7,6 +7,7 @@ type NavigationBarProps = {
   onOpenInventory: () => void;
   onOpenShop: () => void;
   onOpenSettings: () => void;
+  onOpenGodot?: () => void;
 };
 
 export function GardenBottomBar({
@@ -14,6 +15,7 @@ export function GardenBottomBar({
   onOpenInventory,
   onOpenShop,
   onOpenSettings,
+  onOpenGodot,
 }: NavigationBarProps) {
   return (
     <View style={styles.container}>
@@ -40,6 +42,19 @@ export function GardenBottomBar({
               <Text style={styles.navIcon}>📦</Text>
             </LinearGradient>
           </TouchableOpacity>
+
+          {/* Godot Icon */}
+          {onOpenGodot && (
+            <TouchableOpacity
+              onPress={onOpenGodot}
+              activeOpacity={0.8}
+              style={styles.navButtonWrapper}
+            >
+              <LinearGradient colors={['#3b82f6', '#2563eb']} style={styles.navButton}>
+                <Text style={styles.navIcon}>🎮</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
 
           {/* Almanac Icon */}
           <TouchableOpacity
