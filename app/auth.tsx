@@ -19,23 +19,62 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
+
+  // Check if user is currently a guest
+  React.useEffect(() => {
+    const checkGuestStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.is_anonymous) {
+        setIsGuest(true);
+      }
+    };
+    checkGuestStatus();
+  }, []);
 
   const signUp = async () => {
     setIsLoading(true);
-    console.log('🟢 Attempting sign up with:', email);
+    console.log("Attempting sign up with: ", email);
     const { error, data } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
 
     if (error) {
-      console.error('🔴 Sign up error:', error);
+      console.error("Sign up error: ", error);
       alert(`Sign up failed: ${error.message}`);
     } else {
-      console.log('🟢 Sign up success:', data);
-      alert('Success! Please check your email for verification link');
-    }
+      console.log("Sign up success: ", data);
+      alert("Success! Check email for verification link");
+    };
+
     setIsLoading(false);
+  };
+
+  const upgradeGuestAccount = async () => {
+    setIsLoading(true);
+    console.log("Attempting to upgrade guest account to full profile with: ", email);
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        console.error("Upgrade error: ", error);
+        alert(`Failed to connect account: ${error.message}`);
+      } else {
+        console.log("Guest account upgraded successfully, ", data);
+        alert("Success! Your progress is now saved. Please check your email");
+        router.replace("/home");
+      };
+    } catch (error: any) {
+      console.error("Error upgrading guest account: ", error);
+      alert(error?.message || "Failed to connect account");
+    } finally {
+      setIsLoading(false);
+    };
   };
 
   const signIn = async () => {
@@ -88,7 +127,10 @@ export default function AuthScreen() {
       console.log('Error: Please fill in all fields');
       return;
     }
-    if (isSignUp) {
+    if (isGuest) {
+      // If user is upgrading from guest account
+      upgradeGuestAccount();
+    } else if (isSignUp) {
       signUp();
     } else {
       signIn();
@@ -113,11 +155,16 @@ export default function AuthScreen() {
             </View>
 
             <View style={styles.formContainer}>
-              <Text style={styles.title}>{isSignUp ? 'Sign up' : 'Sign in'}</Text>
+              <Text style={styles.title}>
+                {isGuest ? 'Connect Your Account' : (isSignUp ? 'Sign up' : 'Sign in')}
+              </Text>
               <Text style={styles.subtitle}>
-                {isSignUp 
-                  ? 'Create your account to save your discoveries'
-                  : 'Welcome back! Sign into Star Sailors'
+                {isGuest 
+                  ? 'Link your guest account to save your progress permanently'
+                  : (isSignUp 
+                    ? 'Create your account to save your discoveries'
+                    : 'Welcome back! Sign into Star Sailors'
+                  )
                 }
               </Text>
 
@@ -148,7 +195,9 @@ export default function AuthScreen() {
                 disabled={isLoading}
               >
                 <Text style={styles.primaryButtonText}>
-                  {isLoading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
+                  {isLoading ? 'Loading...' : (
+                    isGuest ? 'Connect Account' : (isSignUp ? 'Create Account' : 'Sign In')
+                  )}
                 </Text>
               </TouchableOpacity>
 

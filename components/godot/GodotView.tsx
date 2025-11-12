@@ -1,6 +1,6 @@
+import * as FileSystem from 'expo-file-system/legacy';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
-import * as FileSystem from 'expo-file-system/legacy';
 
 // We'll try to require the native module at runtime so this file works in JS-only environments
 let RTNGodot: any = null;

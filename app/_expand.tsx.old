@@ -2,13 +2,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GardenBottomBar } from '../components/garden/GardenBottomBar';
 import { SimpleToolbar } from '../components/garden/SimpleToolbar';
 import { GameHeader } from '../components/ui/GameHeader';
 
 export default function ExpandScreen() {
   const router = useRouter();
+
+  // Navigation handler
+  const handleNavigate = (route: string) => {
+    router.replace(route as any);
+  };
 
   // TODO: Implement farm expansion functionality
   // This screen will allow users to purchase new farm plots
@@ -62,7 +67,7 @@ export default function ExpandScreen() {
         canShovel={false}
         seedInventory={{}}
         currentRoute="expand"
-        onNavigate={(route) => router.push(route as any)}
+        onNavigate={handleNavigate}
       />
       
       <GardenBottomBar 
@@ -79,6 +84,7 @@ export default function ExpandScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20, // Increased padding for notch/dynamic island
   },
   content: {
     flexGrow: 1,
@@ -121,5 +127,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#a8a29e',
     fontStyle: 'italic',
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    zIndex: 10, // Ensure visibility
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Added background for clarity
   },
 });

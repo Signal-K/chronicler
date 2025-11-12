@@ -32,7 +32,7 @@ export interface BeesProps {
   weatherData: WeatherData | null;
   fullyGrownPlantCount: number;
   fullyGrownPlantPositions: { x: number; y: number; plotId: number }[];
-  onPollinationPress: (plot1: number, plot2: number) => void;
+  onPollinationPress?: (plot1: number, plot2: number) => void; // Optional - legacy classification feature
 }
 
 export interface Star {

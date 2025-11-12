@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export type FarmRoute = '/nests' | '/home' | '/expand' | '/godot';
+export type FarmRoute = 'nests' | 'home' | 'expand' | 'godot';
 
 type ToolbarProps = {
   selectedTool: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
@@ -11,6 +11,7 @@ type ToolbarProps = {
   canPlant?: boolean;
   canWater?: boolean;
   canShovel?: boolean;
+  canHarvest?: boolean;
   seedInventory?: Record<string, number>;
   // Navigation props
   currentRoute?: 'nests' | 'home' | 'expand' | 'godot';
@@ -28,6 +29,7 @@ export function SimpleToolbar({
   canPlant = true,
   canWater = true,
   canShovel = true,
+  canHarvest = true,
   seedInventory = {},
   currentRoute = 'home',
   onNavigate,
@@ -66,15 +68,15 @@ export function SimpleToolbar({
     
     if (currentRoute === 'home') {
       // Go to nests
-      onNavigate('/nests');
+      onNavigate('nests');
     } else if (currentRoute === 'expand') {
       // If there are farms, cycle backwards through them
       if (farmIds.length > 0) {
         // TODO: Implement farm cycling
         // For now, just go to home
-        onNavigate('/home');
+        onNavigate('home');
       } else {
-        onNavigate('/home');
+        onNavigate('home');
       }
     }
     // If we're on nests, do nothing (it's the leftmost screen)
@@ -85,15 +87,15 @@ export function SimpleToolbar({
     
     if (currentRoute === 'nests') {
       // Go to home (or first farm)
-      onNavigate('/home');
+      onNavigate('home');
     } else if (currentRoute === 'home') {
       // If there are more farms, cycle to next farm
       if (farmIds.length > 0) {
         // TODO: Implement farm cycling
         // For now, just go to expand
-        onNavigate('/expand');
+        onNavigate('expand');
       } else {
-        onNavigate('/expand');
+        onNavigate('expand');
       }
     }
     // If we're on expand, do nothing (it's the rightmost screen)
@@ -103,24 +105,44 @@ export function SimpleToolbar({
   const canGoRight = currentRoute !== 'expand';
 
   return (
-    <View style={styles.toolbar}>
-      {/* Left Navigation Arrow */}
-      <TouchableOpacity
-        onPress={handleLeftNav}
-        disabled={!canGoLeft}
-        style={[
-          styles.navButton,
-          styles.navButtonLeft,
-          !canGoLeft && styles.navButtonDisabled
-        ]}
-      >
-        <Text style={[styles.navButtonText, !canGoLeft && styles.navButtonTextDisabled]}>
-          ◀
-        </Text>
-      </TouchableOpacity>
+    <View style={styles.toolbarContainer}>
+      {/* Navigation Row - Above the tools */}
+      <View style={styles.navigationRow}>
+        <TouchableOpacity
+          onPress={handleLeftNav}
+          disabled={!canGoLeft}
+          style={[
+            styles.navButton,
+            !canGoLeft && styles.navButtonDisabled
+          ]}
+        >
+          <Text style={[styles.navButtonText, !canGoLeft && styles.navButtonTextDisabled]}>
+            ◀
+          </Text>
+        </TouchableOpacity>
 
-      {/* Tool Buttons Container */}
-      <View style={styles.toolsContainer}>
+        <View style={styles.screenIndicator}>
+          <Text style={styles.screenIndicatorText}>
+            {currentRoute === 'nests' ? 'HIVES' : currentRoute === 'expand' ? 'EXPAND' : 'FARM'}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={handleRightNav}
+          disabled={!canGoRight}
+          style={[
+            styles.navButton,
+            !canGoRight && styles.navButtonDisabled
+          ]}
+        >
+          <Text style={[styles.navButtonText, !canGoRight && styles.navButtonTextDisabled]}>
+            ▶
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Tool Buttons Row */}
+      <View style={styles.toolsRow}>
         {/* Till Tool */}
         <TouchableOpacity 
           onPress={() => canTill && onToolSelect(selectedTool === 'till' ? selectedTool : 'till')}
@@ -162,22 +184,35 @@ export function SimpleToolbar({
         >
           <Text style={[styles.buttonText, !canPlant && styles.buttonTextDisabled]}>🌱 PLANT</Text>
         </TouchableOpacity>
+        
+        {/* Harvest Tool */}
+        <TouchableOpacity 
+          onPress={() => canHarvest && onToolSelect(selectedTool === 'harvest' ? selectedTool : 'harvest')}
+          disabled={!canHarvest}
+          style={[
+            styles.button, 
+            { backgroundColor: '#ca8a04' },
+            selectedTool === 'harvest' && styles.buttonActive,
+            !canHarvest && styles.buttonDisabled
+          ]}
+        >
+          <Text style={[styles.buttonText, !canHarvest && styles.buttonTextDisabled]}>🌾 HARVEST</Text>
+        </TouchableOpacity>
+        
+        {/* Shovel Tool */}
+        <TouchableOpacity 
+          onPress={() => canShovel && onToolSelect(selectedTool === 'shovel' ? selectedTool : 'shovel')}
+          disabled={!canShovel}
+          style={[
+            styles.button, 
+            { backgroundColor: '#78350f' },
+            selectedTool === 'shovel' && styles.buttonActive,
+            !canShovel && styles.buttonDisabled
+          ]}
+        >
+          <Text style={[styles.buttonText, !canShovel && styles.buttonTextDisabled]}>🪓 SHOVEL</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Right Navigation Arrow */}
-      <TouchableOpacity
-        onPress={handleRightNav}
-        disabled={!canGoRight}
-        style={[
-          styles.navButton,
-          styles.navButtonRight,
-          !canGoRight && styles.navButtonDisabled
-        ]}
-      >
-        <Text style={[styles.navButtonText, !canGoRight && styles.navButtonTextDisabled]}>
-          ▶
-        </Text>
-      </TouchableOpacity>
 
       {/* Plant Selection Modal */}
       <Modal
@@ -226,43 +261,30 @@ export function SimpleToolbar({
 }
 
 const styles = StyleSheet.create({
-  toolbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+  toolbarContainer: {
     backgroundColor: '#92400e',
     borderTopWidth: 3,
     borderTopColor: '#44403c',
+    zIndex: 100,
+    elevation: 10,
   },
-  toolsContainer: {
+  navigationRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
   },
   navButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#78350f',
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#1c1917',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  navButtonLeft: {
-    // Additional styling for left arrow if needed
-  },
-  navButtonRight: {
-    // Additional styling for right arrow if needed
   },
   navButtonDisabled: {
     backgroundColor: '#57534e',
@@ -270,37 +292,47 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   navButtonTextDisabled: {
     color: '#a8a29e',
   },
+  screenIndicator: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+  },
+  screenIndicatorText: {
+    color: '#fef3c7',
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  toolsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+  },
   button: {
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    borderRadius: 16,
-    minWidth: 90,
-    borderWidth: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    borderRadius: 12,
+    minWidth: 62,
+    borderWidth: 2,
     borderColor: '#1c1917',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   buttonActive: {
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: '#facc15',
-    shadowColor: '#facc15',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 8,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
     textAlign: 'center',
   },

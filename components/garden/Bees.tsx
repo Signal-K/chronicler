@@ -1,7 +1,7 @@
 import { getTimeOfDay } from '@/lib/astronomy';
-import type { BeesProps, PollinationIndicator } from '@/types/garden';
-import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import type { BeesProps } from '@/types/garden';
+import React from 'react';
+import { Text, View } from 'react-native';
 import { beesStyles as styles } from '../../styles/garden/BeesStyles';
 
 export default function Bees({ 
@@ -11,37 +11,38 @@ export default function Bees({
   weatherData, 
   fullyGrownPlantCount, 
   fullyGrownPlantPositions,
-  onPollinationPress 
+  onPollinationPress // Legacy - not used in current flow
 }: BeesProps) {
-  const [pollinationIndicators, setPollinationIndicators] = useState<PollinationIndicator[]>([]);
-  const isPollinationActive = fullyGrownPlantCount >= 2;
+  // Pollination indicators disabled - legacy feature preserved for future use
+  // const [pollinationIndicators, setPollinationIndicators] = useState<PollinationIndicator[]>([]);
+  // const isPollinationActive = fullyGrownPlantCount >= 2;
 
-  useEffect(() => {
-    if (!isPollinationActive || !beesActive || fullyGrownPlantPositions.length < 2) {
-      setPollinationIndicators([]);
-      return;
-    };
+  // useEffect(() => {
+  //   if (!isPollinationActive || !beesActive || fullyGrownPlantPositions.length < 2) {
+  //     setPollinationIndicators([]);
+  //     return;
+  //   };
 
-    const indicators: PollinationIndicator[] = [];
+  //   const indicators: PollinationIndicator[] = [];
 
-    for (let i = 0; i < fullyGrownPlantPositions.length - 1; i++) {
-      const plant1 = fullyGrownPlantPositions[i];
-      const plant2 = fullyGrownPlantPositions[i + 1];
+  //   for (let i = 0; i < fullyGrownPlantPositions.length - 1; i++) {
+  //     const plant1 = fullyGrownPlantPositions[i];
+  //     const plant2 = fullyGrownPlantPositions[i + 1];
 
-      const midX = (plant1.x + plant2.x) / 2;
-      const midY = (plant1.y + plant2.y) / 2;
+  //     const midX = (plant1.x + plant2.x) / 2;
+  //     const midY = (plant1.y + plant2.y) / 2;
 
-      indicators.push({
-        id: `pollination-${plant1.plotId}-${plant2.plotId}`,
-        x: midX,
-        y: midY,
-        plot1: plant1.plotId,
-        plot2: plant2.plotId,
-      });
-    };
+  //     indicators.push({
+  //       id: `pollination-${plant1.plotId}-${plant2.plotId}`,
+  //       x: midX,
+  //       y: midY,
+  //       plot1: plant1.plotId,
+  //       plot2: plant2.plotId,
+  //     });
+  //   };
 
-    setPollinationIndicators(indicators);
-  }, [isPollinationActive, beesActive, fullyGrownPlantPositions]);
+  //   setPollinationIndicators(indicators);
+  // }, [isPollinationActive, beesActive, fullyGrownPlantPositions]);
 
   if (!beesActive && sunData && getTimeOfDay(sunData) === 'night') {
     // Bees are sleeping - show fewer bees or make them stationary
@@ -328,66 +329,8 @@ export default function Bees({
         );
       })}
 
-            {/* Pollination indicators */}
-      {pollinationIndicators.map((indicator) => (
-        <TouchableOpacity
-          key={indicator.id}
-          style={{
-            position: 'absolute',
-            left: indicator.x - 40,
-            top: indicator.y - 80,
-            zIndex: 10003,
-          }}
-          onPress={() => onPollinationPress(indicator.plot1, indicator.plot2)}
-          activeOpacity={0.7}
-        >
-          {/* Speech bubble tail */}
-          <View style={{
-            position: 'absolute',
-            bottom: -8,
-            left: 32,
-            width: 0,
-            height: 0,
-            borderLeftWidth: 10,
-            borderRightWidth: 10,
-            borderTopWidth: 12,
-            borderLeftColor: 'transparent',
-            borderRightColor: 'transparent',
-            borderTopColor: '#FFF3CD',
-          }} />
-          
-          {/* Speech bubble */}
-          <View style={{
-            backgroundColor: '#FFF3CD',
-            borderRadius: 20,
-            padding: 16,
-            borderWidth: 3,
-            borderColor: '#FFD700',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.4,
-            shadowRadius: 6,
-            elevation: 8,
-            minWidth: 80,
-            alignItems: 'center',
-          }}>
-            <Text style={{ 
-              fontSize: 32,
-            }}>
-              🐝
-            </Text>
-            <Text style={{ 
-              fontSize: 11, 
-              fontWeight: 'bold', 
-              color: '#856404',
-              textAlign: 'center',
-              marginTop: 6,
-            }}>
-              Tap to identify!
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      {/* Pollination indicators - disabled for now, legacy feature preserved */}
+      {/* Will be re-enabled when classification becomes a bonus mechanic */}
     </>
   );
 }

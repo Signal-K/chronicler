@@ -9,6 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "cleanup:guests": "node ./scripts/cleanup-guest-accounts.js",
     "godot:export:all": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android",
     "godot:export:ios": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios",
     "godot:export:android": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android"

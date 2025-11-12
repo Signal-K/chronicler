@@ -21,11 +21,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        // Get initial session
+        const { data: { session: existingSession } } = await supabase.auth.getSession();
+        
+        if (existingSession) {
+          // User already has a session (guest or registered)
+          setSession(existingSession);
+          setLoading(false);
+        } else {
+          // No session exists - create automatic guest account
+          console.log('🔵 No existing session, creating automatic guest account...');
+          const { data, error } = await supabase.auth.signInAnonymously();
+          
+          if (error) {
+            console.error('🔴 Failed to create guest account:', error);
+            setLoading(false);
+          } else {
+            console.log('🟢 Guest account created automatically:', data.user?.id);
+            setSession(data.session);
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('🔴 Error initializing auth:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const {

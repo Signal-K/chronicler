@@ -44,7 +44,7 @@ export function GardenBottomBar({
           </TouchableOpacity>
 
           {/* Godot Icon */}
-          {onOpenGodot && (
+          {/* {onOpenGodot && (
             <TouchableOpacity
               onPress={onOpenGodot}
               activeOpacity={0.8}
@@ -54,7 +54,7 @@ export function GardenBottomBar({
                 <Text style={styles.navIcon}>🎮</Text>
               </LinearGradient>
             </TouchableOpacity>
-          )}
+          )} */}
 
           {/* Almanac Icon */}
           <TouchableOpacity
@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     borderTopColor: '#44403c',
   },
   background: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   navContent: {
     flexDirection: 'row',
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     maxWidth: 500,
     alignSelf: 'center',
-    gap: 12,
+    gap: 8,
   },
   navButtonWrapper: {
     alignItems: 'center',
@@ -107,18 +107,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    borderWidth: 3,
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    borderWidth: 2,
     borderColor: '#1c1917',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   navIcon: {
-    fontSize: 32,
+    fontSize: 28,
   },
 });

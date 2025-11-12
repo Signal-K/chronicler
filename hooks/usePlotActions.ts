@@ -9,8 +9,6 @@ interface UsePlotActionsParams {
   selectedAction: Tool;
   selectedPlant: string;
   consumeWater: () => Promise<boolean>;
-  setClassificationPlotIndex: (index: number) => void;
-  setShowClassification: (show: boolean) => void;
   setHarvestReward: (reward: { cropEmoji: string; cropCount: number; seedCount: number }) => void;
   setShowHarvestAnimation: (show: boolean) => void;
   setSelectedAction: (action: Tool) => void;
@@ -24,8 +22,6 @@ export function usePlotActions({
   selectedAction,
   selectedPlant,
   consumeWater,
-  setClassificationPlotIndex,
-  setShowClassification,
   setHarvestReward,
   setShowHarvestAnimation,
   setSelectedAction,
@@ -124,12 +120,7 @@ export function usePlotActions({
 
     const newStage = current.growthStage + 1;
 
-    if (current.growthStage === 4 && newStage === 5) {
-      setClassificationPlotIndex(index);
-      setShowClassification(true);
-      return true;
-    }
-
+    // Plant grows automatically to stage 5 without requiring classification
     const newPlots = [...plots];
     newPlots[index] = {
       ...current,

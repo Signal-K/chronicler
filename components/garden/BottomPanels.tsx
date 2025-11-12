@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: 150, // Add space for toolbar + bottom bar (approximately 70px toolbar + 80px bottom bar)
     backgroundColor: '#fef3c7',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

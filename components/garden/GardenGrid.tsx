@@ -50,10 +50,13 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    maxWidth: 600,
+    justifyContent: 'center',
+    maxWidth: '100%',
     gap: 16,
-    padding: 48,
-    alignItems: 'flex-start',
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 4,
+    borderColor: '#22c55e',
+    borderRadius: 8,
   },
 });

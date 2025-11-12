@@ -15,6 +15,11 @@ import { getQualityRating, usePollinatorQuality } from '../hooks/usePollinatorQu
 export default function NestsScreen() {
   const router = useRouter();
   
+  // Navigation handler
+  const handleNavigate = (route: string) => {
+    router.replace(route as any);
+  };
+  
   // State management
   const { hives, inventory, placeHive } = useHiveState();
   const [selectedPosition, setSelectedPosition] = useState<{ q: number; r: number } | null>(null);
@@ -124,7 +129,7 @@ export default function NestsScreen() {
         canShovel={false}
         seedInventory={{}}
         currentRoute="nests"
-        onNavigate={(route) => router.push(route as any)}
+        onNavigate={handleNavigate}
       />
       
       <GardenBottomBar 
