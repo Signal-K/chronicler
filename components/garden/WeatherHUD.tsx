@@ -1,4 +1,4 @@
-import type { WeatherHUDProps } from '@/types/garden';
+import type { WeatherHUDProps } from '../../types/garden';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { weatherHUDStyles as styles } from '../../styles/garden/WeatherHUDStyles';

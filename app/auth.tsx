@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../lib/supabase';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
@@ -139,7 +139,7 @@ export default function AuthScreen() {
 
   return (
     <ImageBackground
-      source={require('@/assets/splash.jpg')}
+      source={require('../assets/splash.jpg')}
       style={styles.backgroundImage}
       resizeMode="cover"
     >

@@ -1,4 +1,4 @@
-import type { ToolbarIconProps } from '@/types/garden';
+import type { ToolbarIconProps } from '../../types/garden';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { toolbarIconStyles as styles } from '../../styles/garden/ToolbarIconStyles';

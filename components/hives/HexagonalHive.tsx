@@ -1,4 +1,4 @@
-import type { BeeHealth, HiveData } from '@/types/hive';
+import type { BeeHealth, HiveData } from '../../types/hive';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, LinearGradient, Path, Polygon, Stop } from 'react-native-svg';

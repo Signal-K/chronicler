@@ -1,4 +1,4 @@
-import type { ParallaxProps } from '@/types/ui';
+import type { ParallaxProps } from '../types/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
     interpolate,
@@ -7,9 +7,9 @@ import Animated, {
     useScrollOffset,
 } from 'react-native-reanimated';
 
-import { ThemedView } from '@/components/themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { ThemedView } from '../components/themed-view';
+import { useColorScheme } from '../hooks/use-color-scheme';
+import { useThemeColor } from '../hooks/use-theme-color';
 
 const HEADER_HEIGHT = 250;
 

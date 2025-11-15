@@ -1,0 +1,31 @@
+{
+  "name": "Bee Garden",
+  "short_name": "BeeGarden",
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#22c55e",
+  "description": "A cozy bee-themed farming game.",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

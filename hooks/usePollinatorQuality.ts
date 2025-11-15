@@ -1,4 +1,4 @@
-import type { HiveData, PollinatorQuality } from '@/types/hive';
+import type { HiveData, PollinatorQuality } from '../types/hive';
 import { useMemo } from 'react';
 
 interface UsePollinatorQualityProps {

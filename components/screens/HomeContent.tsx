@@ -1,9 +1,9 @@
+import type { InventoryData, PlotData } from '../../hooks/useGameState';
+import { usePlotActions } from '../../hooks/usePlotActions';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { GardenGrid } from '../garden/GardenGrid';
 import { HoveringBees } from '../garden/HoveringBees';
-import { usePlotActions } from '@/hooks/usePlotActions';
-import type { PlotData, InventoryData } from '@/hooks/useGameState';
 
 type HomeContentProps = {
   plots: PlotData[];

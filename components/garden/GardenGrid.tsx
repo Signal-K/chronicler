@@ -1,4 +1,4 @@
-import type { PlotData, Tool } from '@/hooks/useGameState';
+import type { PlotData, Tool } from '../../hooks/useGameState';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SimplePlot } from '../placeables/SimplePlot';

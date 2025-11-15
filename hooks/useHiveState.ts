@@ -1,4 +1,4 @@
-import type { BeeHealth, HiveData, HiveInventory, HiveType } from '@/types/hive';
+import type { BeeHealth, HiveData, HiveInventory, HiveType } from '../types/hive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 

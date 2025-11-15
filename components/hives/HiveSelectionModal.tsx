@@ -1,4 +1,4 @@
-import type { HiveInventory, HiveType } from '@/types/hive';
+import type { HiveInventory, HiveType } from '../../types/hive';
 import React from 'react';
 import { Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 

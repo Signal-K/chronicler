@@ -1,4 +1,4 @@
-import type { HiveData } from '@/types/hive';
+import type { HiveData } from '../../types/hive';
 import React from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { HexagonalHive } from './HexagonalHive';

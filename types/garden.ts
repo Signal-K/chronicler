@@ -1,5 +1,5 @@
-import type { MoonAstronomyData, StarVisibility, SunData } from '@/lib/astronomy';
-import type { WeatherData } from '@/lib/weather';
+import type { MoonAstronomyData, StarVisibility, SunData } from '../lib/astronomy';
+import type { WeatherData } from '../lib/weather';
 
 export interface BeeData {
   id: number;

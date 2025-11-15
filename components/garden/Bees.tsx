@@ -1,5 +1,5 @@
-import { getTimeOfDay } from '@/lib/astronomy';
-import type { BeesProps } from '@/types/garden';
+import { getTimeOfDay } from '../../lib/astronomy';
+import type { BeesProps } from '../../types/garden';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { beesStyles as styles } from '../../styles/garden/BeesStyles';

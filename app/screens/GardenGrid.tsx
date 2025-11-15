@@ -1,5 +1,5 @@
-import { SoilPlot } from '@/components/placeables/SoilPlot';
-import type { GardenGridProps } from '@/types/SoilPlot';
+import { SoilPlot } from '../../components/placeables/SoilPlot';
+import type { GardenGridProps } from '../../types/SoilPlot';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';

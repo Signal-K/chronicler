@@ -1,4 +1,4 @@
-import { canPlantCrop, getCropConfig } from '@/lib/cropConfig';
+import { canPlantCrop, getCropConfig } from '../lib/cropConfig';
 import type { InventoryData, PlotData, Tool } from './useGameState';
 
 interface UsePlotActionsParams {

@@ -20,6 +20,7 @@ module.exports = {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
+      bundleIdentifier: "com.liamar.beegarden",
       supportsTablet: true
     },
     android: {
@@ -36,7 +37,29 @@ module.exports = {
     },
     web: {
       output: "static",
-      favicon: "./assets/images/favicon.png"
+      favicon: "./assets/images/favicon.png",
+      bundler: "metro",
+      pwa: {
+        name: "Bee Garden",
+        shortName: "BeeGarden",
+        startUrl: "/",
+        display: "standalone",
+        backgroundColor: "#ffffff",
+        themeColor: "#22c55e",
+        description: "A cozy bee-themed farming game.",
+        icons: [
+          {
+            src: "/assets/images/icon.png",
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: "/assets/images/icon.png",
+            sizes: "512x512",
+            type: "image/png"
+          }
+        ]
+      }
     },
     plugins: [
       "expo-router",

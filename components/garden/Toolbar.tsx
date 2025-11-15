@@ -1,4 +1,4 @@
-import type { ToolbarProps } from '@/types/ui';
+import type { ToolbarProps } from '../../types/ui';
 
 export function Toolbar({ selectedTool, onSelectTool }: ToolbarProps) {
   return (

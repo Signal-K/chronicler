@@ -1,4 +1,4 @@
-import type { PlotComponentProps } from '@/types/plant';
+import type { PlotComponentProps } from '../../types/plant';
 import { PlantComponent } from './Plant';
 
 export function PlotComponent({ plot, selectedTool, onPlant, onWater }: PlotComponentProps) {

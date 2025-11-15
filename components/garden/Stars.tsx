@@ -1,4 +1,4 @@
-import type { StarsProps } from '@/types/garden';
+import type { StarsProps } from '../../types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { starsStyles as styles } from '../../styles/garden/StarsStyles';

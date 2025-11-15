@@ -1,5 +1,5 @@
-import { supabase } from "@/lib/supabase";
-import { getUserStats, HarvestedPlant } from "@/lib/userStats";
+import { supabase } from "../../lib/supabase";
+import { getUserStats, HarvestedPlant } from "../../lib/userStats";
 import React, { useEffect, useState } from "react";
 import {
     Animated,

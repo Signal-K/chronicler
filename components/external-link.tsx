@@ -1,4 +1,4 @@
-import type { ExternalLinkProps } from '@/types/ui';
+import type { ExternalLinkProps } from '../types/ui';
 import { Link } from 'expo-router';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 

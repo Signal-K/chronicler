@@ -1,4 +1,4 @@
-import type { CloudsProps } from '@/types/garden';
+import type { CloudsProps } from '../../types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { cloudsStyles as styles } from '../../styles/garden/CloudsStyles';

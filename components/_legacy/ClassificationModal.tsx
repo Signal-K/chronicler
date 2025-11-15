@@ -1,4 +1,4 @@
-import type { BeeOption, ClassificationModalProps } from '@/types/actions';
+import type { BeeOption, ClassificationModalProps } from '../../types/actions';
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,

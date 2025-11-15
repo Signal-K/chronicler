@@ -1,4 +1,4 @@
-import { HiveCellProps } from "@/types/hive";
+import { HiveCellProps } from "../../types/hive";
 
 export default function HiveCell({ hive, isSelected }: HiveCellProps) {
     const healthColor =

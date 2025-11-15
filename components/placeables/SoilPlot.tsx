@@ -1,4 +1,4 @@
-import { SoilPlotProps } from '@/types/SoilPlot';
+import { SoilPlotProps } from '../../types/SoilPlot';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CropSprite } from '../sprites/CropSprite';

@@ -1,4 +1,4 @@
-import type { FarmRoute } from '@/components/garden/SimpleToolbar';
+import type { FarmRoute } from '../components/garden/SimpleToolbar';
 import { useState } from 'react';
 
 /**
@@ -25,13 +25,13 @@ export function useFarmNavigation(
    */
   const getNextRoute = (): FarmRoute | null => {
     if (currentRoute === 'nests') {
-      return '/home'; // Or first farm if farms exist
+      return 'home'; // Or first farm if farms exist
     }
     
     if (currentRoute === 'home') {
       // TODO: If there are more farms, return next farm route
       // For now, just go to expand
-      return '/expand';
+      return 'expand';
     }
     
     // Already at rightmost screen (expand)
@@ -46,11 +46,11 @@ export function useFarmNavigation(
     if (currentRoute === 'expand') {
       // TODO: If there are farms, return last farm route
       // For now, just go to home
-      return '/home';
+      return 'home';
     }
     
     if (currentRoute === 'home') {
-      return '/nests';
+      return 'nests';
     }
     
     // Already at leftmost screen (nests)
@@ -88,7 +88,7 @@ export function useFarmNavigation(
     }
     // TODO: Return dynamic farm route based on farmIds[farmIndex]
     // For now, just return home as placeholder
-    return '/home';
+    return 'home';
   };
 
   return {

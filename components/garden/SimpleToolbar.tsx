@@ -13,10 +13,8 @@ type ToolbarProps = {
   canShovel?: boolean;
   canHarvest?: boolean;
   seedInventory?: Record<string, number>;
-  // Navigation props
   currentRoute?: 'nests' | 'home' | 'expand' | 'godot';
   onNavigate?: (route: FarmRoute) => void;
-  // For future: array of farm IDs for cycling through multiple farms
   farmIds?: string[];
   currentFarmIndex?: number;
 };
@@ -62,43 +60,32 @@ export function SimpleToolbar({
     }
   };
 
-  // Navigation logic
   const handleLeftNav = () => {
     if (!onNavigate) return;
     
     if (currentRoute === 'home') {
-      // Go to nests
       onNavigate('nests');
     } else if (currentRoute === 'expand') {
-      // If there are farms, cycle backwards through them
       if (farmIds.length > 0) {
-        // TODO: Implement farm cycling
-        // For now, just go to home
         onNavigate('home');
       } else {
         onNavigate('home');
       }
     }
-    // If we're on nests, do nothing (it's the leftmost screen)
   };
 
   const handleRightNav = () => {
     if (!onNavigate) return;
     
     if (currentRoute === 'nests') {
-      // Go to home (or first farm)
       onNavigate('home');
     } else if (currentRoute === 'home') {
-      // If there are more farms, cycle to next farm
       if (farmIds.length > 0) {
-        // TODO: Implement farm cycling
-        // For now, just go to expand
         onNavigate('expand');
       } else {
         onNavigate('expand');
-      }
-    }
-    // If we're on expand, do nothing (it's the rightmost screen)
+      };
+    };
   };
 
   const canGoLeft = currentRoute !== 'nests';
@@ -106,7 +93,6 @@ export function SimpleToolbar({
 
   return (
     <View style={styles.toolbarContainer}>
-      {/* Navigation Row - Above the tools */}
       <View style={styles.navigationRow}>
         <TouchableOpacity
           onPress={handleLeftNav}
@@ -141,11 +127,10 @@ export function SimpleToolbar({
         </TouchableOpacity>
       </View>
 
-      {/* Tool Buttons Row */}
       <View style={styles.toolsRow}>
         {/* Till Tool */}
         <TouchableOpacity 
-          onPress={() => canTill && onToolSelect(selectedTool === 'till' ? selectedTool : 'till')}
+          onPress={() => canTill && onToolSelect(selectedTool === 'till' ? null : 'till')}
           disabled={!canTill}
           style={[
             styles.button, 
@@ -159,7 +144,7 @@ export function SimpleToolbar({
         
         {/* Water Tool */}
         <TouchableOpacity 
-          onPress={() => canWater && onToolSelect(selectedTool === 'water' ? selectedTool : 'water')}
+          onPress={() => canWater && onToolSelect(selectedTool === 'water' ? null : 'water')}
           disabled={!canWater}
           style={[
             styles.button, 
@@ -187,7 +172,7 @@ export function SimpleToolbar({
         
         {/* Harvest Tool */}
         <TouchableOpacity 
-          onPress={() => canHarvest && onToolSelect(selectedTool === 'harvest' ? selectedTool : 'harvest')}
+          onPress={() => canHarvest && onToolSelect(selectedTool === 'harvest' ? null : 'harvest')}
           disabled={!canHarvest}
           style={[
             styles.button, 
@@ -201,7 +186,7 @@ export function SimpleToolbar({
         
         {/* Shovel Tool */}
         <TouchableOpacity 
-          onPress={() => canShovel && onToolSelect(selectedTool === 'shovel' ? selectedTool : 'shovel')}
+          onPress={() => canShovel && onToolSelect(selectedTool === 'shovel' ? null : 'shovel')}
           disabled={!canShovel}
           style={[
             styles.button, 
@@ -214,7 +199,6 @@ export function SimpleToolbar({
         </TouchableOpacity>
       </View>
 
-      {/* Plant Selection Modal */}
       <Modal
         visible={showPlantMenu}
         transparent
@@ -258,7 +242,7 @@ export function SimpleToolbar({
       </Modal>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   toolbarContainer: {

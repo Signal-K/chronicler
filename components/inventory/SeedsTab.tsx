@@ -1,4 +1,4 @@
-import { CROP_CONFIGS } from '@/lib/cropConfig';
+import { CROP_CONFIGS } from '../../lib/cropConfig';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 

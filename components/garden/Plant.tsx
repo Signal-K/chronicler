@@ -1,4 +1,4 @@
-import type { Plant, PlantComponentProps, Plot } from '@/types/plant';
+import type { Plant, PlantComponentProps, Plot } from '../../types/plant';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 

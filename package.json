@@ -10,6 +10,11 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "cleanup:guests": "node ./scripts/cleanup-guest-accounts.js",
+    "build": "npx expo export -p web && cp public/manifest.json dist/manifest.json && cp public/sw.js dist/sw.js && node scripts/inject-pwa.js",
+    "build:sh": "./build.sh",
+    "build:android": "eas build --profile local --platform android",
+    "build:ios": "eas build --profile local --platform ios",
+    "build:prod": "eas build --profile production --platform all",
     "godot:export:all": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android",
     "godot:export:ios": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios",
     "godot:export:android": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android"
@@ -35,6 +40,7 @@
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.8",
     "expo-location": "~19.0.7",
+    "expo-pwa": "^0.0.127",
     "expo-router": "~6.0.8",
     "expo-secure-store": "~15.0.7",
     "expo-splash-screen": "~31.0.10",
@@ -62,6 +68,7 @@
   "devDependencies": {
     "@types/react": "~19.1.0",
     "@types/suncalc": "^1.9.2",
+    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"

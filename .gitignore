@@ -41,7 +41,8 @@ app-example
 # generated native folders
 /ios
 /android
-.env.production
 
 # Ignore Copilot instructions file
 .copilot-instructions
+.vercel
+.env.production

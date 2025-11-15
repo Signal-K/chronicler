@@ -1,4 +1,4 @@
-import type { GardenPlotsProps } from '@/types/garden';
+import type { GardenPlotsProps } from '../../types/garden';
 import React from "react";
 import { Dimensions, Image, Text, View } from "react-native";
 import { gardenPlotsStyles as styles } from "../../styles/garden/GardenPlotsStyles";

@@ -1,5 +1,5 @@
-import { getTimeOfDay } from '@/lib/astronomy';
-import type { MoonProps } from '@/types/garden';
+import { getTimeOfDay } from '../../lib/astronomy';
+import type { MoonProps } from '../../types/garden';
 import React from 'react';
 import { Dimensions, View } from 'react-native';
 import { moonStyles as styles } from '../../styles/garden/MoonStyles';

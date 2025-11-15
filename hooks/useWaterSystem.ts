@@ -1,4 +1,4 @@
-import { useWater as fetchWater, getWaterConstants, getWaterSystem, updateWater, WaterSystemData } from '@/lib/waterSystem';
+import { useWater as fetchWater, getWaterConstants, getWaterSystem, updateWater, WaterSystemData } from '../lib/waterSystem';
 import { useEffect, useState } from 'react';
 
 /**

@@ -1,4 +1,4 @@
-import type { InventoryData } from '@/hooks/useGameState';
+import type { InventoryData } from '../../hooks/useGameState';
 import React from 'react';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { Almanac } from '../../app/screens/almanac';
@@ -97,13 +97,13 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 50,
+    zIndex: 150,
   },
   bottomPanel: {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 150, // Add space for toolbar + bottom bar (approximately 70px toolbar + 80px bottom bar)
+    bottom: 0,
     backgroundColor: '#fef3c7',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 10,
-    zIndex: 60,
+    elevation: 20,
+    zIndex: 200,
     overflow: 'hidden',
   },
 });

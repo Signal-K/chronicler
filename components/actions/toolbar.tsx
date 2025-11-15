@@ -1,6 +1,6 @@
 "use client"
 
-import type { Tool } from "@/types/SoilPlot"
+import type { Tool } from "../../types/SoilPlot"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
 
