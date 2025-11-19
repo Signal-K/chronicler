@@ -1,92 +1,69 @@
-import { useHiveState } from '../../hooks/useHiveState';
-import { getQualityRating, usePollinatorQuality } from '../../hooks/usePollinatorQuality';
-import type { HiveData, HiveType } from '../../types/hive';
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { HiveGrid } from '../hives/HiveGrid';
-import { HiveSelectionModal } from '../hives/HiveSelectionModal';
+import { useHiveState } from '../../hooks/useHiveState';
+import type { PollinationFactorData } from '../../types/pollinationFactor';
 
-export function NestsContent() {
-  // State management
-  const { hives, inventory, placeHive } = useHiveState();
-  const [selectedPosition, setSelectedPosition] = useState<{ q: number; r: number } | null>(null);
-  
-  // Pollinator quality calculation
-  const pollinatorQuality = usePollinatorQuality({
-    hives,
-    weather: {
-      temperature: 22,
-      precipitation: 10,
-      windSpeed: 5,
-      condition: 'sunny',
-    },
-    season: 'spring',
-    airborneNectar: 60,
-  });
-  
-  const qualityRating = getQualityRating(pollinatorQuality.overall);
-  
-  // Handle hive press
-  const handleHivePress = (position: { q: number; r: number }, hive: HiveData | null) => {
-    if (hive) {
-      console.log('Tapped existing hive:', hive);
-    } else {
-      setSelectedPosition(position);
-    }
-  };
-  
-  const handleSelectHive = (hiveType: HiveType) => {
-    if (!selectedPosition) return;
-    placeHive(selectedPosition, hiveType);
-    setSelectedPosition(null);
-  };
-  
-  const handleCloseModal = () => {
-    setSelectedPosition(null);
-  };
+interface NestsContentProps {
+  pollinationFactor: PollinationFactorData;
+  canSpawnBees: boolean;
+}
+
+export function NestsContent({ pollinationFactor, canSpawnBees }: NestsContentProps) {
+  const { hive } = useHiveState();
 
   return (
-    <>
-      {/* Minimal Pollinator Quality Display */}
-      <View style={styles.qualityBanner}>
-        <View style={styles.qualityContent}>
-          <Text style={styles.qualityEmoji}>{qualityRating.emoji}</Text>
-          <View style={styles.qualityInfo}>
-            <Text style={[styles.qualityScore, { color: qualityRating.color }]}>
-              {pollinatorQuality.overall}
+    <View style={styles.container}>
+      {/* Pollination Factor Display */}
+      <View style={styles.statsBanner}>
+        <View style={styles.statsContent}>
+          <Text style={styles.statsEmoji}>🌸</Text>
+          <View style={styles.statsInfo}>
+            <Text style={styles.statsScore}>
+              {pollinationFactor.factor}
             </Text>
-            <Text style={styles.qualityLabel}>Quality</Text>
+            <Text style={styles.statsLabel}>Pollination Factor</Text>
+          </View>
+          {canSpawnBees && (
+            <View style={styles.spawnIndicator}>
+              <Text style={styles.spawnText}>✨ Bees Ready!</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.harvestInfo}>
+          <Text style={styles.harvestText}>
+            Total Harvests: {pollinationFactor.totalHarvests}
+          </Text>
+          <Text style={styles.thresholdText}>
+            Threshold: {pollinationFactor.threshold}
+          </Text>
+        </View>
+      </View>
+
+      {/* Single Hive Display */}
+      <View style={styles.hiveContainer}>
+        <View style={styles.hiveBox}>
+          <Text style={styles.hiveEmoji}>🏡</Text>
+          <Text style={styles.hiveName}>Your Beehive</Text>
+          <View style={styles.beeCountContainer}>
+            <Text style={styles.beeCount}>{hive.beeCount}</Text>
+            <Text style={styles.beeLabel}>Bees</Text>
           </View>
         </View>
       </View>
-      
-      {/* Hive Grid */}
-      <HiveGrid 
-        hives={hives}
-        onHivePress={handleHivePress}
-      />
-
-      {/* Hive Selection Modal */}
-      <HiveSelectionModal
-        visible={selectedPosition !== null}
-        inventory={inventory}
-        onSelectHive={handleSelectHive}
-        onClose={handleCloseModal}
-        position={selectedPosition}
-      />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  qualityBanner: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fef3c7',
+  },
+  statsBanner: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    padding: 16,
     borderWidth: 2,
     borderColor: '#b45309',
     shadowColor: '#000',
@@ -94,29 +71,106 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 6,
-    zIndex: 100,
+    marginBottom: 24,
   },
-  qualityContent: {
+  statsContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
+    marginBottom: 12,
   },
-  qualityEmoji: {
-    fontSize: 24,
+  statsEmoji: {
+    fontSize: 32,
   },
-  qualityInfo: {
-    alignItems: 'center',
+  statsInfo: {
+    flex: 1,
   },
-  qualityScore: {
-    fontSize: 20,
+  statsScore: {
+    fontSize: 28,
     fontWeight: 'bold',
-    lineHeight: 22,
+    color: '#b45309',
   },
-  qualityLabel: {
-    fontSize: 9,
+  statsLabel: {
+    fontSize: 12,
     fontWeight: '600',
     color: '#78350f',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  spawnIndicator: {
+    backgroundColor: '#22c55e',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  spawnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  harvestInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#d1d5db',
+  },
+  harvestText: {
+    fontSize: 14,
+    color: '#78350f',
+    fontWeight: '600',
+  },
+  thresholdText: {
+    fontSize: 14,
+    color: '#78350f',
+    fontWeight: '600',
+  },
+  hiveContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hiveBox: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 32,
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#92400e',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    minWidth: 200,
+  },
+  hiveEmoji: {
+    fontSize: 80,
+    marginBottom: 16,
+  },
+  hiveName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 16,
+  },
+  beeCountContainer: {
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    borderRadius: 16,
+    padding: 16,
+    minWidth: 120,
+  },
+  beeCount: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#b45309',
+  },
+  beeLabel: {
+    fontSize: 16,
+    color: '#78350f',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });

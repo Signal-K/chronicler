@@ -12,6 +12,7 @@ import { GameHeader } from '../components/ui/GameHeader';
 import { useGameState } from '../hooks/useGameState';
 import { useMapSystem } from '../hooks/useMapSystem';
 import { usePanelManager } from '../hooks/usePanelManager';
+import { usePollinationFactor } from '../hooks/usePollinationFactor';
 import { useWaterSystem } from '../hooks/useWaterSystem';
 
 // Import screen content components
@@ -61,6 +62,9 @@ export default function HomeScreen() {
   // Weather and water
   const { currentWater, maxWater, consumeWater } = useWaterSystem(false);
 
+  // Pollination factor - single instance for entire app
+  const { pollinationFactor, incrementFactor, canSpawnBees } = usePollinationFactor();
+
   const pinchGesture = Gesture.Pinch()
     .onEnd((event) => {
       if (event.scale > 1.2) {
@@ -80,7 +84,12 @@ export default function HomeScreen() {
   const renderScreenContent = () => {
     switch (currentScreen) {
       case 'nests':
-        return <NestsContent />;
+        return (
+          <NestsContent 
+            pollinationFactor={pollinationFactor}
+            canSpawnBees={canSpawnBees}
+          />
+        );
       case 'expand':
         return <ExpandContent />;
       case 'home':
@@ -94,6 +103,7 @@ export default function HomeScreen() {
             selectedAction={selectedAction}
             selectedPlant={selectedPlant}
             consumeWater={consumeWater}
+            incrementPollinationFactor={incrementFactor}
           />
         );
     }

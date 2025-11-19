@@ -1,8 +1,8 @@
-import { SoilPlot } from '../../components/placeables/SoilPlot';
-import type { GardenGridProps } from '../../types/SoilPlot';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
+import { SoilPlot } from '../../components/placeables/SoilPlot';
+import type { GardenGridProps } from '../../types/SoilPlot';
 
 const { width: screenWidth } = Dimensions.get('window');
 

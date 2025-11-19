@@ -1,8 +1,8 @@
 "use client"
 
-import type { Tool } from "../../types/SoilPlot"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
+import type { Tool } from "../../types/SoilPlot"
 
 type ToolbarProps = {
   selectedTool: Tool

@@ -12,6 +12,7 @@ interface UsePlotActionsParams {
   setHarvestReward: (reward: { cropEmoji: string; cropCount: number; seedCount: number }) => void;
   setShowHarvestAnimation: (show: boolean) => void;
   setSelectedAction: (action: Tool) => void;
+  incrementPollinationFactor?: (amount: number) => void;
 }
 
 export function usePlotActions({
@@ -25,6 +26,7 @@ export function usePlotActions({
   setHarvestReward,
   setShowHarvestAnimation,
   setSelectedAction,
+  incrementPollinationFactor,
 }: UsePlotActionsParams) {
   
   const handleTill = (index: number, current: PlotData) => {
@@ -186,6 +188,8 @@ export function usePlotActions({
   };
 
   const handleHarvest = (index: number, current: PlotData) => {
+    console.log('🌾 HARVEST CALLED - Plot:', index);
+    
     if (current.growthStage !== 5 || !current.cropType) {
       console.log('Cannot Harvest: Plant is not ready to harvest');
       return false;
@@ -193,6 +197,8 @@ export function usePlotActions({
     
     const config = getCropConfig(current.cropType);
     if (!config) return false;
+    
+    console.log('✅ HARVEST VALID - Crop:', current.cropType);
     
     // Calculate rewards
     const cropCount = 3;
@@ -208,6 +214,16 @@ export function usePlotActions({
       ...newInventory.seeds,
       [current.cropType]: (newInventory.seeds[current.cropType] || 0) + seedCount,
     };
+    
+    // Increment pollination factor on harvest
+    console.log('🔍 INCREMENT FUNCTION EXISTS:', !!incrementPollinationFactor);
+    if (incrementPollinationFactor) {
+      console.log('🌸 CALLING INCREMENT POLLINATION FACTOR');
+      incrementPollinationFactor(1);
+      console.log('✅ INCREMENT CALLED');
+    } else {
+      console.log('❌ NO INCREMENT FUNCTION PASSED!');
+    }
     
     // Show harvest animation
     setHarvestReward({

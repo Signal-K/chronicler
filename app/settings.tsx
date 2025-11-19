@@ -1,10 +1,10 @@
-import { supabase } from '../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { supabase } from '../lib/supabase';
 
 export default function SettingsScreen() {
   const [userEmail, setUserEmail] = useState<string>('');

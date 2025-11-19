@@ -1,7 +1,7 @@
-import type { InventoryData, PlotData } from '../../hooks/useGameState';
-import { usePlotActions } from '../../hooks/usePlotActions';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import type { InventoryData, PlotData } from '../../hooks/useGameState';
+import { usePlotActions } from '../../hooks/usePlotActions';
 import { GardenGrid } from '../garden/GardenGrid';
 import { HoveringBees } from '../garden/HoveringBees';
 
@@ -13,6 +13,7 @@ type HomeContentProps = {
   selectedAction: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
   selectedPlant: string;
   consumeWater: () => Promise<boolean>;
+  incrementPollinationFactor?: (amount: number) => void;
 };
 
 export function HomeContent({
@@ -23,6 +24,7 @@ export function HomeContent({
   selectedAction,
   selectedPlant,
   consumeWater,
+  incrementPollinationFactor,
 }: HomeContentProps) {
   const [, setShowHarvestAnimation] = React.useState(false);
   const [, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
@@ -38,6 +40,7 @@ export function HomeContent({
     setHarvestReward,
     setShowHarvestAnimation,
     setSelectedAction: () => {},
+    incrementPollinationFactor,
   });
 
   return (

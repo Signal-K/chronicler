@@ -4,9 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { GodotView } from '../components/godot';
 import { GardenBottomBar } from '../components/garden/GardenBottomBar';
 import { SimpleToolbar } from '../components/garden/SimpleToolbar';
+import { GodotView } from '../components/godot';
 import { GameHeader } from '../components/ui/GameHeader';
 
 export default function GodotScreen() {

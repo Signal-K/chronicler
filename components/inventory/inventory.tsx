@@ -1,7 +1,7 @@
-import { CROP_CONFIGS } from "../../lib/cropConfig";
-import { CROP_PRICES, InventoryProps } from "../../types/inventory";
 import React, { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CROP_CONFIGS } from "../../lib/cropConfig";
+import { CROP_PRICES, InventoryProps } from "../../types/inventory";
 import { CoinsDisplay } from "./CoinsDisplay";
 import { CropsTab } from "./CropsTab";
 import { ExpansionsTab, ToolsTab } from "./InventoryExtras";

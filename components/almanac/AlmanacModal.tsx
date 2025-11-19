@@ -1,5 +1,3 @@
-import { supabase } from "../../lib/supabase";
-import { getUserStats, HarvestedPlant } from "../../lib/userStats";
 import React, { useEffect, useState } from "react";
 import {
     Animated,
@@ -9,6 +7,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { supabase } from "../../lib/supabase";
+import { getUserStats, HarvestedPlant } from "../../lib/userStats";
 
 import styles from "./AlmanacModal.styles";
 import PlantItem from "./PlantItem";
