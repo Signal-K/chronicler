@@ -2,26 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 
-// Create a safe storage adapter that works across platforms and during build time.
-// It will only use AsyncStorage if it's on a web platform and window is defined.
+// Create a storage adapter that uses AsyncStorage for native platforms
+// and regular AsyncStorage for web (which uses localStorage under the hood)
 const safeAsyncStorage = {
   setItem: (key: string, value: string) => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      return AsyncStorage.setItem(key, value);
-    }
-    return Promise.resolve();
+    return AsyncStorage.setItem(key, value);
   },
   getItem: (key: string) => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      return AsyncStorage.getItem(key);
-    }
-    return Promise.resolve(null);
+    return AsyncStorage.getItem(key);
   },
   removeItem: (key: string) => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      return AsyncStorage.removeItem(key);
-    }
-    return Promise.resolve();
+    return AsyncStorage.removeItem(key);
   },
 };
 

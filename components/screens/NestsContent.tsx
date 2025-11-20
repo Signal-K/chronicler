@@ -1,15 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useHiveState } from '../../hooks/useHiveState';
+import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
   canSpawnBees: boolean;
+  hive: HiveData;
 }
 
-export function NestsContent({ pollinationFactor, canSpawnBees }: NestsContentProps) {
-  const { hive } = useHiveState();
+export function NestsContent({ pollinationFactor, canSpawnBees, hive }: NestsContentProps) {
 
   return (
     <View style={styles.container}>

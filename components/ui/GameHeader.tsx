@@ -8,6 +8,7 @@ type GameHeaderProps = {
   water: number;
   weather: Weather;
   maxWater?: number;
+  isDaytime?: boolean;
   onHarvestClick?: () => void;
   onShovelClick?: () => void;
   canHarvest?: boolean;
@@ -21,8 +22,14 @@ export function GameHeader({
   water, 
   weather, 
   maxWater = 100,
+  isDaytime = true,
 }: GameHeaderProps) {
   const getWeatherIcon = () => {
+    // Show moon at night, weather icons during day
+    if (!isDaytime) {
+      return '🌙';
+    }
+    
     switch (weather) {
       case 'rainy':
         return '🌧️';

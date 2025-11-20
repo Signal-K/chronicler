@@ -38,6 +38,7 @@ export function useGameState() {
   const [inventory, setInventory] = useState<InventoryData>(INITIAL_INVENTORY);
   const [selectedAction, setSelectedAction] = useState<Tool>(null);
   const [selectedPlant, setSelectedPlant] = useState<string>('tomato');
+  const [loaded, setLoaded] = useState(false);
 
   // Load from storage
   useEffect(() => {
@@ -57,21 +58,27 @@ export function useGameState() {
         }
       } catch (e) {
         console.error('Failed to load data', e);
+      } finally {
+        setLoaded(true);
       }
     };
     
     loadData();
   }, []);
 
-  // Save plots to storage
+  // Save plots to storage (only after initial load)
   useEffect(() => {
-    AsyncStorage.setItem('plots', JSON.stringify(plots));
-  }, [plots]);
+    if (loaded) {
+      AsyncStorage.setItem('plots', JSON.stringify(plots));
+    }
+  }, [plots, loaded]);
   
-  // Save inventory to storage
+  // Save inventory to storage (only after initial load)
   useEffect(() => {
-    AsyncStorage.setItem('inventory', JSON.stringify(inventory));
-  }, [inventory]);
+    if (loaded) {
+      AsyncStorage.setItem('inventory', JSON.stringify(inventory));
+    }
+  }, [inventory, loaded]);
 
   // Growth timer
   useEffect(() => {

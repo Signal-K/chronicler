@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         if (existingSession) {
           // User already has a session (guest or registered)
+          console.log('🟢 Existing session found:', existingSession.user?.id);
           setSession(existingSession);
           setLoading(false);
         } else {
