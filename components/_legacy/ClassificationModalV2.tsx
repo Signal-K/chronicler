@@ -1,16 +1,16 @@
-import type { BeeOption, ClassificationModalProps } from '../../types/actions';
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Dimensions,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Animated,
+    Dimensions,
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
+import type { BeeOption, ClassificationModalProps } from '../../types/actions';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: SCREEN_WIDTH * 0.92,
-    maxHeight: SCREEN_HEIGHT * 0.85,
+    height: SCREEN_HEIGHT * 0.85,
     backgroundColor: "#f4e8d8",
     borderRadius: 20,
     overflow: "hidden",
@@ -338,7 +338,6 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     paddingVertical: 4,
-    gap: 10,
   },
   optionCard: {
     backgroundColor: "#FFF",
@@ -346,6 +345,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#D4C4A8",
     overflow: "hidden",
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

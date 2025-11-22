@@ -1,27 +1,85 @@
-import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import type { HiveData } from '../types/hive';
 
+const STORAGE_KEY = 'hives';
+const HIVE_COST = 100; // Cost in coins to build a new hive
+
 export function useHiveState() {
-  // Every user starts with exactly one beehive with no bees
-  const [hive, setHive] = useState<HiveData>({
+  // Users start with exactly one beehive with no bees
+  const [hives, setHives] = useState<HiveData[]>([{
     id: 'default-hive',
     beeCount: 0,
     createdAt: Date.now(),
-  });
+  }]);
+  const [loaded, setLoaded] = useState(false);
 
-  const addBees = (count: number) => {  
+  // Load from storage on mount
+  useEffect(() => {
+    const loadHives = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setHives(parsed);
+          console.log('📂 Loaded hives from storage:', parsed);
+        }
+      } catch (error) {
+        console.error('Error loading hives:', error);
+      } finally {
+        setLoaded(true);
+      }
+    };
+    loadHives();
+  }, []);
+
+  // Save to storage whenever hives change
+  useEffect(() => {
+    if (loaded) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(hives));
+    }
+  }, [hives, loaded]);
+
+  const addBees = (count: number, hiveId?: string) => {  
     if (count <= 0) {
       return;
     };
 
-    setHive(prev => {
-      const newBeeCount = prev.beeCount + count;
-
-      return {
-        ...prev,
-        beeCount: newBeeCount,
-      };
+    setHives(prev => {
+      // Update the first hive if no ID specified, or the specified hive
+      return prev.map((hive, index) => {
+        if (hiveId ? hive.id === hiveId : index === 0) {
+          return {
+            ...hive,
+            beeCount: Math.max(0, hive.beeCount + count),
+          };
+        }
+        return hive;
+      });
     });
+  };
+
+  const buildNewHive = () => {
+    const newHive: HiveData = {
+      id: `hive-${Date.now()}`,
+      beeCount: 0,
+      createdAt: Date.now(),
+    };
+    setHives(prev => [...prev, newHive]);
+    console.log('🏗️ Built new hive:', newHive.id);
+    return newHive;
+  };
+
+  const canBuildNewHive = (coinBalance: number) => {
+    return coinBalance >= HIVE_COST;
+  };
+
+  const getAvailableHives = () => {
+    return hives.filter(h => h.beeCount < 10);
+  };
+
+  const getTotalBeeCount = () => {
+    return hives.reduce((sum, hive) => sum + hive.beeCount, 0);
   };
 
   const calculateBeeSpawn = (pollinationFactor: number, harvestHistory: any[], weather: any) => {
@@ -52,8 +110,14 @@ export function useHiveState() {
   };
 
   return {
-    hive,
+    hives,
+    hive: hives[0], // For backward compatibility
     addBees,
+    buildNewHive,
+    canBuildNewHive,
+    getAvailableHives,
+    getTotalBeeCount,
     calculateBeeSpawn,
+    hiveCost: HIVE_COST,
   };
 }

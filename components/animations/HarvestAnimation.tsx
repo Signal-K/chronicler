@@ -6,6 +6,7 @@ interface HarvestAnimationProps {
   cropEmoji: string;
   cropCount: number;
   seedCount: number;
+  pollinationIncrease?: number;
   onComplete: () => void;
 }
 
@@ -14,6 +15,7 @@ export function HarvestAnimation({
   cropEmoji,
   cropCount,
   seedCount,
+  pollinationIncrease = 1,
   onComplete,
 }: HarvestAnimationProps) {
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -78,6 +80,12 @@ export function HarvestAnimation({
             <Text style={styles.countText}>+{seedCount}</Text>
           </View>
         )}
+        
+        {/* Pollination factor increase */}
+        <View style={styles.rewardRow}>
+          <Text style={styles.emoji}>🌸</Text>
+          <Text style={styles.pollinationText}>+{pollinationIncrease}</Text>
+        </View>
       </View>
     </Animated.View>
   );
@@ -119,6 +127,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#facc15',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  pollinationText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ec4899',
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,

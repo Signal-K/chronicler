@@ -13,6 +13,7 @@ interface UsePlotActionsParams {
   setShowHarvestAnimation: (show: boolean) => void;
   setSelectedAction: (action: Tool) => void;
   incrementPollinationFactor?: (amount: number) => void;
+  onShowDialog?: (title: string, message: string, emoji?: string) => void;
 }
 
 export function usePlotActions({
@@ -27,6 +28,7 @@ export function usePlotActions({
   setShowHarvestAnimation,
   setSelectedAction,
   incrementPollinationFactor,
+  onShowDialog,
 }: UsePlotActionsParams) {
   
   const handleTill = (index: number, current: PlotData) => {
@@ -90,6 +92,21 @@ export function usePlotActions({
     setPlots(newPlots);
     setInventory(newInventory);
     console.log(`Planted: ${config.name} planted!`);
+    
+    // Check if this was the last seed/crop
+    const remainingCount = config.plantRequirement.type === 'seed' 
+      ? newInventory.seeds[selectedPlant] || 0
+      : newInventory.harvested[selectedPlant] || 0;
+    
+    if (remainingCount === 0 && onShowDialog) {
+      const itemType = config.plantRequirement.type === 'seed' ? 'seed' : 'crop';
+      onShowDialog(
+        'Last One Planted! 🌱',
+        `You've planted your last ${config.name} ${itemType}! Visit the shop to buy more seeds or wait for your harvest to grow more.`,
+        '⚠️'
+      );
+    }
+    
     return true;
   };
 

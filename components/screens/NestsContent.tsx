@@ -1,15 +1,34 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
+import { HiveVisual } from '../hives/HiveVisual';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
   canSpawnBees: boolean;
   hive: HiveData;
+  hives?: HiveData[];
+  onBuildHive?: () => void;
+  canBuildHive?: boolean;
+  hiveCost?: number;
+  coinBalance?: number;
+  hiveNectarLevels?: Record<string, number>; // Track nectar per hive
+  maxNectar?: number;
 }
 
-export function NestsContent({ pollinationFactor, canSpawnBees, hive }: NestsContentProps) {
+export function NestsContent({ 
+  pollinationFactor, 
+  canSpawnBees, 
+  hive, 
+  hives = [hive],
+  onBuildHive,
+  canBuildHive = false,
+  hiveCost = 100,
+  coinBalance = 0,
+  hiveNectarLevels = {},
+  maxNectar = 100,
+}: NestsContentProps) {
 
   return (
     <View style={styles.container}>
@@ -39,17 +58,54 @@ export function NestsContent({ pollinationFactor, canSpawnBees, hive }: NestsCon
         </View>
       </View>
 
-      {/* Single Hive Display */}
-      <View style={styles.hiveContainer}>
-        <View style={styles.hiveBox}>
-          <Text style={styles.hiveEmoji}>🏡</Text>
-          <Text style={styles.hiveName}>Your Beehive</Text>
-          <View style={styles.beeCountContainer}>
-            <Text style={styles.beeCount}>{hive.beeCount}</Text>
-            <Text style={styles.beeLabel}>Bees</Text>
+      {/* Hive Display */}
+      <ScrollView 
+        style={styles.hiveScrollView}
+        contentContainerStyle={styles.hiveContainer}
+      >
+        {hives.map((currentHive, index) => (
+          <View key={currentHive.id} style={styles.hiveBox}>
+            <Text style={styles.hiveName}>Beehive {index + 1}</Text>
+            
+            {/* New visual beehive with nectar drips */}
+            <HiveVisual
+              hiveId={currentHive.id}
+              nectarLevel={hiveNectarLevels[currentHive.id] || 0}
+              maxNectar={maxNectar}
+              beeCount={currentHive.beeCount}
+            />
+
+            {currentHive.beeCount >= 10 && (
+              <View style={styles.fullBadge}>
+                <Text style={styles.fullBadgeText}>✨ FULL</Text>
+              </View>
+            )}
           </View>
-        </View>
-      </View>
+        ))}
+
+        {/* Build New Hive Button */}
+        {onBuildHive && (
+          <TouchableOpacity
+            style={[
+              styles.buildHiveButton,
+              !canBuildHive && styles.buildHiveButtonDisabled
+            ]}
+            onPress={onBuildHive}
+            disabled={!canBuildHive}
+          >
+            <Text style={styles.buildHiveIcon}>🏗️</Text>
+            <Text style={styles.buildHiveText}>Build New Hive</Text>
+            <View style={styles.costContainer}>
+              <Text style={styles.costText}>💰 {hiveCost}</Text>
+            </View>
+            {!canBuildHive && (
+              <Text style={styles.insufficientText}>
+                Need {hiveCost - coinBalance} more coins
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -57,13 +113,13 @@ export function NestsContent({ pollinationFactor, canSpawnBees, hive }: NestsCon
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 12,
     backgroundColor: '#fef3c7',
   },
   statsBanner: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 16,
+    borderRadius: 16,
+    padding: 12,
     borderWidth: 2,
     borderColor: '#b45309',
     shadowColor: '#000',
@@ -71,27 +127,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 6,
-    marginBottom: 24,
+    marginBottom: 12,
   },
   statsContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    gap: 8,
+    marginBottom: 8,
   },
   statsEmoji: {
-    fontSize: 32,
+    fontSize: 24,
   },
   statsInfo: {
     flex: 1,
   },
   statsScore: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#b45309',
   },
   statsLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600',
     color: '#78350f',
     textTransform: 'uppercase',
@@ -99,78 +155,185 @@ const styles = StyleSheet.create({
   },
   spawnIndicator: {
     backgroundColor: '#22c55e',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   spawnText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   harvestInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 12,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#d1d5db',
   },
   harvestText: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#78350f',
     fontWeight: '600',
   },
   thresholdText: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#78350f',
     fontWeight: '600',
   },
-  hiveContainer: {
+  hiveScrollView: {
     flex: 1,
+  },
+  hiveContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 12,
+    paddingBottom: 20,
   },
   hiveBox: {
     backgroundColor: '#fff',
-    borderRadius: 24,
-    padding: 32,
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#92400e',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    minWidth: 200,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    width: '95%',
+    maxWidth: 340,
   },
-  hiveEmoji: {
-    fontSize: 80,
-    marginBottom: 16,
+  hiveStructure: {
+    alignItems: 'center',
+    marginBottom: 8,
+    transform: [{ scale: 0.85 }],
+  },
+  hiveRoof: {
+    marginBottom: -8,
+  },
+  roofText: {
+    fontSize: 40,
+    color: '#92400e',
+  },
+  hiveBody: {
+    backgroundColor: '#fbbf24',
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: '#92400e',
+    gap: 6,
+  },
+  hiveLayer: {
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+  },
+  hexagon: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#fef3c7',
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#92400e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  hexText: {
+    fontSize: 18,
+  },
+  hiveEntrance: {
+    marginTop: -4,
+  },
+  entranceText: {
+    fontSize: 20,
   },
   hiveName: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#92400e',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   beeCountContainer: {
     alignItems: 'center',
     backgroundColor: '#fef3c7',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     minWidth: 120,
+    borderWidth: 2,
+    borderColor: '#d97706',
   },
   beeCount: {
-    fontSize: 48,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#b45309',
   },
   beeLabel: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#78350f',
     fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  },
+  fullBadge: {
+    marginTop: 8,
+    backgroundColor: '#10b981',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  fullBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  buildHiveButton: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#92400e',
+    borderStyle: 'dashed',
+    width: '95%',
+    maxWidth: 340,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  buildHiveButtonDisabled: {
+    opacity: 0.5,
+    borderColor: '#9ca3af',
+  },
+  buildHiveIcon: {
+    fontSize: 36,
+    marginBottom: 6,
+  },
+  buildHiveText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 6,
+  },
+  costContainer: {
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#d97706',
+  },
+  costText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  insufficientText: {
+    marginTop: 6,
+    fontSize: 11,
+    color: '#ef4444',
+    fontWeight: '600',
   },
 });

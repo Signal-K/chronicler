@@ -1,7 +1,12 @@
 import { useState } from 'react';
-import { Animated, Dimensions } from 'react-native';
+import { Animated, Dimensions, Platform, StatusBar } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Calculate safe space to avoid status bar and dynamic island
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (StatusBar.currentHeight || 44) : (StatusBar.currentHeight || 24);
+const DYNAMIC_ISLAND_BUFFER = Platform.OS === 'ios' ? 54 : 0; // Extra space for dynamic island on newer iPhones
+const TOP_SAFE_SPACE = STATUS_BAR_HEIGHT + DYNAMIC_ISLAND_BUFFER;
 
 export type PanelType = 'almanac' | 'inventory' | 'shop' | 'settings' | null;
 
@@ -11,6 +16,11 @@ export function usePanelManager() {
   const [showShop, setShowShop] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [panelHeight] = useState(new Animated.Value(0));
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Calculate safe heights - leave space for status bar/dynamic island
+  const normalHeight = SCREEN_HEIGHT * 0.5;
+  const expandedHeight = SCREEN_HEIGHT - TOP_SAFE_SPACE;
 
   const openPanel = (panelType: PanelType) => {
     if (!panelType) return;
@@ -38,8 +48,9 @@ export function usePanelManager() {
           break;
       }
       
+      setIsExpanded(false);
       Animated.spring(panelHeight, {
-        toValue: SCREEN_HEIGHT * 0.5,
+        toValue: normalHeight,
         useNativeDriver: false,
         tension: 50,
         friction: 8,
@@ -57,7 +68,20 @@ export function usePanelManager() {
       setShowInventory(false);
       setShowShop(false);
       setShowSettings(false);
+      setIsExpanded(false);
     });
+  };
+
+  const toggleExpand = () => {
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    
+    Animated.spring(panelHeight, {
+      toValue: newExpandedState ? expandedHeight : normalHeight,
+      useNativeDriver: false,
+      tension: 50,
+      friction: 8,
+    }).start();
   };
 
   const isAnyPanelOpen = showAlmanac || showInventory || showShop || showSettings;
@@ -71,5 +95,7 @@ export function usePanelManager() {
     openPanel,
     closePanel,
     isAnyPanelOpen,
+    isExpanded,
+    toggleExpand,
   };
 }

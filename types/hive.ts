@@ -4,6 +4,7 @@ export interface HiveData {
   id: string;
   beeCount: number;        // Number of bees in the hive (starts at 0)
   createdAt: number;       // Timestamp when hive was created
+  nectarLevel?: number;    // Current nectar accumulated (0-100)
 }
 
 // Legacy interface (keeping for compatibility with existing components)

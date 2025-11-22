@@ -15,6 +15,8 @@ type SettingsProps = {
   setRealWeather: (weather: any) => void
   setNextRainTime: (time: number | null) => void
   onResetGame?: () => void
+  debugConstantBeeSpawn?: boolean
+  onToggleDebugBeeSpawn?: (enabled: boolean) => void
 }
 
 // Placeholder icons for React Native (replace with vector-icons or images as needed)
@@ -31,6 +33,8 @@ export function Settings({
   setRealWeather,
   setNextRainTime,
   onResetGame,
+  debugConstantBeeSpawn = false,
+  onToggleDebugBeeSpawn,
 }: SettingsProps) {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const [locationError, setLocationError] = useState<string | null>(null)
@@ -225,6 +229,29 @@ export function Settings({
           </View>
         </View>
 
+        {/* Debug Options card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>🐛 Debug Options</Text>
+          <Text style={styles.cardDescription}>
+            Developer tools for testing bee mechanics
+          </Text>
+          <View style={styles.rowBetween}>
+            <View style={styles.rowLeft}>
+              <Icon name="🐝" size={18} color="#92400E" />
+              <Text style={styles.rowLabel}>Constant Bee Spawn</Text>
+            </View>
+            <Switch
+              value={debugConstantBeeSpawn}
+              onValueChange={onToggleDebugBeeSpawn}
+            />
+          </View>
+          {debugConstantBeeSpawn && (
+            <Text style={styles.debugWarning}>
+              ⚠️ Bees will spawn constantly for testing
+            </Text>
+          )}
+        </View>
+
         {/* Account & Data card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Account & Data</Text>
@@ -417,6 +444,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     fontStyle: "italic",
+  },
+  debugWarning: {
+    color: "#ea580c",
+    fontSize: 12,
+    marginTop: 8,
+    fontWeight: '600',
+    backgroundColor: '#fed7aa',
+    padding: 8,
+    borderRadius: 6,
   },
   errorText: {
     color: "#dc2626",

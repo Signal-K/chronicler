@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import type { PollinationFactorData, PollinationFactorHookReturn } from '../types/pollinationFactor';
 
 const DEFAULT_THRESHOLD = 5;
@@ -49,23 +49,11 @@ export function usePollinationFactor(): PollinationFactorHookReturn {
   };
 
   const incrementFactor = ( amount: number = 1 ) => {
-    setPollinationFactor(prev => {
-        const newFactor = prev.factor + amount;
-        const newTotalHarvests = prev.totalHarvests + 1;
-        
-        console.log(`🌸 Pollination Factor: ${prev.factor} → ${newFactor}`);
-        console.log(`📊 Total Harvests: ${newTotalHarvests}`);
-        
-        if (prev.factor < prev.threshold && newFactor >= prev.threshold) {
-            console.log("✨ Threshold reached! Bees can now spawn!");
-        };
-
-        return {
-            ...prev,
-            factor: newFactor,
-            totalHarvests: newTotalHarvests,
-        };
-    });
+    setPollinationFactor(prev => ({
+        ...prev,
+        factor: prev.factor + amount,
+        totalHarvests: prev.totalHarvests + 1,
+    }));
   };
 
   const canSpawnBees = pollinationFactor.factor >= pollinationFactor.threshold;

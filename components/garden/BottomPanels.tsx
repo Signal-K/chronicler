@@ -1,9 +1,9 @@
-import type { InventoryData } from '../../hooks/useGameState';
 import React from 'react';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { Almanac } from '../../app/screens/almanac';
 import { Settings } from '../../app/screens/settings';
 import { Shop } from '../../app/screens/shop';
+import type { InventoryData } from '../../hooks/useGameState';
 import { Inventory } from '../inventory/inventory';
 
 interface BottomPanelsProps {
@@ -18,6 +18,10 @@ interface BottomPanelsProps {
   onSellCrop: (cropType: string, count: number, coinsEarned: number, emoji: string) => void;
   closePanel: () => void;
   onResetGame: () => void;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+  debugConstantBeeSpawn?: boolean;
+  onToggleDebugBeeSpawn?: (value: boolean) => void;
 }
 
 export function BottomPanels({
@@ -32,6 +36,10 @@ export function BottomPanels({
   onSellCrop,
   closePanel,
   onResetGame,
+  isExpanded,
+  toggleExpand,
+  debugConstantBeeSpawn = false,
+  onToggleDebugBeeSpawn,
 }: BottomPanelsProps) {
   if (!isAnyPanelOpen) {
     return null;
@@ -48,7 +56,7 @@ export function BottomPanels({
       
       <Animated.View style={[styles.bottomPanel, { height: panelHeight }]}>
         {showAlmanac && (
-          <Almanac onClose={closePanel} isExpanded={false} onToggleExpand={() => {}} />
+          <Almanac onClose={closePanel} isExpanded={isExpanded} onToggleExpand={toggleExpand} />
         )}
         
         {showInventory && (
@@ -57,8 +65,8 @@ export function BottomPanels({
             setInventory={setInventory}
             onSellCrop={onSellCrop}
             onClose={closePanel} 
-            isExpanded={false} 
-            onToggleExpand={() => {}} 
+            isExpanded={isExpanded} 
+            onToggleExpand={toggleExpand} 
           />
         )}
         
@@ -67,21 +75,23 @@ export function BottomPanels({
             inventory={inventory} 
             setInventory={setInventory} 
             onClose={closePanel} 
-            isExpanded={false} 
-            onToggleExpand={() => {}} 
+            isExpanded={isExpanded} 
+            onToggleExpand={toggleExpand} 
           />
         )}
         
         {showSettings && (
           <Settings 
             onClose={closePanel} 
-            isExpanded={false} 
-            onToggleExpand={() => {}} 
+            isExpanded={isExpanded} 
+            onToggleExpand={toggleExpand} 
             location={null} 
             setLocation={() => {}} 
             setRealWeather={() => {}} 
             setNextRainTime={() => {}}
             onResetGame={onResetGame}
+            debugConstantBeeSpawn={debugConstantBeeSpawn}
+            onToggleDebugBeeSpawn={onToggleDebugBeeSpawn}
           />
         )}
       </Animated.View>

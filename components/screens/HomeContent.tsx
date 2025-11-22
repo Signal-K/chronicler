@@ -1,10 +1,19 @@
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { useBeeManager } from '../../hooks/useBeeManager';
 import type { InventoryData, PlotData } from '../../hooks/useGameState';
 import { usePlotActions } from '../../hooks/usePlotActions';
-import { BeeGameObject } from '../garden/BeeGameObject';
+import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
+import { FlyingBee } from '../hives/FlyingBee';
+import { InfoDialog } from '../ui/InfoDialog';
+
+type FlyingBeeData = {
+  id: string;
+  hiveId: string;
+  startX: number;
+  startY: number;
+  spawnedAt: number;
+};
 
 type HomeContentProps = {
   plots: PlotData[];
@@ -19,6 +28,8 @@ type HomeContentProps = {
   pollinationFactor?: number;
   hiveCount?: number;
   updateHiveBeeCount?: (count: number) => void;
+  flyingBees?: FlyingBeeData[];
+  onBeePress?: (beeId: string) => void;
 };
 
 export function HomeContent({
@@ -34,23 +45,13 @@ export function HomeContent({
   pollinationFactor = 0,
   hiveCount = 1,
   updateHiveBeeCount,
+  flyingBees = [],
+  onBeePress,
 }: HomeContentProps) {
-  const [, setShowHarvestAnimation] = React.useState(false);
-  const [, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
-
-  // Bee management system
-  const { activeBees, despawnBee, setHiveBeeCountUpdater } = useBeeManager({
-    pollinationFactor,
-    hiveCount,
-    isDaytime,
-  });
-
-  // Connect hive bee count updater
-  React.useEffect(() => {
-    if (updateHiveBeeCount) {
-      setHiveBeeCountUpdater(updateHiveBeeCount);
-    }
-  }, [updateHiveBeeCount, setHiveBeeCountUpdater]);
+  const [showHarvestAnimation, setShowHarvestAnimation] = React.useState(false);
+  const [harvestReward, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
+  const [dialogVisible, setDialogVisible] = React.useState(false);
+  const [dialogData, setDialogData] = React.useState({ title: '', message: '', emoji: '' });
   
   const { handlePlotPress } = usePlotActions({
     plots,
@@ -64,19 +65,14 @@ export function HomeContent({
     setShowHarvestAnimation,
     setSelectedAction: () => {},
     incrementPollinationFactor,
+    onShowDialog: (title: string, message: string, emoji?: string) => {
+      setDialogData({ title, message, emoji: emoji || '' });
+      setDialogVisible(true);
+    },
   });
 
   return (
     <>
-      {/* Bee Game Objects - managed as individual entities */}
-      {activeBees.map((bee) => (
-        <BeeGameObject
-          key={bee.id}
-          beeId={bee.id}
-          onDespawn={despawnBee}
-        />
-      ))}
-
       {/* Garden with fence */}
       <ScrollView contentContainerStyle={styles.content}>
         <GardenGrid 
@@ -85,6 +81,36 @@ export function HomeContent({
           onPlotPress={handlePlotPress}
         />
       </ScrollView>
+
+      {/* Flying Bees - classification system */}
+      {flyingBees.map((bee) => (
+        <FlyingBee
+          key={bee.id}
+          beeId={bee.id}
+          startX={bee.startX}
+          startY={bee.startY}
+          onPress={() => onBeePress?.(bee.id)}
+        />
+      ))}
+
+      {/* Harvest Animation */}
+      <HarvestAnimation
+        visible={showHarvestAnimation}
+        cropEmoji={harvestReward.cropEmoji}
+        cropCount={harvestReward.cropCount}
+        seedCount={harvestReward.seedCount}
+        pollinationIncrease={1}
+        onComplete={() => setShowHarvestAnimation(false)}
+      />
+
+      {/* Info Dialog */}
+      <InfoDialog
+        visible={dialogVisible}
+        title={dialogData.title}
+        message={dialogData.message}
+        emoji={dialogData.emoji}
+        onClose={() => setDialogVisible(false)}
+      />
     </>
   );
 }

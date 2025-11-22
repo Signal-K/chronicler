@@ -8,6 +8,6 @@ export interface ClassificationModalProps {
   visible: boolean;
   onClose: () => void;
   onClassify: (beeType: string) => void;
-  anomalyId: number;
+  anomalyId?: number | string;
   anomalyImageUrl?: string;
 }
