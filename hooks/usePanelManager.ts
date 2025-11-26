@@ -19,7 +19,7 @@ export function usePanelManager() {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Calculate safe heights - leave space for status bar/dynamic island
-  const normalHeight = SCREEN_HEIGHT * 0.5;
+  const normalHeight = SCREEN_HEIGHT * 0.8;
   const expandedHeight = SCREEN_HEIGHT - TOP_SAFE_SPACE;
 
   const openPanel = (panelType: PanelType) => {

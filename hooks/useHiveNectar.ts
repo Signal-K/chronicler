@@ -94,8 +94,14 @@ export function useHiveNectar(hives: HiveData[], isDaytime: boolean) {
         });
     }, [hives]);
 
+    // Update nectar levels directly (for bottling)
+    const updateNectarLevels = React.useCallback((newLevels: HiveNectarState) => {
+        setNectarLevels(newLevels);
+    }, []);
+
     return {
         hiveNectarLevels: nectarLevels,
         addNectarBonus,
+        updateNectarLevels,
     };
 }

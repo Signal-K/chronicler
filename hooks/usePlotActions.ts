@@ -204,7 +204,7 @@ export function usePlotActions({
     return true;
   };
 
-  const handleHarvest = (index: number, current: PlotData) => {
+  const handleHarvest = async (index: number, current: PlotData) => {
     console.log('🌾 HARVEST CALLED - Plot:', index);
     
     if (current.growthStage !== 5 || !current.cropType) {
@@ -216,6 +216,14 @@ export function usePlotActions({
     if (!config) return false;
     
     console.log('✅ HARVEST VALID - Crop:', current.cropType);
+    
+    // Track harvest for experience system
+    try {
+      const { recordHarvest } = await import('../lib/userExperience');
+      await recordHarvest(current.cropType);
+    } catch (error) {
+      console.error('Failed to record harvest:', error);
+    }
     
     // Calculate rewards
     const cropCount = 3;
@@ -289,7 +297,10 @@ export function usePlotActions({
         handleShovel(index, current);
         break;
       case 'harvest':
-        handleHarvest(index, current);
+        // Handle async harvest
+        handleHarvest(index, current).catch(err => 
+          console.error('Harvest error:', err)
+        );
         break;
     }
   };

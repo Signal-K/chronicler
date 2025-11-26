@@ -1,6 +1,8 @@
 
+import { useRouter } from "expo-router"
 import React from "react"
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { TomatoSeedIcon, CarrotSeedIcon, WheatSeedIcon, GlassBottleIcon, CoinIcon } from "../../components/ui/ShopIcons"
 
 type ShopProps = {
   inventory: {
@@ -14,69 +16,109 @@ type ShopProps = {
 }
 
 const shopItems = [
-  { name: "Tomato Seeds", price: 10, type: "tomato" },
-  { name: "Carrot Seeds", price: 8, type: "carrot" },
-  { name: "Wheat Seeds", price: 5, type: "wheat" },
+  { name: "Tomato Seeds", shortName: "Tomato", price: 10, type: "tomato", category: "seeds", icon: TomatoSeedIcon },
+  { name: "Carrot Seeds", shortName: "Carrot", price: 8, type: "carrot", category: "seeds", icon: CarrotSeedIcon },
+  { name: "Wheat Seeds", shortName: "Wheat", price: 5, type: "wheat", category: "seeds", icon: WheatSeedIcon },
+  { name: "Glass Bottle", shortName: "Bottle", price: 20, type: "glass_bottle", category: "items", icon: GlassBottleIcon, description: "Holds 10 nectar" },
 ]
 
-// Placeholder icons for React Native (replace with vector-icons or images as needed)
-const Icon = ({ name, size = 24, color = "#000" }: { name: string; size?: number; color?: string }) => (
-  <Text style={{ fontSize: size, color, marginRight: 6 }}>{name}</Text>
-)
-
 export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExpand }: ShopProps) {
+  const router = useRouter()
+  
   const handlePurchase = (item: (typeof shopItems)[0]) => {
     if (inventory.coins >= item.price) {
-      setInventory({
+      const newInventory = {
         ...inventory,
         coins: inventory.coins - item.price,
-        seeds: {
+      };
+      
+      if (item.category === 'seeds') {
+        newInventory.seeds = {
           ...inventory.seeds,
-          [item.type]: inventory.seeds[item.type as keyof typeof inventory.seeds] + 1,
-        },
-      })
+          [item.type]: (inventory.seeds[item.type as keyof typeof inventory.seeds] || 0) + 1,
+        };
+      } else if (item.category === 'items') {
+        newInventory.items = {
+          ...(inventory.items || {}),
+          [item.type]: ((inventory.items || {})[item.type] || 0) + 1,
+        };
+      }
+      
+      setInventory(newInventory);
     }
   }
 
   const content = (
     <View style={[styles.container, isExpanded && styles.expandedContainer]}>
+      {/* Header */}
       <View style={styles.header}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Icon name="🛍️" size={24} color="#92400E" />
-          <Text style={styles.headerTitle}>Shop</Text>
-        </View>
+        <Text style={styles.headerTitle}>🛍️ Shop</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={onToggleExpand} style={styles.iconButton}>
-            <Icon name={isExpanded ? "-" : "+"} size={20} color="#8a5c00" />
+            <Text style={styles.iconButtonText}>{isExpanded ? "−" : "+"}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={onClose} style={styles.iconButton}>
-            <Icon name="X" size={22} color="#8a5c00" />
+            <Text style={styles.iconButtonText}>✕</Text>
           </TouchableOpacity>
         </View>
       </View>
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Coins Display */}
         <View style={styles.coinsCard}>
-          <Text style={styles.coinsText}>
-            Your Coins: <Text style={styles.coinsValue}>{inventory.coins}</Text>
-          </Text>
-        </View>
-        {shopItems.map((item) => (
-          <View key={item.name} style={styles.itemCard}>
-            <View style={styles.itemRow}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>{item.price} coins</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => handlePurchase(item)}
-              disabled={inventory.coins < item.price}
-              style={[styles.buyButton, inventory.coins < item.price && styles.buyButtonDisabled]}
-            >
-              <Text style={styles.buyButtonText}>
-                {inventory.coins >= item.price ? "Buy" : "Not Enough Coins"}
-              </Text>
-            </TouchableOpacity>
+          <CoinIcon size={32} />
+          <View style={styles.coinsInfo}>
+            <Text style={styles.coinsLabel}>Your Balance</Text>
+            <Text style={styles.coinsValue}>{inventory.coins}</Text>
           </View>
-        ))}
+        </View>
+
+        {/* Items Grid */}
+        <View style={styles.gridContainer}>
+          {shopItems.map((item) => {
+            const ItemIcon = item.icon;
+            const canAfford = inventory.coins >= item.price;
+            
+            return (
+              <TouchableOpacity
+                key={item.type}
+                style={[styles.gridItem, !canAfford && styles.gridItemDisabled]}
+                onPress={() => handlePurchase(item)}
+                disabled={!canAfford}
+                activeOpacity={0.7}
+              >
+                <View style={styles.itemIconContainer}>
+                  <ItemIcon size={56} />
+                </View>
+                <Text style={styles.itemNameText}>{item.shortName}</Text>
+                {item.description && (
+                  <Text style={styles.itemDescText} numberOfLines={1}>{item.description}</Text>
+                )}
+                <View style={styles.priceContainer}>
+                  <CoinIcon size={16} />
+                  <Text style={[styles.priceText, !canAfford && styles.priceTextDisabled]}>
+                    {item.price}
+                  </Text>
+                </View>
+                {!canAfford && (
+                  <View style={styles.lockedOverlay}>
+                    <Text style={styles.lockedText}>🔒</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* View Orders Button */}
+        <TouchableOpacity 
+          style={styles.viewOrdersButton}
+          onPress={() => router.push('/orders' as any)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.viewOrdersIcon}>📦</Text>
+          <Text style={styles.viewOrdersButtonText}>View Orders</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   )
@@ -94,7 +136,7 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FEF3C7",
+    backgroundColor: "#FFFBEB",
   },
   expandedContainer: {
     flex: 1,
@@ -104,84 +146,175 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#FDE68A",
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
     borderBottomColor: "#92400E",
-    padding: 16,
-    zIndex: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 4,
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "800",
     color: "#92400E",
-    marginLeft: 8,
   },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 4,
   },
   iconButton: {
-    padding: 8,
-  },
-  scrollContent: {
-    padding: 16,
-    gap: 16,
-  },
-  coinsCard: {
-    marginBottom: 12,
-    padding: 12,
-    backgroundColor: "#FEF9C3",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FEF3C7",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 2,
-    borderColor: "#CA8A04",
-    borderRadius: 10,
+    borderColor: "#D97706",
   },
-  coinsText: {
-    color: "#B45309",
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  coinsValue: {
+  iconButtonText: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#92400E",
   },
-  itemCard: {
-    backgroundColor: "#fff",
-    borderWidth: 2,
-    borderColor: "#FDE68A",
-    borderRadius: 12,
+  scrollContent: {
     padding: 16,
-    marginBottom: 12,
   },
-  itemRow: {
+  coinsCard: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    backgroundColor: "#FEF9C3",
+    borderWidth: 3,
+    borderColor: "#F59E0B",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: "#F59E0B",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  coinsInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  coinsLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#92400E",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  coinsValue: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#92400E",
+    marginTop: 2,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 20,
+  },
+  gridItem: {
+    width: "48%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 16,
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#FDE68A",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  gridItemDisabled: {
+    opacity: 0.6,
+    borderColor: "#D1D5DB",
+  },
+  itemIconContainer: {
     marginBottom: 8,
   },
-  itemName: {
-    fontWeight: "bold",
-    color: "#92400E",
-    fontSize: 17,
-  },
-  itemPrice: {
+  itemNameText: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#22C55E",
+    fontWeight: "700",
+    color: "#92400E",
+    marginBottom: 2,
+    textAlign: "center",
   },
-  buyButton: {
-    backgroundColor: "#16A34A",
-    paddingVertical: 10,
-    borderRadius: 8,
+  itemDescText: {
+    fontSize: 10,
+    color: "#78350F",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  priceContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    gap: 4,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#F59E0B",
   },
-  buyButtonDisabled: {
-    backgroundColor: "#D6D3D1",
+  priceText: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#92400E",
   },
-  buyButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 15,
+  priceTextDisabled: {
+    color: "#9CA3AF",
+  },
+  lockedOverlay: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#EF4444",
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lockedText: {
+    fontSize: 12,
+  },
+  viewOrdersButton: {
+    flexDirection: "row",
+    backgroundColor: "#92400E",
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 8,
+    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: "#78350F",
+    shadowColor: "#92400E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+    gap: 12,
+  },
+  viewOrdersIcon: {
+    fontSize: 24,
+  },
+  viewOrdersButtonText: {
+    color: "#FEF3C7",
+    fontWeight: "800",
+    fontSize: 18,
+    letterSpacing: 0.5,
   },
 })

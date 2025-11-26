@@ -24,7 +24,9 @@ import { useMapSystem } from '../hooks/useMapSystem';
 import { usePanelManager } from '../hooks/usePanelManager';
 import { usePollinationFactor } from '../hooks/usePollinationFactor';
 import { useWaterSystem } from '../hooks/useWaterSystem';
+import { checkAndGenerateOrders } from '../lib/orderGeneration';
 import { supabase } from '../lib/supabase';
+import { recordClassification } from '../lib/userExperience';
 
 // Import screen content components
 import type { FarmRoute } from "../components/garden/SimpleToolbar";
@@ -102,7 +104,7 @@ export default function HomeScreen() {
   const { isDaytime } = useDayNightCycle();
 
   // Nectar system
-  const { hiveNectarLevels, addNectarBonus } = useHiveNectar(hives, isDaytime);
+  const { hiveNectarLevels, addNectarBonus, updateNectarLevels } = useHiveNectar(hives, isDaytime);
 
   // Flying bees system
   const { flyingBees, removeBee } = useFlyingBees(hives, isDaytime, debugConstantBeeSpawn, plots);
@@ -137,6 +139,23 @@ export default function HomeScreen() {
     }
   }, [canSpawnBees]);
 
+  // Periodic order generation check
+  useEffect(() => {
+    // Check immediately on mount
+    checkAndGenerateOrders().catch(err => 
+      console.error('Failed to check orders:', err)
+    );
+
+    // Check every minute for new orders
+    const interval = setInterval(() => {
+      checkAndGenerateOrders().catch(err => 
+        console.error('Failed to check orders:', err)
+      );
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Handle bee press for classification
   const handleBeePress = useCallback(async (beeId: string) => {
     setSelectedBeeId(beeId);
@@ -170,6 +189,13 @@ export default function HomeScreen() {
     }
     setShowClassificationModal(false);
     setDebugConstantBeeSpawn(false);
+    
+    // Track classification for experience
+    try {
+      await recordClassification();
+    } catch (error) {
+      console.error('Failed to record classification:', error);
+    }
 
     // Save classification to Supabase
     if (currentAnomaly) {
@@ -229,6 +255,9 @@ export default function HomeScreen() {
             coinBalance={inventory.coins}
             hiveNectarLevels={hiveNectarLevels}
             maxNectar={100}
+            inventory={inventory}
+            onInventoryUpdate={setInventory}
+            onNectarUpdate={updateNectarLevels}
           />
         );
       case "expand":
@@ -260,6 +289,8 @@ export default function HomeScreen() {
     <GestureHandlerRootView>
       <GestureDetector gesture={pinchGesture}>
         <View style={styles.container}>
+          {/* Status bar area background */}
+          <View style={styles.statusBarArea} />
           <StatusBar style="light" />
 
           {/* Fixed Header - Never reloads */}
@@ -273,11 +304,7 @@ export default function HomeScreen() {
 
           {/* Background with active map colors */}
           <LinearGradient
-            colors={
-              isDaytime
-                ? [mapColors.primary, mapColors.secondary, mapColors.tertiary]
-                : ["#1e3a8a", "#1e40af", "#1e293b"]
-            }
+            colors={[mapColors.primary, mapColors.secondary, mapColors.tertiary]}
             style={StyleSheet.absoluteFillObject}
           />
 
@@ -370,6 +397,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === "ios" ? 60 : 20,
+  },
+  statusBarArea: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: Platform.OS === "ios" ? 60 : 20,
+    backgroundColor: 'rgba(120, 53, 15, 0.9)',
+    zIndex: 19,
   },
   contentContainer: {
     flex: 1,

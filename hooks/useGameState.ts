@@ -17,6 +17,7 @@ export type InventoryData = {
   water: number;
   seeds: Record<string, number>;
   harvested: Record<string, number>;
+  items?: Record<string, number>; // For bottles, tools, etc.
 };
 
 const INITIAL_PLOTS: PlotData[] = Array(6).fill(null).map(() => ({
@@ -31,6 +32,7 @@ const INITIAL_INVENTORY: InventoryData = {
   water: 100,
   seeds: { tomato: 5, carrot: 5, wheat: 5, corn: 5 },
   harvested: { tomato: 0, carrot: 0, wheat: 0, corn: 0 },
+  items: { glass_bottle: 0, bottled_nectar: 0 },
 };
 
 export function useGameState() {

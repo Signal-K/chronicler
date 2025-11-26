@@ -95,7 +95,7 @@ animateToWaypoint(0);
       <TouchableOpacity
         onPress={() => onPress(beeId)}
         style={styles.touchableWrapper}
-        activeOpacity={0.3}
+        activeOpacity={1}
       >
         <Animated.Text style={[styles.beeEmoji, { transform: [{ rotate: rotationInterpolate }] }]}>🐝</Animated.Text>
       </TouchableOpacity>
@@ -110,10 +110,7 @@ const styles = StyleSheet.create({
     elevation: 99999,
   },
   touchableWrapper: {
-    width: 120,
-    height: 120,
-    backgroundColor: 'transparent',
-    borderRadius: 60,
+    padding: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },

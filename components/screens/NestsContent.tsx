@@ -1,8 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { InventoryData } from '../../hooks/useGameState';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveVisual } from '../hives/HiveVisual';
+import { bottleNectar, canBottleNectar, getTotalNectar } from '../../lib/nectarBottling';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -15,6 +17,9 @@ interface NestsContentProps {
   coinBalance?: number;
   hiveNectarLevels?: Record<string, number>; // Track nectar per hive
   maxNectar?: number;
+  inventory?: InventoryData;
+  onInventoryUpdate?: (inventory: InventoryData) => void;
+  onNectarUpdate?: (nectarLevels: Record<string, number>) => void;
 }
 
 export function NestsContent({ 
@@ -28,10 +33,76 @@ export function NestsContent({
   coinBalance = 0,
   hiveNectarLevels = {},
   maxNectar = 100,
+  inventory,
+  onInventoryUpdate,
+  onNectarUpdate,
 }: NestsContentProps) {
+
+  const handleBottleNectar = () => {
+    if (!inventory || !onInventoryUpdate || !onNectarUpdate) {
+      Alert.alert("Error", "Bottling system not available");
+      return;
+    }
+
+    const result = bottleNectar(inventory, hiveNectarLevels);
+    if (result) {
+      onInventoryUpdate(result.updatedInventory);
+      onNectarUpdate(result.updatedNectarLevels);
+      Alert.alert(
+        "Success! 🍯",
+        "You bottled 10 nectar. Check your inventory!",
+        [{ text: "Great!" }]
+      );
+    } else {
+      const totalNectar = getTotalNectar(hiveNectarLevels);
+      const bottles = (inventory.items || {}).glass_bottle || 0;
+      
+      let message = "";
+      if (bottles < 1) {
+        message = "You need a glass bottle. Buy one from the shop!";
+      } else if (totalNectar < 10) {
+        message = `You need 10 nectar (you have ${totalNectar.toFixed(1)}). Wait for your bees to produce more.`;
+      } else {
+        message = "Cannot bottle nectar right now.";
+      }
+      
+      Alert.alert("Cannot Bottle", message, [{ text: "OK" }]);
+    }
+  };
+
+  const canBottle = inventory ? canBottleNectar(inventory, hiveNectarLevels) : false;
+  const totalNectar = getTotalNectar(hiveNectarLevels);
+  const bottles = inventory ? ((inventory.items || {}).glass_bottle || 0) : 0;
+  const bottledNectar = inventory ? ((inventory.items || {}).bottled_nectar || 0) : 0;
 
   return (
     <View style={styles.container}>
+      {/* Nectar Bottling Section */}
+      {inventory && (
+        <View style={styles.bottlingSection}>
+          <View style={styles.bottlingHeader}>
+            <Text style={styles.bottlingTitle}>🍯 Nectar Bottling</Text>
+            <View style={styles.bottlingStats}>
+              <Text style={styles.bottlingStat}>Total Nectar: {totalNectar.toFixed(1)}/10</Text>
+              <Text style={styles.bottlingStat}>Bottles: {bottles}</Text>
+              <Text style={styles.bottlingStat}>Bottled: {bottledNectar}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[styles.bottleButton, !canBottle && styles.bottleButtonDisabled]}
+            onPress={handleBottleNectar}
+            disabled={!canBottle}
+          >
+            <Text style={styles.bottleButtonText}>
+              {canBottle ? "🍾 Bottle Nectar" : "Cannot Bottle"}
+            </Text>
+            <Text style={styles.bottleButtonSubtext}>
+              Uses 1 bottle + 10 nectar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Pollination Factor Display */}
       <View style={styles.statsBanner}>
         <View style={styles.statsContent}>
@@ -335,5 +406,62 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#ef4444',
     fontWeight: '600',
+  },
+  bottlingSection: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: '#f59e0b',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  bottlingHeader: {
+    marginBottom: 10,
+  },
+  bottlingTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 6,
+  },
+  bottlingStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  bottlingStat: {
+    fontSize: 12,
+    color: '#78350f',
+    fontWeight: '600',
+  },
+  bottleButton: {
+    backgroundColor: '#f59e0b',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#d97706',
+  },
+  bottleButtonDisabled: {
+    backgroundColor: '#d1d5db',
+    borderColor: '#9ca3af',
+  },
+  bottleButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 2,
+  },
+  bottleButtonSubtext: {
+    fontSize: 11,
+    color: '#fff',
+    opacity: 0.9,
   },
 });
