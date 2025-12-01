@@ -4,9 +4,9 @@ import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
+    Gesture,
+    GestureDetector,
+    GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import ClassificationModalV2 from "../components/_legacy/ClassificationModalV2";
 import { FirstBeeAnimation } from "../components/animations/FirstBeeAnimation";

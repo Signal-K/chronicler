@@ -2,7 +2,7 @@
 import { useRouter } from "expo-router"
 import React from "react"
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { TomatoSeedIcon, CarrotSeedIcon, WheatSeedIcon, GlassBottleIcon, CoinIcon } from "../../components/ui/ShopIcons"
+import { CarrotSeedIcon, CoinIcon, GlassBottleIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons"
 
 type ShopProps = {
   inventory: {

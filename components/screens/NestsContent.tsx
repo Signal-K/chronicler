@@ -1,10 +1,10 @@
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
+import { bottleNectar, canBottleNectar, getTotalNectar } from '../../lib/nectarBottling';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveVisual } from '../hives/HiveVisual';
-import { bottleNectar, canBottleNectar, getTotalNectar } from '../../lib/nectarBottling';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -76,81 +76,79 @@ export function NestsContent({
   const bottledNectar = inventory ? ((inventory.items || {}).bottled_nectar || 0) : 0;
 
   return (
-    <View style={styles.container}>
-      {/* Nectar Bottling Section */}
-      {inventory && (
-        <View style={styles.bottlingSection}>
-          <View style={styles.bottlingHeader}>
-            <Text style={styles.bottlingTitle}>🍯 Nectar Bottling</Text>
-            <View style={styles.bottlingStats}>
-              <Text style={styles.bottlingStat}>Total Nectar: {totalNectar.toFixed(1)}/10</Text>
-              <Text style={styles.bottlingStat}>Bottles: {bottles}</Text>
-              <Text style={styles.bottlingStat}>Bottled: {bottledNectar}</Text>
-            </View>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Dashboard Row - Compact Stats */}
+      <View style={styles.dashboardRow}>
+        {/* Pollination Card */}
+        <View style={styles.dashboardCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardEmoji}>🌸</Text>
+            <Text style={styles.cardTitle}>Pollination</Text>
           </View>
-          <TouchableOpacity
-            style={[styles.bottleButton, !canBottle && styles.bottleButtonDisabled]}
-            onPress={handleBottleNectar}
-            disabled={!canBottle}
-          >
-            <Text style={styles.bottleButtonText}>
-              {canBottle ? "🍾 Bottle Nectar" : "Cannot Bottle"}
+          
+          <View style={styles.pollinationContent}>
+            <Text style={styles.bigNumber}>{pollinationFactor.factor}</Text>
+            {canSpawnBees && (
+              <View style={styles.readyBadge}>
+                <Text style={styles.readyText}>Bees Ready!</Text>
+              </View>
+            )}
+            <Text style={styles.smallStat}>
+              {pollinationFactor.totalHarvests} / {pollinationFactor.threshold} Harvests
             </Text>
-            <Text style={styles.bottleButtonSubtext}>
-              Uses 1 bottle + 10 nectar
-            </Text>
-          </TouchableOpacity>
+          </View>
         </View>
-      )}
 
-      {/* Pollination Factor Display */}
-      <View style={styles.statsBanner}>
-        <View style={styles.statsContent}>
-          <Text style={styles.statsEmoji}>🌸</Text>
-          <View style={styles.statsInfo}>
-            <Text style={styles.statsScore}>
-              {pollinationFactor.factor}
-            </Text>
-            <Text style={styles.statsLabel}>Pollination Factor</Text>
-          </View>
-          {canSpawnBees && (
-            <View style={styles.spawnIndicator}>
-              <Text style={styles.spawnText}>✨ Bees Ready!</Text>
+        {/* Bottling Card */}
+        {inventory && (
+          <View style={styles.dashboardCard}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardEmoji}>🍯</Text>
+              <Text style={styles.cardTitle}>Bottling</Text>
             </View>
-          )}
-        </View>
-        <View style={styles.harvestInfo}>
-          <Text style={styles.harvestText}>
-            Total Harvests: {pollinationFactor.totalHarvests}
-          </Text>
-          <Text style={styles.thresholdText}>
-            Threshold: {pollinationFactor.threshold}
-          </Text>
-        </View>
+            
+            <View style={styles.bottlingContent}>
+              <View style={styles.bottlingStatsRow}>
+                <Text style={styles.smallStat}>Nectar: {totalNectar.toFixed(0)}/10</Text>
+                <Text style={styles.smallStat}>Bottles: {bottles}</Text>
+              </View>
+              <Text style={styles.smallStat}>Bottled: {bottledNectar}</Text>
+              
+              <TouchableOpacity
+                style={[styles.compactBottleButton, !canBottle && styles.disabledButton]}
+                onPress={handleBottleNectar}
+                disabled={!canBottle}
+              >
+                <Text style={styles.compactButtonText}>Bottle (10)</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
 
-      {/* Hive Display */}
-      <ScrollView 
-        style={styles.hiveScrollView}
-        contentContainerStyle={styles.hiveContainer}
-      >
+      {/* Hives List */}
+      <View style={styles.hivesList}>
         {hives.map((currentHive, index) => (
-          <View key={currentHive.id} style={styles.hiveBox}>
-            <Text style={styles.hiveName}>Beehive {index + 1}</Text>
+          <View key={currentHive.id} style={styles.hiveCard}>
+            <View style={styles.hiveHeader}>
+              <Text style={styles.hiveTitle}>Beehive {index + 1}</Text>
+              {currentHive.beeCount >= 10 && (
+                <View style={styles.fullBadgeCompact}>
+                  <Text style={styles.fullBadgeText}>FULL</Text>
+                </View>
+              )}
+            </View>
             
-            {/* New visual beehive with nectar drips */}
             <HiveVisual
               hiveId={currentHive.id}
               nectarLevel={hiveNectarLevels[currentHive.id] || 0}
               maxNectar={maxNectar}
               beeCount={currentHive.beeCount}
             />
-
-            {currentHive.beeCount >= 10 && (
-              <View style={styles.fullBadge}>
-                <Text style={styles.fullBadgeText}>✨ FULL</Text>
-              </View>
-            )}
           </View>
         ))}
 
@@ -158,310 +156,192 @@ export function NestsContent({
         {onBuildHive && (
           <TouchableOpacity
             style={[
-              styles.buildHiveButton,
-              !canBuildHive && styles.buildHiveButtonDisabled
+              styles.buildCard,
+              !canBuildHive && styles.disabledBuildCard
             ]}
             onPress={onBuildHive}
             disabled={!canBuildHive}
           >
-            <Text style={styles.buildHiveIcon}>🏗️</Text>
-            <Text style={styles.buildHiveText}>Build New Hive</Text>
-            <View style={styles.costContainer}>
-              <Text style={styles.costText}>💰 {hiveCost}</Text>
+            <Text style={styles.buildEmoji}>🏗️</Text>
+            <View>
+              <Text style={styles.buildText}>Build New Hive</Text>
+              <Text style={styles.costText}>💰 {hiveCost} coins</Text>
             </View>
-            {!canBuildHive && (
-              <Text style={styles.insufficientText}>
-                Need {hiveCost - coinBalance} more coins
-              </Text>
-            )}
           </TouchableOpacity>
         )}
-      </ScrollView>
-    </View>
+      </View>
+
+      {/* Bottom padding for scrolling past bottom bar */}
+      <View style={{ height: 100 }} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
     backgroundColor: '#fef3c7',
   },
-  statsBanner: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
+  contentContainer: {
     padding: 12,
-    borderWidth: 2,
-    borderColor: '#b45309',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 6,
-    marginBottom: 12,
-  },
-  statsContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  statsEmoji: {
-    fontSize: 24,
-  },
-  statsInfo: {
-    flex: 1,
-  },
-  statsScore: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#b45309',
-  },
-  statsLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#78350f',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  spawnIndicator: {
-    backgroundColor: '#22c55e',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  spawnText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: 'bold',
-  },
-  harvestInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#d1d5db',
-  },
-  harvestText: {
-    fontSize: 11,
-    color: '#78350f',
-    fontWeight: '600',
-  },
-  thresholdText: {
-    fontSize: 11,
-    color: '#78350f',
-    fontWeight: '600',
-  },
-  hiveScrollView: {
-    flex: 1,
-  },
-  hiveContainer: {
-    alignItems: 'center',
-    paddingVertical: 8,
     gap: 12,
-    paddingBottom: 20,
   },
-  hiveBox: {
+  dashboardRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  dashboardCard: {
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#92400e',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    width: '95%',
-    maxWidth: 340,
-  },
-  hiveStructure: {
-    alignItems: 'center',
-    marginBottom: 8,
-    transform: [{ scale: 0.85 }],
-  },
-  hiveRoof: {
-    marginBottom: -8,
-  },
-  roofText: {
-    fontSize: 40,
-    color: '#92400e',
-  },
-  hiveBody: {
-    backgroundColor: '#fbbf24',
-    borderRadius: 12,
-    padding: 10,
-    borderWidth: 2,
-    borderColor: '#92400e',
-    gap: 6,
-  },
-  hiveLayer: {
-    flexDirection: 'row',
-    gap: 6,
-    justifyContent: 'center',
-  },
-  hexagon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#fef3c7',
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#92400e',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  hexText: {
-    fontSize: 18,
-  },
-  hiveEntrance: {
-    marginTop: -4,
-  },
-  entranceText: {
-    fontSize: 20,
-  },
-  hiveName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#92400e',
-    marginBottom: 8,
-  },
-  beeCountContainer: {
-    alignItems: 'center',
-    backgroundColor: '#fef3c7',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    minWidth: 120,
+    padding: 12,
     borderWidth: 2,
     borderColor: '#d97706',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    minHeight: 140,
+    justifyContent: 'space-between',
   },
-  beeCount: {
-    fontSize: 28,
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  cardEmoji: {
+    fontSize: 18,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  pollinationContent: {
+    alignItems: 'center',
+    gap: 4,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  bigNumber: {
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#b45309',
   },
-  beeLabel: {
-    fontSize: 12,
+  readyBadge: {
+    backgroundColor: '#22c55e',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginBottom: 4,
+  },
+  readyText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  smallStat: {
+    fontSize: 11,
     color: '#78350f',
     fontWeight: '600',
   },
-  fullBadge: {
-    marginTop: 8,
-    backgroundColor: '#10b981',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  bottlingContent: {
+    gap: 6,
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  bottlingStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+  },
+  compactBottleButton: {
+    backgroundColor: '#f59e0b',
+    paddingVertical: 8,
     borderRadius: 8,
-  },
-  fullBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  buildHiveButton: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#d97706',
+    marginTop: 4,
+  },
+  disabledButton: {
+    backgroundColor: '#d1d5db',
+    borderColor: '#9ca3af',
+  },
+  compactButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  hivesList: {
+    gap: 16,
+  },
+  hiveCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 2,
     borderColor: '#92400e',
-    borderStyle: 'dashed',
-    width: '95%',
-    maxWidth: 340,
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
   },
-  buildHiveButtonDisabled: {
-    opacity: 0.5,
+  hiveHeader: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingHorizontal: 8,
+  },
+  hiveTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  fullBadgeCompact: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  fullBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  buildCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#92400e',
+    borderStyle: 'dashed',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  disabledBuildCard: {
+    opacity: 0.6,
     borderColor: '#9ca3af',
   },
-  buildHiveIcon: {
-    fontSize: 36,
-    marginBottom: 6,
+  buildEmoji: {
+    fontSize: 24,
   },
-  buildHiveText: {
+  buildText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#92400e',
-    marginBottom: 6,
-  },
-  costContainer: {
-    backgroundColor: '#fef3c7',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#d97706',
   },
   costText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#92400e',
-  },
-  insufficientText: {
-    marginTop: 6,
-    fontSize: 11,
-    color: '#ef4444',
+    color: '#b45309',
     fontWeight: '600',
-  },
-  bottlingSection: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 2,
-    borderColor: '#f59e0b',
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  bottlingHeader: {
-    marginBottom: 10,
-  },
-  bottlingTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#92400e',
-    marginBottom: 6,
-  },
-  bottlingStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  bottlingStat: {
-    fontSize: 12,
-    color: '#78350f',
-    fontWeight: '600',
-  },
-  bottleButton: {
-    backgroundColor: '#f59e0b',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#d97706',
-  },
-  bottleButtonDisabled: {
-    backgroundColor: '#d1d5db',
-    borderColor: '#9ca3af',
-  },
-  bottleButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 2,
-  },
-  bottleButtonSubtext: {
-    fontSize: 11,
-    color: '#fff',
-    opacity: 0.9,
   },
 });
