@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export type FarmRoute = 'nests' | 'home' | 'expand' | 'godot';
+export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
 
 type ToolbarProps = {
   selectedTool: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
@@ -13,7 +13,7 @@ type ToolbarProps = {
   canShovel?: boolean;
   canHarvest?: boolean;
   seedInventory?: Record<string, number>;
-  currentRoute?: 'nests' | 'home' | 'expand' | 'godot';
+  currentRoute?: 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
   onNavigate?: (route: FarmRoute) => void;
   farmIds?: string[];
   currentFarmIndex?: number;
@@ -65,12 +65,10 @@ export function SimpleToolbar({
     
     if (currentRoute === 'home') {
       onNavigate('nests');
+    } else if (currentRoute === 'landscape') {
+      onNavigate('home');
     } else if (currentRoute === 'expand') {
-      if (farmIds.length > 0) {
-        onNavigate('home');
-      } else {
-        onNavigate('home');
-      }
+      onNavigate('landscape');
     }
   };
 
@@ -80,12 +78,10 @@ export function SimpleToolbar({
     if (currentRoute === 'nests') {
       onNavigate('home');
     } else if (currentRoute === 'home') {
-      if (farmIds.length > 0) {
-        onNavigate('expand');
-      } else {
-        onNavigate('expand');
-      };
-    };
+      onNavigate('landscape');
+    } else if (currentRoute === 'landscape') {
+      onNavigate('expand');
+    }
   };
 
   const canGoLeft = currentRoute !== 'nests';
@@ -109,7 +105,7 @@ export function SimpleToolbar({
 
         <View style={styles.screenIndicator}>
           <Text style={styles.screenIndicatorText}>
-            {currentRoute === 'nests' ? 'HIVES' : currentRoute === 'expand' ? 'EXPAND' : 'FARM'}
+            {currentRoute === 'nests' ? 'HIVES' : currentRoute === 'landscape' ? 'LANDSCAPE' : currentRoute === 'expand' ? 'EXPAND' : 'FARM'}
           </Text>
         </View>
 
@@ -128,6 +124,8 @@ export function SimpleToolbar({
       </View>
 
       <View style={styles.toolsRow}>
+        {currentRoute !== 'landscape' && currentRoute !== 'expand' && (
+        <>
         {/* Till Tool */}
         <TouchableOpacity 
           onPress={() => canTill && onToolSelect(selectedTool === 'till' ? null : 'till')}
@@ -170,7 +168,7 @@ export function SimpleToolbar({
           <Text style={[styles.buttonText, !canPlant && styles.buttonTextDisabled]}>🌱 PLANT</Text>
         </TouchableOpacity>
         
-        {/* Harvest Tool */}
+        {/* Harvest Tool (combines harvest + shovel) */}
         <TouchableOpacity 
           onPress={() => canHarvest && onToolSelect(selectedTool === 'harvest' ? null : 'harvest')}
           disabled={!canHarvest}
@@ -183,20 +181,8 @@ export function SimpleToolbar({
         >
           <Text style={[styles.buttonText, !canHarvest && styles.buttonTextDisabled]}>🌾 HARVEST</Text>
         </TouchableOpacity>
-        
-        {/* Shovel Tool */}
-        <TouchableOpacity 
-          onPress={() => canShovel && onToolSelect(selectedTool === 'shovel' ? null : 'shovel')}
-          disabled={!canShovel}
-          style={[
-            styles.button, 
-            { backgroundColor: '#78350f' },
-            selectedTool === 'shovel' && styles.buttonActive,
-            !canShovel && styles.buttonDisabled
-          ]}
-        >
-          <Text style={[styles.buttonText, !canShovel && styles.buttonTextDisabled]}>🪓 SHOVEL</Text>
-        </TouchableOpacity>
+        </>
+        )}
       </View>
 
       <Modal
@@ -301,6 +287,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 8,
     paddingVertical: 12,
+    minHeight: 72,
   },
   button: {
     paddingHorizontal: 8,

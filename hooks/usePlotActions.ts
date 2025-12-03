@@ -207,8 +207,14 @@ export function usePlotActions({
   const handleHarvest = async (index: number, current: PlotData) => {
     console.log('🌾 HARVEST CALLED - Plot:', index);
     
-    if (current.growthStage !== 5 || !current.cropType) {
-      console.log('Cannot Harvest: Plant is not ready to harvest');
+    // If plant is not fully grown, perform shovel action instead
+    if (current.growthStage !== 5) {
+      console.log('🪓 Plant not fully grown - performing shovel action');
+      return handleShovel(index, current);
+    }
+    
+    if (!current.cropType) {
+      console.log('Cannot Harvest: No crop planted');
       return false;
     }
     
@@ -293,11 +299,8 @@ export function usePlotActions({
       case 'water':
         handleWater(index, current);
         break;
-      case 'shovel':
-        handleShovel(index, current);
-        break;
       case 'harvest':
-        // Handle async harvest
+        // Handle async harvest (also handles shovel for non-fully-grown plants)
         handleHarvest(index, current).catch(err => 
           console.error('Harvest error:', err)
         );

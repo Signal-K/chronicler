@@ -2,7 +2,7 @@
 
 export function GrainSilo({
     size = 110,
-    opacity = 0.8,
+    opacity = 0.9,
 }: { size?: number; opacity?: number }) {
     return (
         <svg width={size} height={size * 1.3} viewBox={`0 0 ${size} ${size * 1.3}`} className="block" style={{ opacity }}>

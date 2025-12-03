@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '../contexts/auth';
@@ -8,6 +9,13 @@ import { useColorScheme } from '../hooks/use-color-scheme';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  
+  console.log('📱 RootLayout rendering', { colorScheme });
+  
+  // Add test to ensure component is mounting
+  useEffect(() => {
+    console.log('✅ RootLayout mounted successfully');
+  }, []);
 
   return (
     <AuthProvider>

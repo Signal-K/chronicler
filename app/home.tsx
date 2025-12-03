@@ -14,6 +14,7 @@ import { BottomPanels } from "../components/garden/BottomPanels";
 import { GardenBottomBar } from "../components/garden/GardenBottomBar";
 import { MapOverview } from "../components/garden/MapOverview";
 import { SimpleToolbar } from "../components/garden/SimpleToolbar";
+import { SiloModal } from "../components/modals/SiloModal";
 import { GameHeader } from "../components/ui/GameHeader";
 import { useDayNightCycle } from '../hooks/useDayNightCycle';
 import { useFlyingBees } from '../hooks/useFlyingBees';
@@ -32,6 +33,7 @@ import { recordClassification } from '../lib/userExperience';
 import type { FarmRoute } from "../components/garden/SimpleToolbar";
 import { ExpandContent } from "../components/screens/ExpandContent";
 import { HomeContent } from "../components/screens/HomeContent";
+import { LandscapeContent } from "../components/screens/LandscapeContent";
 import { NestsContent } from "../components/screens/NestsContent";
 
 export default function HomeScreen() {
@@ -44,6 +46,7 @@ export default function HomeScreen() {
   const [selectedBeeId, setSelectedBeeId] = useState<string | null>(null);
   const [showClassificationModal, setShowClassificationModal] = useState(false);
   const [currentAnomaly, setCurrentAnomaly] = useState<any>(null);
+  const [showSiloModal, setShowSiloModal] = useState(false);
 
   // Map system
   const { getActiveMap, setActiveMap, getAllMaps } = useMapSystem();
@@ -260,6 +263,8 @@ export default function HomeScreen() {
             onNectarUpdate={updateNectarLevels}
           />
         );
+      case "landscape":
+        return <LandscapeContent onNavigateToFarm={() => handleNavigate('home')} onOpenSiloModal={() => setShowSiloModal(true)} />;
       case "expand":
         return <ExpandContent />;
       case "home":
@@ -311,7 +316,7 @@ export default function HomeScreen() {
           {/* Dynamic Content Area - Swaps without reload */}
           <View style={styles.contentContainer}>{renderScreenContent()}</View>
 
-          {/* Fixed Toolbar - Never reloads */}
+          {/* Fixed Toolbar - Always visible, navigation works on all screens */}
           <SimpleToolbar
             selectedTool={selectedAction}
             onToolSelect={setSelectedAction}
@@ -322,23 +327,14 @@ export default function HomeScreen() {
               (p) =>
                 (p.state === "planted" || p.state === "growing") && p.needsWater
             )}
-            canHarvest={plots.some(
-              (p) => p.state !== "empty" && p.growthStage === 5
-            )}
-            canShovel={plots.some((p) => p.state !== "empty")}
+            canHarvest={plots.some((p) => p.state !== "empty")}
             seedInventory={inventory.seeds}
             currentRoute={currentScreen}
             onNavigate={handleNavigate}
           />
 
-          {/* Fixed Bottom Bar - Never reloads */}
-          <GardenBottomBar
-            onOpenAlmanac={() => openPanel("almanac")}
-            onOpenInventory={() => openPanel("inventory")}
-            onOpenShop={() => openPanel("shop")}
-            onOpenSettings={() => openPanel("settings")}
-            onOpenGodot={() => router.push("/godot" as any)}
-          />
+          {/* Fixed Bottom Bar - Removed per user request */}
+          {/* Bottom bar with 4 icons removed from home/farm view */}
 
           {/* Bottom Panels */}
           <BottomPanels
@@ -374,7 +370,6 @@ export default function HomeScreen() {
               onComplete={() => setShowFirstBeeAnimation(false)}
             />
           )}
-
           {/* Classification Modal */}
           <ClassificationModalV2
             visible={showClassificationModal}
@@ -386,6 +381,14 @@ export default function HomeScreen() {
             onClassify={handleClassificationComplete}
             anomalyId={currentAnomaly?.id}
             anomalyImageUrl={currentAnomaly ? `http://127.0.0.1:54321/storage/v1/object/public/${currentAnomaly.avatar_url}` : undefined}
+          />
+
+          {/* Silo Modal */}
+          <SiloModal
+            visible={showSiloModal}
+            onClose={() => setShowSiloModal(false)}
+            inventory={inventory}
+            setInventory={setInventory}
           />
         </View>
       </GestureDetector>

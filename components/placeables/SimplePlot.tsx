@@ -4,8 +4,8 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 const getPlotWidth = () => {
   const screenWidth = Dimensions.get('window').width;
   // Calculate width for 2 columns with padding and gaps
-  // Accounting for: padding (48*2) + gap (16) + borders
-  return Math.min((screenWidth - 96 - 16 - 40) / 2, 160);
+  // Much larger plots to fill vertical space
+  return Math.min((screenWidth - 80) / 2, 160);
 };
 
 type PlotData = {
@@ -107,8 +107,8 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
     if (selectedTool === 'water' && (plot.state === 'planted' || plot.state === 'growing')) {
       if (plot.needsWater) return '💧 WATER';
     }
-    if (selectedTool === 'shovel' && plot.state !== 'empty') return '🪓 CLEAR';
     if (selectedTool === 'harvest' && plot.growthStage === 5) return '🌾 HARVEST';
+    if (selectedTool === 'harvest' && plot.state !== 'empty') return '🪓 CLEAR';
     return '';
   };
 
