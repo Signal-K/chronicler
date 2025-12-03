@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const getPlotWidth = () => {
-  const screenWidth = Dimensions.get('window').width;
-  // Calculate width for 2 columns with padding and gaps
-  // Much larger plots to fill vertical space
-  return Math.min((screenWidth - 80) / 2, 160);
+  // Fixed width for consistent 2x3 grid layout
+  // Smaller size to ensure 2 columns fit side by side
+  return 145;
 };
 
 type PlotData = {
