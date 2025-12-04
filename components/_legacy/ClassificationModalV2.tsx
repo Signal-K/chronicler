@@ -137,60 +137,56 @@ export default function ClassificationModalV2({
           </View>
 
           {/* Main content area with paper texture */}
-          <View style={styles.contentArea}>
+          <ScrollView style={styles.contentArea} showsVerticalScrollIndicator={false}>
             {anomalyImageUrl && (
               <View style={styles.imageFrame}>
-                <View style={styles.polaroidFrame}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={zoomLevel > 1}
+                  maximumZoomScale={4}
+                  minimumZoomScale={1}
+                  style={styles.imageScrollView}
+                >
                   <ScrollView
-                    horizontal
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}
                     scrollEnabled={zoomLevel > 1}
-                    maximumZoomScale={4}
-                    minimumZoomScale={1}
-                    style={styles.imageScrollView}
                   >
-                    <ScrollView
-                      showsHorizontalScrollIndicator={false}
-                      showsVerticalScrollIndicator={false}
-                      scrollEnabled={zoomLevel > 1}
-                    >
-                      <Image
-                        source={{ uri: anomalyImageUrl }}
-                        style={[
-                          styles.anomalyImage,
-                          {
-                            transform: [{ scale: zoomLevel }],
-                            transformOrigin: 'center',
-                          }
-                        ]}
-                        resizeMode="cover"
-                      />
-                    </ScrollView>
+                    <Image
+                      source={{ uri: anomalyImageUrl }}
+                      style={[
+                        styles.anomalyImage,
+                        {
+                          transform: [{ scale: zoomLevel }],
+                          transformOrigin: 'center',
+                        }
+                      ]}
+                      resizeMode="cover"
+                    />
                   </ScrollView>
-                  
-                  <View style={styles.polaroidFooter}>
-                    <View style={styles.zoomControls}>
-                      <TouchableOpacity
-                        style={styles.zoomButton}
-                        onPress={() => setZoomLevel(prev => Math.max(1, prev / 2) as 1 | 2 | 4)}
-                        disabled={zoomLevel === 1}
-                      >
-                        <Text style={styles.zoomButtonIcon}>➖</Text>
-                      </TouchableOpacity>
-                      <View style={styles.zoomIndicator}>
-                        <Text style={styles.zoomIndicatorText}>{zoomLevel}×</Text>
-                      </View>
-                      <TouchableOpacity
-                        style={styles.zoomButton}
-                        onPress={() => setZoomLevel(prev => Math.min(4, prev * 2) as 1 | 2 | 4)}
-                        disabled={zoomLevel === 4}
-                      >
-                        <Text style={styles.zoomButtonIcon}>➕</Text>
-                      </TouchableOpacity>
-                    </View>
-                    <Text style={styles.polaroidLabel}>Garden Visitor</Text>
+                </ScrollView>
+                
+                {/* Zoom controls */}
+                <View style={styles.zoomControls}>
+                  <TouchableOpacity
+                    style={[styles.zoomButton, zoomLevel === 1 && styles.zoomButtonDisabled]}
+                    onPress={() => setZoomLevel(prev => Math.max(1, prev / 2) as 1 | 2 | 4)}
+                    disabled={zoomLevel === 1}
+                  >
+                    <Text style={styles.zoomButtonText}>−</Text>
+                  </TouchableOpacity>
+                  <View style={styles.zoomIndicator}>
+                    <Text style={styles.zoomIndicatorText}>{zoomLevel}×</Text>
                   </View>
+                  <TouchableOpacity
+                    style={[styles.zoomButton, zoomLevel === 4 && styles.zoomButtonDisabled]}
+                    onPress={() => setZoomLevel(prev => Math.min(4, prev * 2) as 1 | 2 | 4)}
+                    disabled={zoomLevel === 4}
+                  >
+                    <Text style={styles.zoomButtonText}>+</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             )}
@@ -199,11 +195,7 @@ export default function ClassificationModalV2({
               Help identify this pollinator!
             </Text>
 
-            <ScrollView 
-              style={styles.optionScroll} 
-              contentContainerStyle={styles.optionsContainer}
-              showsVerticalScrollIndicator={false}
-            >
+            <View style={styles.optionsContainer}>
               {BEE_OPTIONS.map((option) => {
                 const isSelected = selectedBeeType === option.id;
 
@@ -247,7 +239,7 @@ export default function ClassificationModalV2({
                   </TouchableOpacity>
                 );
               })}
-            </ScrollView>
+            </View>
 
             {/* Submit button with wooden style */}
             <TouchableOpacity
@@ -263,7 +255,7 @@ export default function ClassificationModalV2({
                 {selectedBeeType ? '✓ Record Visitor' : 'Select a visitor type'}
               </Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -282,7 +274,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: SCREEN_WIDTH * 0.92,
-    height: SCREEN_HEIGHT * 0.85,
+    maxHeight: SCREEN_HEIGHT * 0.75,
     backgroundColor: "#f4e8d8",
     borderRadius: 20,
     overflow: "hidden",
@@ -308,72 +300,82 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   title: {
     fontSize: 20,
+    fontWeight: "600",
+    color: "#F5E6D3",
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoomButtonText: {
+    fontSize: 28,
+    color: '#FFF',
+    fontWeight: 'bold',
+    lineHeight: 28,
+  },
   imageScrollView: {
-    width: '100%',
-    height: 260,
+    width: SCREEN_WIDTH * 0.7,
+    height: SCREEN_HEIGHT * 0.35,
+    borderRadius: 8,
+    backgroundColor: '#FFF',
+    borderWidth: 2,
+    borderColor: '#D4C4A8',
   },
   anomalyImage: {
-    width: SCREEN_WIDTH * 0.7 - 12,
-    height: 260,
-    borderRadius: 2,
-  },
-  polaroidFooter: {
-    marginTop: 2,
-    paddingTop: 4,
-    alignItems: "center",
+    width: SCREEN_WIDTH * 0.7,
+    height: SCREEN_HEIGHT * 0.35,
+    borderRadius: 8,
   },
   zoomControls: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
-    marginBottom: 6,
+    marginTop: 8,
   },
   zoomButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 8,
     backgroundColor: '#6B8E23',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#556B2F',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  zoomButtonIcon: {
-    fontSize: 18,
-    color: '#FFF',
-    fontWeight: 'bold',
+  zoomButtonDisabled: {
+    backgroundColor: '#9CA3AF',
+    borderColor: '#6B7280',
+    opacity: 0.5,
   },
   zoomIndicator: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     backgroundColor: '#FFF',
     borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#D4C4A8',
-    minWidth: 50,
+    borderWidth: 3,
+    borderColor: '#8B6F47',
+    minWidth: 60,
     alignItems: 'center',
   },
   zoomIndicatorText: {
     fontSize: 14,
     fontWeight: '700',
     color: '#4A3828',
-  },
-  polaroidLabel: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "500",
-    fontStyle: "italic",
-  },borderColor: "rgba(255, 255, 255, 0.3)",
   },
   closeButtonText: {
     fontSize: 18,
@@ -382,48 +384,17 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     padding: 12,
-    flex: 1,
   },
   imageFrame: {
     alignItems: "center",
     marginBottom: 8,
   },
-  polaroidFrame: {
-    backgroundColor: "#FFF",
-    padding: 8,
-    borderRadius: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-  },
-  anomalyImage: {
-    width: SCREEN_WIDTH * 0.65,
-    height: SCREEN_WIDTH * 0.4,
-    borderRadius: 2,
-  },
-  polaroidFooter: {
-    marginTop: 8,
-    alignItems: "center",
-  },
-  polaroidLabel: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "500",
-    fontStyle: "italic",
-  },
   instructionText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#5D4E37",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 6,
     fontWeight: "600",
-  },
-  optionScroll: {
-    flex: 1,
   },
   optionsContainer: {
     paddingVertical: 4,
@@ -434,7 +405,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#D4C4A8",
     overflow: "hidden",
-    marginBottom: 10,
+    marginBottom: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -510,8 +481,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   submitButton: {
-    marginTop: 12,
-    padding: 16,
+    marginTop: 8,
+    padding: 14,
     backgroundColor: "#6B8E23",
     borderRadius: 12,
     alignItems: "center",
