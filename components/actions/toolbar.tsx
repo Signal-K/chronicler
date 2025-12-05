@@ -15,9 +15,9 @@ export function Toolbar({ selectedTool, onToolSelect, onPlantSelect }: ToolbarPr
 
   const availablePlants = [
     { id: "tomato", name: "Tomato", icon: "🍅", color: "bg-red-500" },
-    { id: "carrot", name: "Carrot", icon: "🥕", color: "bg-orange-500" },
+    { id: "pumpkin", name: "Pumpkin", icon: "🎃", color: "bg-orange-500" },
     { id: "wheat", name: "Wheat", icon: "🌾", color: "bg-yellow-600" },
-    { id: "corn", name: "Corn", icon: "🌽", color: "bg-yellow-500" },
+    { id: "potato", name: "Potato", icon: "🥔", color: "bg-yellow-700" },
   ]
 
   const handlePlantClick = () => {

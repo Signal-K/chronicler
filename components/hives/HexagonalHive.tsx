@@ -1,7 +1,7 @@
-import type { BeeHealth, HiveData } from '../../types/hive';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, LinearGradient, Path, Polygon, Stop } from 'react-native-svg';
+import type { BeeHealth, HiveData } from '../../types/hive';
 
 interface HexagonalHiveProps {
   hive: HiveData | null;
@@ -204,16 +204,16 @@ export function HexagonalHive({ hive, size = 80, onPress }: HexagonalHiveProps) 
         />
 
         {/* Pollen dust overlay (when pollen > 50%) */}
-        {hive.resources.pollen > 50 && (
+        {(hive.resources?.pollen || 0) > 50 && (
           <Polygon
             points={getHexagonPoints(hexSize)}
             fill={`url(#pollenShimmer-${hive.id})`}
-            opacity={Math.min((hive.resources.pollen - 50) / 50, 1) * 0.5}
+            opacity={Math.min(((hive.resources?.pollen || 0) - 50) / 50, 1) * 0.5}
           />
         )}
 
         {/* Honey drip effects (when honey high) */}
-        {hive.resources.honey > 70 && (
+        {(hive.resources?.honey || 0) > 70 && (
           <>
             <Circle
               cx={centerX - hexSize * 0.35}
@@ -252,7 +252,7 @@ export function HexagonalHive({ hive, size = 80, onPress }: HexagonalHiveProps) 
         <Polygon
           points={getHexagonPoints(hexSize - 8)}
           fill="none"
-          stroke={getHealthColor(hive.health)}
+          stroke={getHealthColor(hive.health || 'good')}
           strokeWidth="2"
           opacity="0.4"
         />
@@ -261,7 +261,7 @@ export function HexagonalHive({ hive, size = 80, onPress }: HexagonalHiveProps) 
       {/* Minimal info overlay */}
       <View style={styles.infoOverlay}>
         {/* Queen indicator */}
-        {hive.population.queen && (
+        {hive.population?.queen && (
           <View style={styles.queenBadge}>
             <Text style={styles.queenIcon}>👑</Text>
           </View>

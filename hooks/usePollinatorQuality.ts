@@ -1,5 +1,5 @@
-import type { HiveData, PollinatorQuality } from '../types/hive';
 import { useMemo } from 'react';
+import type { BeeHealth, HiveData, PollinatorQuality } from '../types/hive';
 
 interface UsePollinatorQualityProps {
   hives: HiveData[];
@@ -50,7 +50,7 @@ export function usePollinatorQuality({
     const seasonalityFactor = calculateSeasonalityFactor(season);
     
     // Overall quality (weighted average)
-    const overall = Math.round(
+    const overall = (
       weatherFactor * 0.25 +
       populationFactor * 0.25 +
       healthFactor * 0.20 +
@@ -60,13 +60,9 @@ export function usePollinatorQuality({
     
     return {
       overall: Math.max(0, Math.min(100, overall)),
-      factors: {
-        weather: weatherFactor,
-        population: populationFactor,
-        health: healthFactor,
-        resources: resourceFactor,
-        seasonality: seasonalityFactor,
-      },
+      diversity: populationFactor, // Population diversity contributes to overall diversity
+      health: healthFactor, // Bee health factor
+      activity: (weatherFactor + seasonalityFactor + resourceFactor) / 3, // Activity based on weather, season, and resources
     };
   }, [hives, weather, season, airborneNectar]);
   
@@ -129,10 +125,10 @@ function calculateWeatherFactor(weather?: UsePollinatorQualityProps['weather']):
 function calculatePopulationFactor(hives: HiveData[]): number {
   if (hives.length === 0) return 0;
   
-  const totalWorkers = hives.reduce((sum, h) => sum + h.population.workers, 0);
-  const totalDrones = hives.reduce((sum, h) => sum + h.population.drones, 0);
-  const hivesWithQueens = hives.filter(h => h.population.queen).length;
-  const avgBrood = hives.reduce((sum, h) => sum + h.population.brood, 0) / hives.length;
+  const totalWorkers = hives.reduce((sum, h) => sum + (h.population?.workers || 0), 0);
+  const totalDrones = hives.reduce((sum, h) => sum + (h.population?.drones || 0), 0);
+  const hivesWithQueens = hives.filter(h => h.population?.queen).length;
+  const avgBrood = hives.reduce((sum, h) => sum + (h.population?.brood || 0), 0) / hives.length;
   
   let score = 0;
   
@@ -179,15 +175,15 @@ function calculatePopulationFactor(hives: HiveData[]): number {
 function calculateHealthFactor(hives: HiveData[]): number {
   if (hives.length === 0) return 0;
   
-  const healthScores = {
+  const healthScores: Record<BeeHealth, number> = {
     'excellent': 100,
-    'good': 75,
+    'good': 80,
     'fair': 50,
     'poor': 25,
     'critical': 10,
   };
   
-  const avgHealth = hives.reduce((sum, h) => sum + healthScores[h.health], 0) / hives.length;
+  const avgHealth = hives.reduce((sum, h) => sum + healthScores[h.health || 'good'], 0) / hives.length;
   
   // Penalty if any hive is critical (diseased hives can spread)
   const criticalHives = hives.filter(h => h.health === 'critical').length;
@@ -199,9 +195,9 @@ function calculateHealthFactor(hives: HiveData[]): number {
 function calculateResourceFactor(hives: HiveData[], airborneNectar: number): number {
   if (hives.length === 0) return airborneNectar;
   
-  const avgPollen = hives.reduce((sum, h) => sum + h.resources.pollen, 0) / hives.length;
-  const avgNectar = hives.reduce((sum, h) => sum + h.resources.nectar, 0) / hives.length;
-  const avgHoney = hives.reduce((sum, h) => sum + h.resources.honey, 0) / hives.length;
+  const avgPollen = hives.reduce((sum, h) => sum + (h.resources?.pollen || 0), 0) / hives.length;
+  const avgNectar = hives.reduce((sum, h) => sum + (h.resources?.nectar || 0), 0) / hives.length;
+  const avgHoney = hives.reduce((sum, h) => sum + (h.resources?.honey || 0), 0) / hives.length;
   
   // Stored resources score (pollen and nectar are most important for active foraging)
   const storedScore = (avgPollen * 0.5 + avgNectar * 0.5);

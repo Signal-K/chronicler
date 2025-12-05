@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getToolsForRoute, type ToolType } from '../../constants/toolbarConfig';
 
 export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
 
 type ToolbarProps = {
-  selectedTool: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
-  onToolSelect: (tool: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null) => void;
+  selectedTool: ToolType;
+  onToolSelect: (tool: ToolType) => void;
   onPlantSelect?: (plantType: string) => void;
   canTill?: boolean;
   canPlant?: boolean;
@@ -45,13 +46,13 @@ export function SimpleToolbar({
 
   // Get crop image for plant selection
   const getCropImageForPlant = (cropId: string) => {
-    const imageMap: Record<string, any> = {
-      wheat: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
-      tomato: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
-      carrot: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
-      corn: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
+    const seedIcons: Record<string, any> = {
+      wheat: require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      tomato: require('../../assets/Sprites/Crops/Tomato/4 - Tomato Full.png'),
+      pumpkin: require('../../assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png'),
+      potato: require('../../assets/Sprites/Crops/Potato/4 - Potato Full.png'),
     };
-    return imageMap[cropId];
+    return seedIcons[cropId];
   };
 
   const handlePlantClick = () => {
@@ -98,6 +99,21 @@ export function SimpleToolbar({
   const canGoLeft = currentRoute !== 'nests';
   const canGoRight = currentRoute !== 'expand';
 
+  // Get tools for current route from configuration
+  const toolButtons = getToolsForRoute(currentRoute);
+
+  // Check if tool can be used based on condition
+  const canUseTool = (condition?: string): boolean => {
+    switch (condition) {
+      case 'canTill': return canTill;
+      case 'canPlant': return canPlant;
+      case 'canWater': return canWater;
+      case 'canShovel': return canShovel;
+      case 'canHarvest': return canHarvest;
+      default: return true;
+    }
+  };
+
   return (
     <View style={styles.toolbarContainer}>
       <View style={styles.navigationRow}>
@@ -135,65 +151,39 @@ export function SimpleToolbar({
       </View>
 
       <View style={styles.toolsRow}>
-        {currentRoute !== 'landscape' && currentRoute !== 'expand' && (
-        <>
-        {/* Till Tool */}
-        <TouchableOpacity 
-          onPress={() => canTill && onToolSelect(selectedTool === 'till' ? null : 'till')}
-          disabled={!canTill}
-          style={[
-            styles.button, 
-            { backgroundColor: '#92400e' },
-            selectedTool === 'till' && styles.buttonActive,
-            !canTill && styles.buttonDisabled
-          ]}
-        >
-          <Text style={[styles.buttonText, !canTill && styles.buttonTextDisabled]}>⛏️ TILL</Text>
-        </TouchableOpacity>
-        
-        {/* Water Tool */}
-        <TouchableOpacity 
-          onPress={() => canWater && onToolSelect(selectedTool === 'water' ? null : 'water')}
-          disabled={!canWater}
-          style={[
-            styles.button, 
-            { backgroundColor: '#3b82f6' },
-            selectedTool === 'water' && styles.buttonActive,
-            !canWater && styles.buttonDisabled
-          ]}
-        >
-          <Text style={[styles.buttonText, !canWater && styles.buttonTextDisabled]}>💧 WATER</Text>
-        </TouchableOpacity>
-        
-        {/* Plant Tool */}
-        <TouchableOpacity 
-          onPress={canPlant ? handlePlantClick : undefined}
-          disabled={!canPlant}
-          style={[
-            styles.button, 
-            { backgroundColor: '#22c55e' },
-            selectedTool === 'plant' && styles.buttonActive,
-            !canPlant && styles.buttonDisabled
-          ]}
-        >
-          <Text style={[styles.buttonText, !canPlant && styles.buttonTextDisabled]}>🌱 PLANT</Text>
-        </TouchableOpacity>
-        
-        {/* Harvest Tool (combines harvest + shovel) */}
-        <TouchableOpacity 
-          onPress={() => canHarvest && onToolSelect(selectedTool === 'harvest' ? null : 'harvest')}
-          disabled={!canHarvest}
-          style={[
-            styles.button, 
-            { backgroundColor: '#ca8a04' },
-            selectedTool === 'harvest' && styles.buttonActive,
-            !canHarvest && styles.buttonDisabled
-          ]}
-        >
-          <Text style={[styles.buttonText, !canHarvest && styles.buttonTextDisabled]}>🌾 HARVEST</Text>
-        </TouchableOpacity>
-        </>
-        )}
+        {toolButtons.map((toolButton) => {
+          const canUse = canUseTool(toolButton.requiresCondition);
+          const isActive = selectedTool === toolButton.tool;
+          
+          // Special handling for plant tool (opens menu)
+          const handlePress = () => {
+            if (!canUse) return;
+            
+            if (toolButton.tool === 'plant') {
+              handlePlantClick();
+            } else {
+              onToolSelect(isActive ? null : toolButton.tool);
+            }
+          };
+
+          return (
+            <TouchableOpacity
+              key={toolButton.id}
+              onPress={handlePress}
+              disabled={!canUse}
+              style={[
+                styles.button,
+                { backgroundColor: toolButton.backgroundColor },
+                isActive && styles.buttonActive,
+                !canUse && styles.buttonDisabled
+              ]}
+            >
+              <Text style={[styles.buttonText, !canUse && styles.buttonTextDisabled]}>
+                {toolButton.icon} {toolButton.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       <Modal

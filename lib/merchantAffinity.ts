@@ -11,7 +11,7 @@ export const MERCHANTS: Merchant[] = [
     emoji: '👨‍🍳',
     description: 'Loves wheat and grains for baking',
     affinity: 0,
-    specialties: ['wheat', 'corn'],
+    specialties: ['wheat', 'potato'],
   },
   {
     id: 'chef',
@@ -19,7 +19,7 @@ export const MERCHANTS: Merchant[] = [
     emoji: '👩‍🍳',
     description: 'Needs fresh vegetables for cooking',
     affinity: 0,
-    specialties: ['tomato', 'carrot', 'lettuce', 'potato'],
+    specialties: ['tomato', 'pumpkin', 'lettuce', 'potato'],
   },
   {
     id: 'beekeeper',
@@ -35,7 +35,7 @@ export const MERCHANTS: Merchant[] = [
     emoji: '🧑‍💼',
     description: 'Buys and sells everything',
     affinity: 0,
-    specialties: ['tomato', 'carrot', 'wheat', 'corn', 'lettuce', 'potato'],
+    specialties: ['tomato', 'pumpkin', 'wheat', 'potato', 'lettuce', 'potato'],
   },
   {
     id: 'herbalist',

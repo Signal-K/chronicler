@@ -17,11 +17,11 @@ const crops = [
     description: "A juicy red fruit perfect for salads and sauces.",
   },
   {
-    name: "Carrot",
+    name: "Pumpkin",
     growthTime: "5 days",
-    seasons: "Spring, Fall",
+    seasons: "Fall",
     sellPrice: 30,
-    description: "A crunchy orange root vegetable rich in vitamins.",
+    description: "A large orange squash perfect for pies and decoration.",
   },
   {
     name: "Wheat",
@@ -29,6 +29,13 @@ const crops = [
     seasons: "Summer, Fall",
     sellPrice: 20,
     description: "A golden grain used for making bread and flour.",
+  },
+  {
+    name: "Potato",
+    growthTime: "6 days",
+    seasons: "Spring, Fall",
+    sellPrice: 25,
+    description: "A starchy tuber that grows underground, versatile for cooking.",
   },
 ]
 

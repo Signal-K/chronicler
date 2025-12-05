@@ -1,10 +1,10 @@
-import { useGameState } from "@/hooks/useGameState";
-import { canFulfillOrder, fulfillOrder, getMissingItems } from "@/lib/orderFulfillment";
-import { loadActiveOrders } from "@/lib/orderGeneration";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CoinIcon, OrderBoxIcon } from "../components/ui/ShopIcons";
+import { useGameState } from "../hooks/useGameState";
+import { canFulfillOrder, fulfillOrder, getMissingItems } from "../lib/orderFulfillment";
+import { loadActiveOrders } from "../lib/orderGeneration";
 import type { Order } from "../types/orders";
 
 export default function OrdersScreen() {

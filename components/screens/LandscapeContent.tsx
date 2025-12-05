@@ -141,6 +141,218 @@ function GrainSilo({ size = 110, opacity = 0.8, x = 0, y = 0, onPress }: { size?
   );
 }
 
+// Water Tank Component
+function WaterTank({ size = 120, x = 0, y = 0, water = 100, maxWater = 100 }: { size?: number; x?: number; y?: number; water?: number; maxWater?: number }) {
+  // Calculate water level percentage
+  const waterLevel = Math.max(0, Math.min(1, water / maxWater));
+  const waterHeight = size * 0.6 * waterLevel; // 60% of size is max water height
+  const waterY = size * 0.85 - waterHeight; // Start from bottom and work up
+  
+  return (
+    <View style={{ position: 'absolute', left: x, top: y, width: size, height: size * 1.1 }}>
+      <Svg width={size} height={size * 1.1} viewBox={`0 0 ${size} ${size * 1.1}`}>
+        {/* Base platform */}
+        <Ellipse 
+          cx={size * 0.5} 
+          cy={size * 0.95} 
+          rx={size * 0.42} 
+          ry={size * 0.12} 
+          fill="#5A5A5A" 
+          stroke="#3A3A3A" 
+          strokeWidth="1.5" 
+        />
+        
+        {/* Support legs */}
+        {[0.25, 0.75].map((xOffset) => (
+          <Rect 
+            key={`leg-${xOffset}`}
+            x={size * (xOffset - 0.03)} 
+            y={size * 0.7} 
+            width={size * 0.06} 
+            height={size * 0.25} 
+            fill="#4A4A4A" 
+            stroke="#2A2A2A" 
+            strokeWidth="1" 
+          />
+        ))}
+        
+        {/* Main cylindrical tank body */}
+        <Ellipse 
+          cx={size * 0.5} 
+          cy={size * 0.25} 
+          rx={size * 0.35} 
+          ry={size * 0.1} 
+          fill="#B8C5D0" 
+          stroke="#7A8A9A" 
+          strokeWidth="2" 
+        />
+        <Rect 
+          x={size * 0.15} 
+          y={size * 0.25} 
+          width={size * 0.7} 
+          height={size * 0.6} 
+          fill="#C5D5E5" 
+          stroke="#7A8A9A" 
+          strokeWidth="2" 
+        />
+        <Ellipse 
+          cx={size * 0.5} 
+          cy={size * 0.85} 
+          rx={size * 0.35} 
+          ry={size * 0.1} 
+          fill="#A8B8C8" 
+          stroke="#7A8A9A" 
+          strokeWidth="2" 
+        />
+        
+        {/* Water inside tank - clipped to tank shape */}
+        {waterHeight > 0 && (
+          <>
+            {/* Water body */}
+            <Rect 
+              x={size * 0.15} 
+              y={waterY} 
+              width={size * 0.7} 
+              height={waterHeight} 
+              fill="#4A9EDE" 
+              opacity="0.7" 
+            />
+            {/* Water top ellipse */}
+            <Ellipse 
+              cx={size * 0.5} 
+              cy={waterY} 
+              rx={size * 0.35} 
+              ry={size * 0.1} 
+              fill="#5AB5F5" 
+              opacity="0.8" 
+            />
+            {/* Water shine effect */}
+            <Ellipse 
+              cx={size * 0.5} 
+              cy={waterY + size * 0.02} 
+              rx={size * 0.25} 
+              ry={size * 0.06} 
+              fill="white" 
+              opacity="0.3" 
+            />
+          </>
+        )}
+        
+        {/* Tank horizontal bands for structure */}
+        {[0.35, 0.5, 0.65, 0.75].map((yOffset) => (
+          <Ellipse 
+            key={`band-${yOffset}`} 
+            cx={size * 0.5} 
+            cy={size * yOffset} 
+            rx={size * 0.35} 
+            ry={size * 0.03} 
+            fill="none" 
+            stroke="#6A7A8A" 
+            strokeWidth="1" 
+            opacity="0.5" 
+          />
+        ))}
+        
+        {/* Side highlights for metallic effect */}
+        <Rect 
+          x={size * 0.15} 
+          y={size * 0.3} 
+          width={size * 0.05} 
+          height={size * 0.5} 
+          fill="white" 
+          opacity="0.15" 
+        />
+        <Rect 
+          x={size * 0.8} 
+          y={size * 0.3} 
+          width={size * 0.05} 
+          height={size * 0.5} 
+          fill="#1A2A3A" 
+          opacity="0.2" 
+        />
+        
+        {/* Outlet pipe at bottom */}
+        <Rect 
+          x={size * 0.75} 
+          y={size * 0.82} 
+          width={size * 0.15} 
+          height={size * 0.05} 
+          fill="#6A7A8A" 
+          stroke="#4A5A6A" 
+          strokeWidth="1" 
+          rx="2"
+        />
+        
+        {/* Water level indicator gauge */}
+        <Rect 
+          x={size * 0.88} 
+          y={size * 0.3} 
+          width={size * 0.04} 
+          height={size * 0.5} 
+          fill="#E8E8E8" 
+          stroke="#888" 
+          strokeWidth="1" 
+          rx="1"
+        />
+        {/* Gauge level marker */}
+        <Rect 
+          x={size * 0.87} 
+          y={size * (0.8 - waterLevel * 0.5)} 
+          width={size * 0.06} 
+          height={size * 0.02} 
+          fill={waterLevel > 0.5 ? "#4CAF50" : waterLevel > 0.25 ? "#FFA726" : "#F44336"} 
+        />
+      </Svg>
+    </View>
+  );
+}
+
+// Pipe/Cable connecting water tank to greenhouse
+function WaterPipe({ fromX, fromY, toX, toY, strokeWidth = 2 }: { fromX: number; fromY: number; toX: number; toY: number; strokeWidth?: number }) {
+  return (
+    <Svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+      {/* Outer pipe casing */}
+      <Line 
+        x1={fromX} 
+        y1={fromY} 
+        x2={toX} 
+        y2={toY} 
+        stroke="#5A6A7A" 
+        strokeWidth={strokeWidth * 2} 
+        strokeLinecap="round"
+      />
+      {/* Inner pipe highlight */}
+      <Line 
+        x1={fromX} 
+        y1={fromY} 
+        x2={toX} 
+        y2={toY} 
+        stroke="#7A8A9A" 
+        strokeWidth={strokeWidth} 
+        strokeLinecap="round"
+      />
+      {/* Pipe connectors/joints every so often */}
+      {Array.from({ length: 4 }).map((_, i) => {
+        const t = (i + 1) / 5;
+        const x = fromX + (toX - fromX) * t;
+        const y = fromY + (toY - fromY) * t;
+        
+        return (
+          <Circle 
+            key={`joint-${i}`}
+            cx={x} 
+            cy={y} 
+            r={strokeWidth * 1.5} 
+            fill="#6A7A8A" 
+            stroke="#4A5A6A" 
+            strokeWidth="1"
+          />
+        );
+      })}
+    </Svg>
+  );
+}
+
 // Minecart Component positioned along track path
 function MinecartWithTrack({ fromX, fromY, toX, toY, size = 40 }: { fromX: number; fromY: number; toX: number; toY: number; size?: number }) {
   const [position, setPosition] = useState(0);
@@ -244,7 +456,19 @@ function MinecartTrack({ fromX, fromY, toX, toY, strokeWidth = 3 }: { fromX: num
   );
 }
 
-export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal, onOpenOrdersModal }: { onNavigateToFarm?: () => void; onOpenSiloModal?: () => void; onOpenOrdersModal?: () => void }) {
+export function LandscapeContent({ 
+  onNavigateToFarm, 
+  onOpenSiloModal, 
+  onOpenOrdersModal,
+  water = 100,
+  maxWater = 100,
+}: { 
+  onNavigateToFarm?: () => void; 
+  onOpenSiloModal?: () => void; 
+  onOpenOrdersModal?: () => void;
+  water?: number;
+  maxWater?: number;
+}) {
   const [dimensions, setDimensions] = useState({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT - 80, // Only account for header since bottom bars are hidden
@@ -275,6 +499,17 @@ export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal, onOpenOrde
   const stationY = dimensions.height * 0.15;
   const greenhouseX = dimensions.width * 0.25;
   const greenhouseY = dimensions.height * 0.35;
+  
+  // Water tank positioning - further away from greenhouse
+  const waterTankX = dimensions.width * 0.05;
+  const waterTankY = dimensions.height * 0.15;
+  const waterTankSize = 80;
+  
+  // Pipe connection points
+  const pipeFromX = waterTankX + waterTankSize * 0.9; // Right side of tank outlet
+  const pipeFromY = waterTankY + waterTankSize * 0.85; // At outlet height
+  const pipeToX = greenhouseX - 20; // Left side of greenhouse
+  const pipeToY = greenhouseY + 20; // Mid-height of greenhouse
 
   return (
     <View style={styles.container}>
@@ -283,6 +518,22 @@ export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal, onOpenOrde
       <View style={styles.sceneContainer}>
         {/* Tree positioned behind greenhouse and lower on display - 50% smaller */}
         <Tree size={90} x={dimensions.width * 0.05} y={dimensions.height * 0.5} />
+        
+        {/* Water tank behind greenhouse with pipe connection */}
+        <WaterTank 
+          size={waterTankSize} 
+          x={waterTankX} 
+          y={waterTankY} 
+          water={water}
+          maxWater={maxWater}
+        />
+        <WaterPipe 
+          fromX={pipeFromX} 
+          fromY={pipeFromY} 
+          toX={pipeToX} 
+          toY={pipeToY} 
+          strokeWidth={2.5}
+        />
         
         {/* Tracks and minecart rendered before train station to fix z-layering - 50% smaller */}
         <MinecartTrack fromX={stationX} fromY={stationY} toX={greenhouseX} toY={greenhouseY} strokeWidth={2} />

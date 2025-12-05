@@ -11,11 +11,12 @@ export const TomatoSeedIcon = ({ size = 48 }: { size?: number }) => (
   </Svg>
 );
 
-export const CarrotSeedIcon = ({ size = 48 }: { size?: number }) => (
+export const PumpkinSeedIcon = ({ size = 48 }: { size?: number }) => (
   <Svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-    <Circle cx="24" cy="24" r="14" fill="#EA580C" />
-    <Path d="M24 10 L22 16 L24 16 L23 10 L24 16 L25 10Z" fill="#16A34A" stroke="#15803D" strokeWidth="1" />
-    <Ellipse cx="24" cy="25" rx="4" ry="8" fill="#FDBA74" opacity="0.3" />
+    <Circle cx="24" cy="26" r="14" fill="#EA580C" />
+    <Path d="M24 12 L22 16 L24 16 L23 12 L24 16 L25 12Z" fill="#16A34A" stroke="#15803D" strokeWidth="1" />
+    <Ellipse cx="20" cy="26" rx="5" ry="10" fill="#FB923C" opacity="0.4" />
+    <Ellipse cx="28" cy="26" rx="5" ry="10" fill="#FB923C" opacity="0.4" />
   </Svg>
 );
 
@@ -30,6 +31,17 @@ export const WheatSeedIcon = ({ size = 48 }: { size?: number }) => (
       <Ellipse cx="3" cy="10" rx="3" ry="4" fill="#FCD34D" />
       <Ellipse cx="0" cy="15" rx="3" ry="4" fill="#FCD34D" />
     </G>
+  </Svg>
+);
+
+export const PotatoSeedIcon = ({ size = 48 }: { size?: number }) => (
+  <Svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <Ellipse cx="24" cy="26" rx="12" ry="14" fill="#B45309" />
+    <Ellipse cx="24" cy="26" rx="10" ry="12" fill="#D97706" />
+    <Circle cx="20" cy="24" r="1.5" fill="#78350F" opacity="0.6" />
+    <Circle cx="28" cy="26" r="1.5" fill="#78350F" opacity="0.6" />
+    <Circle cx="24" cy="30" r="1.5" fill="#78350F" opacity="0.6" />
+    <Path d="M24 12 L23 16 L24 16 L23.5 12Z" fill="#16A34A" stroke="#15803D" strokeWidth="0.5" />
   </Svg>
 );
 

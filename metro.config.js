@@ -17,7 +17,19 @@ config.transformer = {
 // Add resolver config to handle web-specific module resolution
 config.resolver = {
   ...config.resolver,
+  alias: {
+    '@': __dirname,
+  },
   resolveRequest: (context, moduleName, platform) => {
+    // Handle @ alias
+    if (moduleName.startsWith('@/')) {
+      const relativePath = moduleName.replace('@/', '');
+      return {
+        filePath: path.resolve(__dirname, relativePath),
+        type: 'sourceFile',
+      };
+    }
+    
     // Replace worklets with mock on web
     if (platform === 'web') {
       if (moduleName === 'react-native-worklets' || moduleName === 'react-native-worklets-core') {

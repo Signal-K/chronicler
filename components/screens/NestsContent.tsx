@@ -1,7 +1,6 @@
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
-import { bottleNectar, canBottleNectar, getTotalNectar } from '../../lib/nectarBottling';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveVisual } from '../hives/HiveVisual';
@@ -38,43 +37,6 @@ export function NestsContent({
   onNectarUpdate,
 }: NestsContentProps) {
 
-  const handleBottleNectar = () => {
-    if (!inventory || !onInventoryUpdate || !onNectarUpdate) {
-      Alert.alert("Error", "Bottling system not available");
-      return;
-    }
-
-    const result = bottleNectar(inventory, hiveNectarLevels);
-    if (result) {
-      onInventoryUpdate(result.updatedInventory);
-      onNectarUpdate(result.updatedNectarLevels);
-      Alert.alert(
-        "Success! 🍯",
-        "You bottled 10 nectar. Check your inventory!",
-        [{ text: "Great!" }]
-      );
-    } else {
-      const totalNectar = getTotalNectar(hiveNectarLevels);
-      const bottles = (inventory.items || {}).glass_bottle || 0;
-      
-      let message = "";
-      if (bottles < 1) {
-        message = "You need a glass bottle. Buy one from the shop!";
-      } else if (totalNectar < 10) {
-        message = `You need 10 nectar (you have ${totalNectar.toFixed(1)}). Wait for your bees to produce more.`;
-      } else {
-        message = "Cannot bottle nectar right now.";
-      }
-      
-      Alert.alert("Cannot Bottle", message, [{ text: "OK" }]);
-    }
-  };
-
-  const canBottle = inventory ? canBottleNectar(inventory, hiveNectarLevels) : false;
-  const totalNectar = getTotalNectar(hiveNectarLevels);
-  const bottles = inventory ? ((inventory.items || {}).glass_bottle || 0) : 0;
-  const bottledNectar = inventory ? ((inventory.items || {}).bottled_nectar || 0) : 0;
-
   return (
     <ScrollView 
       style={styles.container}
@@ -103,31 +65,7 @@ export function NestsContent({
           </View>
         </View>
 
-        {/* Bottling Card */}
-        {inventory && (
-          <View style={styles.dashboardCard}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardEmoji}>🍯</Text>
-              <Text style={styles.cardTitle}>Bottling</Text>
-            </View>
-            
-            <View style={styles.bottlingContent}>
-              <View style={styles.bottlingStatsRow}>
-                <Text style={styles.smallStat}>Nectar: {totalNectar.toFixed(0)}/10</Text>
-                <Text style={styles.smallStat}>Bottles: {bottles}</Text>
-              </View>
-              <Text style={styles.smallStat}>Bottled: {bottledNectar}</Text>
-              
-              <TouchableOpacity
-                style={[styles.compactBottleButton, !canBottle && styles.disabledButton]}
-                onPress={handleBottleNectar}
-                disabled={!canBottle}
-              >
-                <Text style={styles.compactButtonText}>Bottle (10)</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        {/* Bottling Card removed - use toolbar button instead */}
       </View>
 
       {/* Hives List */}

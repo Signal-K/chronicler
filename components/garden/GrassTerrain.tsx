@@ -13,11 +13,11 @@ export default function GrassTerrain() {
     
     // Pre-define grass sprites to avoid dynamic require (using fewer variants for performance)
     const grassSprites = [
-      require('@/assets/Sprites/Grass/grass_00.png'),
-      require('@/assets/Sprites/Grass/grass_03.png'),
-      require('@/assets/Sprites/Grass/grass_06.png'),
-      require('@/assets/Sprites/Grass/grass_09.png'),
-      require('@/assets/Sprites/Grass/grass_12.png'),
+      require('../../assets/Sprites/Grass/grass_00.png'),
+      require('../../assets/Sprites/Grass/grass_03.png'),
+      require('../../assets/Sprites/Grass/grass_06.png'),
+      require('../../assets/Sprites/Grass/grass_09.png'),
+      require('../../assets/Sprites/Grass/grass_12.png'),
     ];
     
     // Create a grid of grass tiles with some variety

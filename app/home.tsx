@@ -16,6 +16,7 @@ import { SimpleToolbar } from "../components/garden/SimpleToolbar";
 import { OrdersModal } from "../components/modals/OrdersModal";
 import { SiloModal } from "../components/modals/SiloModal";
 import { GameHeader } from "../components/ui/GameHeader";
+import { Toast } from "../components/ui/Toast";
 import { useDayNightCycle } from '../hooks/useDayNightCycle';
 import { useFlyingBees } from '../hooks/useFlyingBees';
 import { useGameState } from '../hooks/useGameState';
@@ -48,6 +49,10 @@ export default function HomeScreen() {
   const [currentAnomaly, setCurrentAnomaly] = useState<any>(null);
   const [showSiloModal, setShowSiloModal] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastTitle, setToastTitle] = useState("");
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
 
   // Map system
   const { getActiveMap, setActiveMap, getAllMaps } = useMapSystem();
@@ -243,6 +248,37 @@ export default function HomeScreen() {
     await setActiveMap(mapId as any);
   };
 
+  // Handle bottle action when on nests screen
+  useEffect(() => {
+    if (selectedAction === 'bottle' && currentScreen === 'nests') {
+      const result = require('../lib/nectarBottling').bottleNectar(inventory, hiveNectarLevels);
+      if (result) {
+        setInventory(result.updatedInventory);
+        updateNectarLevels(result.updatedNectarLevels);
+        setToastTitle("🍯 Success!");
+        setToastMessage("You bottled 10 nectar. Check your inventory!");
+        setToastType('success');
+        setToastVisible(true);
+      } else {
+        const bottles = (inventory.items || {}).glass_bottle || 0;
+        const totalNectar = require('../lib/nectarBottling').getTotalNectar(hiveNectarLevels);
+        let message = "";
+        if (bottles < 1) {
+          message = "You need a glass bottle. Buy one from the shop!";
+        } else if (totalNectar < 10) {
+          message = `Need 10 nectar to bottle. You have ${totalNectar.toFixed(1)}.`;
+        } else {
+          message = "Cannot bottle nectar right now.";
+        }
+        setToastTitle("Cannot Bottle");
+        setToastMessage(message);
+        setToastType('error');
+        setToastVisible(true);
+      }
+      setSelectedAction(null);
+    }
+  }, [selectedAction, currentScreen, inventory, hiveNectarLevels, setInventory, updateNectarLevels, setSelectedAction]);
+
   // Render current screen content
   const renderScreenContent = () => {
     switch (currentScreen) {
@@ -265,7 +301,13 @@ export default function HomeScreen() {
           />
         );
       case "landscape":
-        return <LandscapeContent onNavigateToFarm={() => handleNavigate('home')} onOpenSiloModal={() => setShowSiloModal(true)} onOpenOrdersModal={() => setShowOrdersModal(true)} />;
+        return <LandscapeContent 
+          onNavigateToFarm={() => handleNavigate('home')} 
+          onOpenSiloModal={() => setShowSiloModal(true)} 
+          onOpenOrdersModal={() => setShowOrdersModal(true)} 
+          water={inventory.water}
+          maxWater={100}
+        />;
       case "expand":
         return <ExpandContent />;
       case "home":
@@ -399,6 +441,16 @@ export default function HomeScreen() {
             onClose={() => setShowOrdersModal(false)}
             inventory={inventory}
             setInventory={setInventory}
+          />
+
+          {/* Toast Notification */}
+          <Toast
+            visible={toastVisible}
+            title={toastTitle}
+            message={toastMessage}
+            type={toastType}
+            onDismiss={() => setToastVisible(false)}
+            duration={3000}
           />
         </View>
       </GestureDetector>

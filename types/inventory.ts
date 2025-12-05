@@ -14,7 +14,7 @@ export type InventoryProps = {
 
 export const CROP_PRICES: Record<string, number> = {
   tomato: 15,
-  carrot: 12,
+  pumpkin: 12,
   wheat: 8,
-  corn: 10,
+  potato: 10,
 }

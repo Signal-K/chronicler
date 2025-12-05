@@ -1,7 +1,7 @@
-import type { GardenPlotsProps } from '../../types/garden';
 import React from "react";
 import { Dimensions, Image, Text, View } from "react-native";
 import { gardenPlotsStyles as styles } from "../../styles/garden/GardenPlotsStyles";
+import type { GardenPlotsProps } from '../../types/garden';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -26,13 +26,13 @@ const plotPositions = [
   const getPlantSprite = (growthStage: number = 0) => {
     switch (growthStage) {
       case 0:
-        return require("@/assets/Sprites/Growing Plants/tile000.png");
+        return require("../../assets/Sprites/Growing Plants/tile000.png");
       case 1:
-        return require("@/assets/Sprites/Growing Plants/tile001.png");
+        return require("../../assets/Sprites/Growing Plants/tile001.png");
       case 2:
-        return require("@/assets/Sprites/Growing Plants/tile009.png");
+        return require("../../assets/Sprites/Growing Plants/tile009.png");
       default:
-        return require("@/assets/Sprites/Growing Plants/tile000.png");
+        return require("../../assets/Sprites/Growing Plants/tile000.png");
     }
   };
 
@@ -93,7 +93,7 @@ const plotPositions = [
             }}
           >
             <Image
-              source={require("@/assets/Sprites/Sand/sand_07.png")}
+              source={require("../../assets/Sprites/Sand/sand_07.png")}
               style={{ width: 120, height: 90 }}
               resizeMode="stretch"
             />

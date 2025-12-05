@@ -14,7 +14,7 @@ get_relative_path() {
 
 # Find all TypeScript files with @/ imports (excluding node_modules)
 find . -name "*.tsx" -o -name "*.ts" | grep -v node_modules | while read file; do
-    if grep -q "from '@/" "$file" 2>/dev/null; then
+    if grep -q "@/" "$file" 2>/dev/null; then
         echo "Processing: $file"
         
         # Create a temp file

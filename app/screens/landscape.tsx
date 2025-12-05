@@ -1,13 +1,15 @@
 "use client"
 
-import { Greenhouse } from "@/components/elements/buildings/greenhouse"
-import { Minecart } from "@/components/elements/buildings/minecart"
-import { GrainSilo } from "@/components/elements/buildings/silo"
-import { MinecartTrack } from "@/components/elements/buildings/track"
-import { TrainStation } from "@/components/elements/buildings/train-station"
-import { Tree } from "@/components/elements/tree"
-import { LandscapeGrassBackground } from "@/components/landscape/background"
 import { useEffect, useRef, useState } from "react"
+import { Greenhouse } from "../../components/elements/buildings/greenhouse"
+import { Minecart } from "../../components/elements/buildings/minecart"
+import { GrainSilo } from "../../components/elements/buildings/silo"
+import { MinecartTrack } from "../../components/elements/buildings/track"
+import { TrainStation } from "../../components/elements/buildings/train-station"
+import { WaterPipe } from "../../components/elements/buildings/water-pipe"
+import { WaterTank } from "../../components/elements/buildings/water-tank"
+import { Tree } from "../../components/elements/tree"
+import { LandscapeGrassBackground } from "../../components/landscape/background"
 
 export default function LandscapeScene() {
     const sceneRef = useRef<HTMLDivElement>(null);
@@ -15,6 +17,10 @@ export default function LandscapeScene() {
         width: 800,
         height: 600,
     });
+    
+    // Example water value - in a real app this would come from game state
+    const [water] = useState(75);
+    const maxWater = 100;
 
     useEffect(() => {
         const updateDimensions = () => {
@@ -35,6 +41,17 @@ export default function LandscapeScene() {
     const stationY = dimensions.height * 0.15;
     const greenhouseX = dimensions.width * 0.25;
     const greenhouseY = dimensions.height * 0.35;
+    
+    // Water tank positioning - further away from greenhouse
+    const waterTankX = dimensions.width * 0.02;
+    const waterTankY = dimensions.height * 0.12;
+    const waterTankSize = 120;
+    
+    // Pipe connection points
+    const pipeFromX = waterTankX + waterTankSize * 0.9;
+    const pipeFromY = waterTankY + waterTankSize * 0.85;
+    const pipeToX = greenhouseX - 20;
+    const pipeToY = greenhouseY + 40;
 
     return (
         <div
@@ -44,6 +61,26 @@ export default function LandscapeScene() {
         >
             {/* Grass background layer fills the entire scene */}
             <LandscapeGrassBackground />
+
+            {/* Water tank behind greenhouse */}
+            <div
+                style={{
+                    position: "absolute",
+                    left: waterTankX,
+                    top: waterTankY,
+                }}
+            >
+                <WaterTank size={waterTankSize} water={water} maxWater={maxWater} />
+            </div>
+
+            {/* Water pipe connecting tank to greenhouse */}
+            <WaterPipe 
+                fromX={pipeFromX} 
+                fromY={pipeFromY} 
+                toX={pipeToX} 
+                toY={pipeToY} 
+                strokeWidth={3}
+            />
 
             {/* Track & minecart is on top of the grass layer */}
             <div

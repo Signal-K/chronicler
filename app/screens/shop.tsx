@@ -2,12 +2,13 @@
 import { useRouter } from "expo-router"
 import React from "react"
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { CarrotSeedIcon, CoinIcon, GlassBottleIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons"
+import { CoinIcon, GlassBottleIcon, PotatoSeedIcon, PumpkinSeedIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons"
 
 type ShopProps = {
   inventory: {
     coins: number
     seeds: Record<string, number>
+    items?: Record<string, number>
   }
   setInventory: (inventory: any) => void
   onClose: () => void
@@ -17,8 +18,9 @@ type ShopProps = {
 
 const shopItems = [
   { name: "Tomato Seeds", shortName: "Tomato", price: 10, type: "tomato", category: "seeds", icon: TomatoSeedIcon },
-  { name: "Carrot Seeds", shortName: "Carrot", price: 8, type: "carrot", category: "seeds", icon: CarrotSeedIcon },
+  { name: "Pumpkin Seeds", shortName: "Pumpkin", price: 8, type: "pumpkin", category: "seeds", icon: PumpkinSeedIcon },
   { name: "Wheat Seeds", shortName: "Wheat", price: 5, type: "wheat", category: "seeds", icon: WheatSeedIcon },
+  { name: "Potato Seeds", shortName: "Potato", price: 7, type: "potato", category: "seeds", icon: PotatoSeedIcon },
   { name: "Glass Bottle", shortName: "Bottle", price: 20, type: "glass_bottle", category: "items", icon: GlassBottleIcon, description: "Holds 10 nectar" },
 ]
 

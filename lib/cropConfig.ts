@@ -49,11 +49,11 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       'assets/Sprites/Crops/Tomato/4 - Tomato Full.png',
     ],
   },
-  carrot: {
-    id: 'carrot',
-    name: 'Carrot',
+  pumpkin: {
+    id: 'pumpkin',
+    name: 'Pumpkin',
     category: 'vegetable',
-    emoji: '🥕',
+    emoji: '🎃',
     plantRequirement: {
       type: 'seed',
       amount: 1,
@@ -64,10 +64,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 12,
     growthImages: [
-      'assets/Sprites/Crops/Carrot/1 - Carrot Seed.png',
-      'assets/Sprites/Crops/Carrot/2 - Carrot Sprout.png',
-      'assets/Sprites/Crops/Carrot/3 - Carrot Mid.png',
-      'assets/Sprites/Crops/Carrot/4 - Carrot Full.png',
+      'assets/Sprites/Crops/Pumpkin/1 - Pumpkin Seed.png',
+      'assets/Sprites/Crops/Pumpkin/2 - Pumpkin Sprout.png',
+      'assets/Sprites/Crops/Pumpkin/3 - Pumpkin Mid.png',
+      'assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png',
     ],
   },
   wheat: {
@@ -91,11 +91,11 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
   },
-  corn: {
-    id: 'corn',
-    name: 'Corn',
+  potato: {
+    id: 'potato',
+    name: 'Potato',
     category: 'vegetable',
-    emoji: '🌽',
+    emoji: '🥔',
     plantRequirement: {
       type: 'seed',
       amount: 1,
@@ -106,10 +106,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 10,
     growthImages: [
-      'assets/Sprites/Crops/Corn/1 - Corn Seed.png',
-      'assets/Sprites/Crops/Corn/2 - Corn Sprout.png',
-      'assets/Sprites/Crops/Corn/3 - Corn Mid.png',
-      'assets/Sprites/Crops/Corn/4 - Corn Full.png',
+      'assets/Sprites/Crops/Potato/1 - Potato Seed.png',
+      'assets/Sprites/Crops/Potato/2 - Potato Sprout.png',
+      'assets/Sprites/Crops/Potato/3 - Potato Mid.png',
+      'assets/Sprites/Crops/Potato/4 - Potato Full.png',
     ],
   },
   sunflower: {

@@ -1,6 +1,6 @@
-import type { HiveData } from '../../types/hive';
 import React from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import type { HiveData } from '../../types/hive';
 import { HexagonalHive } from './HexagonalHive';
 
 interface HiveGridProps {
@@ -46,7 +46,7 @@ export function HiveGrid({ hives, onHivePress, maxRadius = 1 }: HiveGridProps) {
 
   // Find hive data for a given position, return null if empty
   const getHiveAtPosition = (q: number, r: number): HiveData | null => {
-    const existingHive = hives.find(h => h.position.q === q && h.position.r === r);
+    const existingHive = hives.find(h => h.position?.q === q && h.position?.r === r);
     return existingHive || null;
   };
 

@@ -14,9 +14,9 @@ const DEFAULT_INVENTORY: InventoryData = {
   coins: 100,
   seeds: {
     tomato: 5,
-    carrot: 5,
+    pumpkin: 5,
     wheat: 5,
-    corn: 5,
+    potato: 5,
   },
   crops: {},
   tools: [],
