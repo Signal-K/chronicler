@@ -1,6 +1,6 @@
-import type { PlotData, Tool } from '../../hooks/useGameState';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { PlotData, Tool } from '../../hooks/useGameState';
 import { SimplePlot } from '../placeables/SimplePlot';
 import { GardenFence } from './GardenFence';
 

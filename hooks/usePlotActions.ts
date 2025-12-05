@@ -46,6 +46,14 @@ export function usePlotActions({
     };
     setPlots(newPlots);
     console.log(`✅ Tilled: Plot ${index + 1} is now tilled`);
+    
+    // Check if any empty plots remain to till
+    const remainingEmptyPlots = newPlots.some(plot => plot.state === 'empty');
+    
+    // Deselect till tool if no empty plots remain
+    if (!remainingEmptyPlots && selectedAction === 'till') {
+      setSelectedAction(null);
+    }
     return true;
   };
 
@@ -107,6 +115,15 @@ export function usePlotActions({
       );
     }
     
+    // Check if any tilled plots remain and if player has any seeds left
+    const remainingTilledPlots = newPlots.some(plot => plot.state === 'tilled');
+    const hasAnySeeds = Object.values(newInventory.seeds).some(count => count > 0);
+    
+    // Deselect plant tool if no tilled plots remain or no seeds remain
+    if ((!remainingTilledPlots || !hasAnySeeds) && selectedAction === 'plant') {
+      setSelectedAction(null);
+    }
+    
     return true;
   };
 
@@ -150,6 +167,18 @@ export function usePlotActions({
     };
 
     setPlots(newPlots);
+    
+    // Check if any plots remain that need watering
+    const remainingWaterablePlots = newPlots.some(plot => 
+      (plot.state === 'planted' || plot.state === 'growing') && 
+      plot.needsWater && 
+      plot.growthStage < 5
+    );
+    
+    // Deselect water tool if no plots need watering
+    if (!remainingWaterablePlots && selectedAction === 'water') {
+      setSelectedAction(null);
+    }
     return true;
   };
 
@@ -201,6 +230,16 @@ export function usePlotActions({
     setShowHarvestAnimation(true);
     setPlots(newPlots);
     setInventory(newInventory);
+    
+    // Check if any plots remain that can be harvested or shoveled
+    const remainingHarvestable = newPlots.some(plot => 
+      plot.state !== 'empty' && plot.cropType !== null
+    );
+    
+    // Deselect harvest tool only if no plots remain harvestable/shovellable
+    if (!remainingHarvestable && selectedAction === 'harvest') {
+      setSelectedAction(null);
+    }
     return true;
   };
 
@@ -276,8 +315,15 @@ export function usePlotActions({
     setPlots(newPlots);
     setInventory(newInventory);
     
-    // Deselect tool after use
-    setSelectedAction(null);
+    // Check if any plots remain that can be harvested or shoveled
+    const remainingHarvestable = newPlots.some(plot => 
+      plot.state !== 'empty' && plot.cropType !== null
+    );
+    
+    // Deselect harvest tool only if no plots remain harvestable/shovellable
+    if (!remainingHarvestable && selectedAction === 'harvest') {
+      setSelectedAction(null);
+    }
     return true;
   };
 

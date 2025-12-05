@@ -21,6 +21,7 @@ type HomeContentProps = {
   inventory: InventoryData;
   setInventory: React.Dispatch<React.SetStateAction<InventoryData>>;
   selectedAction: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
+  setSelectedAction: React.Dispatch<React.SetStateAction<'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null>>;
   selectedPlant: string;
   consumeWater: () => Promise<boolean>;
   incrementPollinationFactor?: (amount: number) => void;
@@ -38,6 +39,7 @@ export function HomeContent({
   inventory,
   setInventory,
   selectedAction,
+  setSelectedAction,
   selectedPlant,
   consumeWater,
   incrementPollinationFactor,
@@ -63,7 +65,7 @@ export function HomeContent({
     consumeWater,
     setHarvestReward,
     setShowHarvestAnimation,
-    setSelectedAction: () => {},
+    setSelectedAction,
     incrementPollinationFactor,
     onShowDialog: (title: string, message: string, emoji?: string) => {
       setDialogData({ title, message, emoji: emoji || '' });
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 60,
+    paddingVertical: 20,
     paddingHorizontal: 16,
   },
 });

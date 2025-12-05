@@ -74,10 +74,14 @@ function Tree({ size = 140, x = 0, y = 0 }: { size?: number; x?: number; y?: num
 }
 
 // Train Station Component
-function TrainStation({ size = 180, x = 0, y = 0 }: { size?: number; x?: number; y?: number }) {
+function TrainStation({ size = 180, x = 0, y = 0, onPress }: { size?: number; x?: number; y?: number; onPress?: () => void }) {
   return (
-    <View style={{ position: 'absolute', left: x, top: y, width: size, height: size * 1.1 }}>
-      <Svg width={size} height={size * 1.1} viewBox={`0 0 ${size} ${size * 1.1}`}>
+    <TouchableOpacity 
+      style={{ position: 'absolute', left: x, top: y, width: size, height: size * 1.1 }}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Svg width={size} height={size * 1.1} viewBox={`0 0 ${size} ${size * 1.1}`} pointerEvents="none">
       <Rect x="0" y={size * 0.65} width={size} height={size * 0.45} fill="#9B8B7E" stroke="#6B5B4F" strokeWidth="2" />
       <Line x1="0" y1={size * 0.65} x2={size} y2={size * 0.65} stroke="#6B5B4F" strokeWidth="1.5" />
       
@@ -105,7 +109,7 @@ function TrainStation({ size = 180, x = 0, y = 0 }: { size?: number; x?: number;
       
       <Polygon points={`${size * 0.5},${size * 0.02} ${size * 0.55},${size * 0.08} ${size * 0.45},${size * 0.08}`} fill="#654321" opacity="0.6" />
     </Svg>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -117,7 +121,7 @@ function GrainSilo({ size = 110, opacity = 0.8, x = 0, y = 0, onPress }: { size?
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Svg width={size} height={size * 1.3} viewBox={`0 0 ${size} ${size * 1.3}`}>
+      <Svg width={size} height={size * 1.3} viewBox={`0 0 ${size} ${size * 1.3}`} pointerEvents="none">
       <Polygon points={`${size * 0.5},${size * 0.08} ${size * 0.8},${size * 0.25} ${size * 0.2},${size * 0.25}`} fill="#A0826D" stroke="#8B6F47" strokeWidth="1.5" />
       <Ellipse cx={size * 0.5} cy={size * 0.25} rx={size * 0.38} ry={size * 0.12} fill="#D2B48C" stroke="#A0826D" strokeWidth="1.5" />
       <Rect x={size * 0.12} y={size * 0.25} width={size * 0.76} height={size * 0.7} fill="#C9A876" stroke="#A0826D" strokeWidth="1.5" />
@@ -240,11 +244,12 @@ function MinecartTrack({ fromX, fromY, toX, toY, strokeWidth = 3 }: { fromX: num
   );
 }
 
-export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal }: { onNavigateToFarm?: () => void; onOpenSiloModal?: () => void }) {
+export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal, onOpenOrdersModal }: { onNavigateToFarm?: () => void; onOpenSiloModal?: () => void; onOpenOrdersModal?: () => void }) {
   const [dimensions, setDimensions] = useState({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT - 80, // Only account for header since bottom bars are hidden
   });
+  const [isModalOpening, setIsModalOpening] = useState(false);
 
   useEffect(() => {
     console.log('🌄 LandscapeContent mounted');
@@ -257,6 +262,14 @@ export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal }: { onNavi
     };
     updateDimensions();
   }, []);
+
+  const handleSiloPress = () => {
+    if (isModalOpening) return;
+    setIsModalOpening(true);
+    onOpenSiloModal?.();
+    // Reset after a short delay
+    setTimeout(() => setIsModalOpening(false), 500);
+  };
 
   const stationX = dimensions.width * 0.92; // Moved further right (was 0.85)
   const stationY = dimensions.height * 0.15;
@@ -276,12 +289,12 @@ export function LandscapeContent({ onNavigateToFarm, onOpenSiloModal }: { onNavi
         <MinecartWithTrack fromX={stationX} fromY={stationY} toX={greenhouseX} toY={greenhouseY} size={25} />
         
         {/* Train station and greenhouse on top layer - 50% smaller */}
-        <TrainStation size={110} x={dimensions.width - 130} y={10} />
+        <TrainStation size={110} x={dimensions.width - 130} y={10} onPress={onOpenOrdersModal} />
         <Greenhouse size={100} x={greenhouseX - 50} y={greenhouseY - 50} onPress={onNavigateToFarm} />
         
-        <GrainSilo size={140} opacity={0.45} x={dimensions.width * 0.05} y={dimensions.height - 320} onPress={onOpenSiloModal} />
-        <GrainSilo size={160} opacity={0.5} x={dimensions.width * 0.38} y={dimensions.height - 340} onPress={onOpenSiloModal} />
-        <GrainSilo size={145} opacity={0.48} x={dimensions.width - 145 - dimensions.width * 0.05} y={dimensions.height - 320} onPress={onOpenSiloModal} />
+        <GrainSilo size={140} opacity={0.45} x={dimensions.width * 0.05} y={dimensions.height - 320} onPress={handleSiloPress} />
+        <GrainSilo size={160} opacity={0.5} x={dimensions.width * 0.38} y={dimensions.height - 340} onPress={handleSiloPress} />
+        <GrainSilo size={145} opacity={0.48} x={dimensions.width - 145 - dimensions.width * 0.05} y={dimensions.height - 320} onPress={handleSiloPress} />
       </View>
     </View>
   );

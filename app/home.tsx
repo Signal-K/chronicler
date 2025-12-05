@@ -11,9 +11,9 @@ import {
 import ClassificationModalV2 from "../components/_legacy/ClassificationModalV2";
 import { FirstBeeAnimation } from "../components/animations/FirstBeeAnimation";
 import { BottomPanels } from "../components/garden/BottomPanels";
-import { GardenBottomBar } from "../components/garden/GardenBottomBar";
 import { MapOverview } from "../components/garden/MapOverview";
 import { SimpleToolbar } from "../components/garden/SimpleToolbar";
+import { OrdersModal } from "../components/modals/OrdersModal";
 import { SiloModal } from "../components/modals/SiloModal";
 import { GameHeader } from "../components/ui/GameHeader";
 import { useDayNightCycle } from '../hooks/useDayNightCycle';
@@ -47,6 +47,7 @@ export default function HomeScreen() {
   const [showClassificationModal, setShowClassificationModal] = useState(false);
   const [currentAnomaly, setCurrentAnomaly] = useState<any>(null);
   const [showSiloModal, setShowSiloModal] = useState(false);
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
 
   // Map system
   const { getActiveMap, setActiveMap, getAllMaps } = useMapSystem();
@@ -264,7 +265,7 @@ export default function HomeScreen() {
           />
         );
       case "landscape":
-        return <LandscapeContent onNavigateToFarm={() => handleNavigate('home')} onOpenSiloModal={() => setShowSiloModal(true)} />;
+        return <LandscapeContent onNavigateToFarm={() => handleNavigate('home')} onOpenSiloModal={() => setShowSiloModal(true)} onOpenOrdersModal={() => setShowOrdersModal(true)} />;
       case "expand":
         return <ExpandContent />;
       case "home":
@@ -276,6 +277,7 @@ export default function HomeScreen() {
             inventory={inventory}
             setInventory={setInventory}
             selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
             selectedPlant={selectedPlant}
             consumeWater={consumeWater}
             incrementPollinationFactor={incrementFactor}
@@ -387,6 +389,14 @@ export default function HomeScreen() {
           <SiloModal
             visible={showSiloModal}
             onClose={() => setShowSiloModal(false)}
+            inventory={inventory}
+            setInventory={setInventory}
+          />
+
+          {/* Orders Modal */}
+          <OrdersModal
+            visible={showOrdersModal}
+            onClose={() => setShowOrdersModal(false)}
             inventory={inventory}
             setInventory={setInventory}
           />

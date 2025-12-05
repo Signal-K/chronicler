@@ -77,7 +77,7 @@ export function SiloModal({
                 setInventory={setInventory}
                 onSellCrop={onSellCrop}
                 onClose={onClose}
-                isExpanded={true}
+                isExpanded={false}
                 onToggleExpand={() => {}}
               />
             )}
@@ -85,7 +85,7 @@ export function SiloModal({
             {activeTab === 'almanac' && (
               <Almanac
                 onClose={onClose}
-                isExpanded={true}
+                isExpanded={false}
                 onToggleExpand={() => {}}
               />
             )}
@@ -95,7 +95,7 @@ export function SiloModal({
                 inventory={inventory}
                 setInventory={setInventory}
                 onClose={onClose}
-                isExpanded={true}
+                isExpanded={false}
                 onToggleExpand={() => {}}
               />
             )}

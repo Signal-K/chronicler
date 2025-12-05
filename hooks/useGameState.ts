@@ -98,7 +98,10 @@ export function useGameState() {
             ? now - plot.plantedAt
             : 0;
 
-          if (timeSinceAction >= 1000 && plot.growthStage < 5) {
+          // Random time between 9-12 seconds (9000-12000ms) before plant needs water
+          const waterNeededTime = 9000 + Math.random() * 3000;
+          
+          if (timeSinceAction >= waterNeededTime && plot.growthStage < 5) {
             if (!plot.needsWater && plot.growthStage > 0) {
               return {
                 ...plot,

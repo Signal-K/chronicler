@@ -23,8 +23,8 @@ export interface CropConfig {
   };
   /** Sell price per unit */
   sellPrice: number;
-  /** Growth stages emojis */
-  growthEmojis: [string, string, string, string]; // [sprout, young, mature, ready]
+  /** Growth stage images - paths to image files for each growth stage */
+  growthImages: [string, string, string, string]; // [seed/sprout, young, mature, ready]
 }
 
 export const CROP_CONFIGS: Record<string, CropConfig> = {
@@ -42,7 +42,12 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       seeds: { min: 1, max: 3 },
     },
     sellPrice: 15,
-    growthEmojis: ['🌱', '🌿', '🪴', '🍅'],
+    growthImages: [
+      'assets/Sprites/Crops/Tomato/1 - Tomato Seed.png',
+      'assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png',
+      'assets/Sprites/Crops/Tomato/3 - Tomato Mid.png',
+      'assets/Sprites/Crops/Tomato/4 - Tomato Full.png',
+    ],
   },
   carrot: {
     id: 'carrot',
@@ -58,7 +63,12 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       seeds: undefined,
     },
     sellPrice: 12,
-    growthEmojis: ['🌱', '🌿', '🪴', '🥕'],
+    growthImages: [
+      'assets/Sprites/Crops/Carrot/1 - Carrot Seed.png',
+      'assets/Sprites/Crops/Carrot/2 - Carrot Sprout.png',
+      'assets/Sprites/Crops/Carrot/3 - Carrot Mid.png',
+      'assets/Sprites/Crops/Carrot/4 - Carrot Full.png',
+    ],
   },
   wheat: {
     id: 'wheat',
@@ -74,7 +84,12 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       seeds: { min: 2, max: 4 }, // Grains produce lots of seeds
     },
     sellPrice: 8,
-    growthEmojis: ['🌱', '🌿', '🪴', '🌾'],
+    growthImages: [
+      'assets/Sprites/Crops/Wheat/1 - Wheat Seed.png',
+      'assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png',
+      'assets/Sprites/Crops/Wheat/3 - Wheat Mid.png',
+      'assets/Sprites/Crops/Wheat/4 - Wheat Full.png',
+    ],
   },
   corn: {
     id: 'corn',
@@ -90,7 +105,12 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       seeds: undefined,
     },
     sellPrice: 10,
-    growthEmojis: ['🌱', '🌿', '🪴', '🌽'],
+    growthImages: [
+      'assets/Sprites/Crops/Corn/1 - Corn Seed.png',
+      'assets/Sprites/Crops/Corn/2 - Corn Sprout.png',
+      'assets/Sprites/Crops/Corn/3 - Corn Mid.png',
+      'assets/Sprites/Crops/Corn/4 - Corn Full.png',
+    ],
   },
   sunflower: {
     id: 'sunflower',
@@ -106,7 +126,12 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       seeds: { min: 2, max: 3 },
     },
     sellPrice: 20,
-    growthEmojis: ['🌱', '🌿', '🪴', '🌻'],
+    growthImages: [
+      'assets/Sprites/Crops/Sunflower/1 - Sunflower Seed.png',
+      'assets/Sprites/Crops/Sunflower/2 - Sunflower Sprout.png',
+      'assets/Sprites/Crops/Sunflower/3 - Sunflower Mid.png',
+      'assets/Sprites/Crops/Sunflower/4 - Sunflower Full.png',
+    ],
   },
 };
 

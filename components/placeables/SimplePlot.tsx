@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getCropConfig } from '../../lib/cropConfig';
 
 const getPlotWidth = () => {
   // Fixed width for consistent 2x3 grid layout
@@ -63,17 +64,48 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
     return `${seconds}s`;
   };
 
-  const getCropEmoji = (cropType: string | null, stage: number) => {
-    if (!cropType) return '🌱';
+  const getCropImageSource = (cropType: string | null, stage: number) => {
+    if (!cropType) return null;
     
-    const emojis: Record<string, string[]> = {
-      tomato: ['🌱', '🌿', '🪴', '🍅', '🍅'],
-      carrot: ['🌱', '🌿', '🪴', '🥕', '🥕'],
-      wheat: ['🌱', '🌿', '🪴', '🌾', '🌾'],
-      corn: ['🌱', '🌿', '🪴', '🌽', '🌽'],
+    const config = getCropConfig(cropType);
+    if (!config) return null;
+    
+    // Stage is 1-5, but growthImages array is 0-indexed with 4 items
+    // Stage 5 (fully grown) uses the same image as stage 4
+    const imageIndex = Math.min(stage - 1, 3);
+    const imagePath = config.growthImages[imageIndex];
+    
+    // Convert the path to a require statement
+    // For now, we'll use a mapping since we know the crops
+    const imageMap: Record<string, any[]> = {
+      wheat: [
+        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'),
+        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
+        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
+        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+      ],
+      // Placeholder requires for other crops - replace with actual images when available
+      tomato: [
+        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
+        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
+        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
+        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+      ],
+      carrot: [
+        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
+        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
+        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
+        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+      ],
+      corn: [
+        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
+        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
+        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
+        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+      ],
     };
     
-    return emojis[cropType]?.[Math.min(stage - 1, 4)] || '🌱';
+    return imageMap[cropType]?.[imageIndex] || null;
   };
 
   const getPlotStyle = () => {
@@ -131,9 +163,17 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
       {/* Plant sprite - show based on growth stage */}
       {(plot.state === 'planted' || plot.state === 'growing') && plot.growthStage > 0 && (
         <View style={styles.grownPlant}>
-          <Text style={plot.growthStage === 5 ? styles.plantEmojiLarge : styles.plantEmoji}>
-            {getCropEmoji(plot.cropType, plot.growthStage)}
-          </Text>
+          {getCropImageSource(plot.cropType, plot.growthStage) ? (
+            <Image 
+              source={getCropImageSource(plot.cropType, plot.growthStage)} 
+              style={plot.growthStage === 5 ? styles.plantImageLarge : styles.plantImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <Text style={plot.growthStage === 5 ? styles.plantEmojiLarge : styles.plantEmoji}>
+              🌱
+            </Text>
+          )}
           {plot.growthStage === 5 && (
             <Text style={styles.harvestable}>✨</Text>
           )}
@@ -203,6 +243,14 @@ const styles = StyleSheet.create({
   plantEmoji: {
     fontSize: 48,
     textAlign: 'center',
+  },
+  plantImage: {
+    width: 80,
+    height: 80,
+  },
+  plantImageLarge: {
+    width: 100,
+    height: 100,
   },
   grownPlant: {
     alignItems: 'center',
