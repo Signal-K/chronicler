@@ -85,10 +85,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 8,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1 - Wheat Seed.png',
-      'assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png',
-      'assets/Sprites/Crops/Wheat/3 - Wheat Mid.png',
-      'assets/Sprites/Crops/Wheat/4 - Wheat Full.png',
+      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
+      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
+      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
+      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
   },
   corn: {

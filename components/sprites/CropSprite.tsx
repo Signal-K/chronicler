@@ -21,35 +21,35 @@ export function CropSprite({ crop, growthStage }: CropSpriteProps) {
   const getImageSource = () => {
     const imageMap: Record<string, any[]> = {
       wheat: [
-        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'),
-        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+        require('@/assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+        require('@/assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+        require('@/assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+        require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
       // Placeholder requires for other crops - replace with actual images when available
       tomato: [
-        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
-        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+        require('@/assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'), // Placeholder
+        require('@/assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+        require('@/assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+        require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
       carrot: [
-        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
-        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+        require('@/assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'), // Placeholder
+        require('@/assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+        require('@/assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+        require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
       corn: [
-        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
-        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+        require('@/assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'), // Placeholder
+        require('@/assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+        require('@/assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+        require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
       sunflower: [
-        require('../../assets/Sprites/Crops/Wheat/1 - Wheat Seed.png'), // Placeholder
-        require('../../assets/Sprites/Crops/Wheat/2 - Wheat Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3 - Wheat Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4 - Wheat Full.png'),
+        require('@/assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'), // Placeholder
+        require('@/assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+        require('@/assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+        require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
     };
     

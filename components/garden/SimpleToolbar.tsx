@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
 
@@ -42,6 +42,17 @@ export function SimpleToolbar({
     { id: 'wheat', name: 'Wheat', icon: '🌾', color: '#ca8a04' },
     { id: 'corn', name: 'Corn', icon: '🌽', color: '#eab308' },
   ];
+
+  // Get crop image for plant selection
+  const getCropImageForPlant = (cropId: string) => {
+    const imageMap: Record<string, any> = {
+      wheat: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      tomato: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
+      carrot: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
+      corn: require('@/assets/Sprites/Crops/Wheat/4---Wheat-Full.png'), // Placeholder
+    };
+    return imageMap[cropId];
+  };
 
   const handlePlantClick = () => {
     if (selectedTool === 'plant') {
@@ -214,7 +225,11 @@ export function SimpleToolbar({
                       !canPlantThis && styles.plantButtonDisabled
                     ]}
                   >
-                    <Text style={styles.plantIcon}>{plant.icon}</Text>
+                    <Image 
+                      source={getCropImageForPlant(plant.id)}
+                      style={styles.plantIconImage}
+                      resizeMode="contain"
+                    />
                     <Text style={styles.plantName}>{plant.name}</Text>
                     <View style={styles.seedBadge}>
                       <Text style={styles.seedBadgeText}>🌱 {seedCount}</Text>
@@ -362,6 +377,11 @@ const styles = StyleSheet.create({
   },
   plantIcon: {
     fontSize: 32,
+    marginBottom: 4,
+  },
+  plantIconImage: {
+    width: 48,
+    height: 48,
     marginBottom: 4,
   },
   plantName: {
