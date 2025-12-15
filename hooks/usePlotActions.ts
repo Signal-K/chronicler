@@ -262,12 +262,19 @@ export function usePlotActions({
     
     console.log('✅ HARVEST VALID - Crop:', current.cropType);
     
-    // Track harvest for experience system
+    // Track harvest for experience system - new XP system
     try {
-      const { recordHarvest } = await import('../lib/userExperience');
-      await recordHarvest(current.cropType);
+      const { awardHarvestXP } = await import('../lib/experienceSystem');
+      const xpEvents = await awardHarvestXP(current.cropType);
+      
+      // Log XP gained for user feedback
+      xpEvents.forEach(event => {
+        console.log(`🎉 XP Gained: +${event.amount} (${event.description})`);
+      });
+      
+      // Could show XP notification UI here in the future
     } catch (error) {
-      console.error('Failed to record harvest:', error);
+      console.error('Failed to record harvest XP:', error);
     }
     
     // Calculate rewards

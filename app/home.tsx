@@ -10,6 +10,7 @@ import {
 } from "react-native-gesture-handler";
 import ClassificationModalV2 from "../components/_legacy/ClassificationModalV2";
 import { FirstBeeAnimation } from "../components/animations/FirstBeeAnimation";
+import { HoneyProductionDebug } from "../components/debug/HoneyProductionDebug";
 import { BottomPanels } from "../components/garden/BottomPanels";
 import { MapOverview } from "../components/garden/MapOverview";
 import { SimpleToolbar } from "../components/garden/SimpleToolbar";
@@ -22,6 +23,7 @@ import { useFlyingBees } from '../hooks/useFlyingBees';
 import { useGameState } from '../hooks/useGameState';
 import { useHiveNectar } from '../hooks/useHiveNectar';
 import { useHiveState } from '../hooks/useHiveState';
+import { useHoneyProduction } from '../hooks/useHoneyProduction';
 import { useMapSystem } from '../hooks/useMapSystem';
 import { usePanelManager } from '../hooks/usePanelManager';
 import { usePollinationFactor } from '../hooks/usePollinationFactor';
@@ -118,6 +120,42 @@ export default function HomeScreen() {
   // Flying bees system
   const { flyingBees, removeBee } = useFlyingBees(hives, isDaytime, debugConstantBeeSpawn, plots);
 
+  // Transform plots to format expected by honey production system
+  const activeCropsForHoney = plots
+    .map((plot, index) => {
+      if (plot.cropType && (plot.state === 'planted' || plot.state === 'growing') && plot.growthStage >= 2) {
+        return {
+          cropId: plot.cropType,
+          plotId: `plot-${index}`,
+          growthStage: plot.growthStage,
+          position: { x: index % 3, y: Math.floor(index / 3) } // Simple 3x2 grid positioning
+        };
+      }
+      return null;
+    })
+    .filter(Boolean) as Array<{ 
+      cropId: string; 
+      plotId: string; 
+      growthStage: number; 
+      position: { x: number; y: number } 
+    }>;
+
+  // Honey production system - integrate with existing hive system
+  const {
+    recordCropHarvest,
+    getHiveInfo,
+    getProductionStats,
+    fastForwardProduction,
+    isAutoFillEnabled
+  } = useHoneyProduction({
+    hives: hives.map(h => ({ 
+      id: h.id, 
+      position: { x: 0, y: 0 } // Default position, could be enhanced later
+    })),
+    activeCrops: activeCropsForHoney,
+    autoFillEnabled: true // Loaded from AsyncStorage in the hook
+  });
+
   // Memoized callback to update hive bee count
   const updateHiveBeeCount = useCallback((count: number) => {
     const currentCount = hive.beeCount;
@@ -127,6 +165,31 @@ export default function HomeScreen() {
       setTimeout(() => addBees(diff), 0);
     }
   }, [hive.beeCount, addBees]);
+
+  // Enhanced setPlots wrapper to track harvests for honey production
+  const enhancedSetPlots = useCallback((newPlots: typeof plots) => {
+    // Check for harvested crops by comparing old and new states
+    plots.forEach((oldPlot, index) => {
+      const newPlot = newPlots[index];
+      
+      // Detect if a crop was harvested (had crop, now empty)
+      if (oldPlot.cropType && 
+          oldPlot.state !== 'empty' && 
+          newPlot.state === 'empty' && 
+          oldPlot.growthStage >= 4) {
+        // Record the harvest for honey production
+        recordCropHarvest(oldPlot.cropType, 1);
+      }
+    });
+    
+    // Update the plots
+    setPlots(newPlots);
+  }, [plots, recordCropHarvest, setPlots]);
+
+  // Handle weather icon press to open settings
+  const handleWeatherPress = useCallback(() => {
+    router.push('/settings');
+  }, [router]);
 
   // Handle building a new hive
   const handleBuildHive = useCallback(() => {
@@ -315,7 +378,7 @@ export default function HomeScreen() {
         return (
           <HomeContent
             plots={plots}
-            setPlots={setPlots}
+            setPlots={enhancedSetPlots}
             inventory={inventory}
             setInventory={setInventory}
             selectedAction={selectedAction}
@@ -349,6 +412,7 @@ export default function HomeScreen() {
             maxWater={maxWater}
             weather="sunny"
             isDaytime={isDaytime}
+            onWeatherPress={handleWeatherPress}
           />
 
           {/* Background with active map colors */}
@@ -451,6 +515,13 @@ export default function HomeScreen() {
             type={toastType}
             onDismiss={() => setToastVisible(false)}
             duration={3000}
+          />
+
+          {/* Honey Production Debug Panel */}
+          <HoneyProductionDebug
+            getProductionStats={getProductionStats}
+            getHiveInfo={getHiveInfo}
+            hiveIds={hives.map(h => h.id)}
           />
         </View>
       </GestureDetector>

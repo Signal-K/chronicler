@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type Weather = 'sunny' | 'cloudy' | 'rainy';
 
@@ -9,6 +9,7 @@ type GameHeaderProps = {
   weather: Weather;
   maxWater?: number;
   isDaytime?: boolean;
+  onWeatherPress?: () => void;
   onHarvestClick?: () => void;
   onShovelClick?: () => void;
   canHarvest?: boolean;
@@ -23,6 +24,7 @@ export function GameHeader({
   weather, 
   maxWater = 100,
   isDaytime = true,
+  onWeatherPress,
 }: GameHeaderProps) {
   const getWeatherIcon = () => {
     // Show moon at night, weather icons during day
@@ -48,9 +50,15 @@ export function GameHeader({
   return (
     <View style={styles.header}>
       {/* Weather */}
-      <View style={styles.weatherBadge}>
+      <Pressable 
+        style={({ pressed }) => [
+          styles.weatherBadge, 
+          pressed && styles.weatherBadgePressed
+        ]} 
+        onPress={onWeatherPress}
+      >
         <Text style={styles.weatherIcon}>{getWeatherIcon()}</Text>
-      </View>
+      </Pressable>
 
       {/* Water balance */}
       <View style={[styles.waterBadge, { backgroundColor: waterColor, borderColor: waterBorderColor }]}>
@@ -87,6 +95,10 @@ const styles = StyleSheet.create({
     borderColor: '#fbbf24',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  weatherBadgePressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
   },
   weatherIcon: {
     fontSize: 20,

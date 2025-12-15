@@ -48,12 +48,21 @@ export function usePollinationFactor(): PollinationFactorHookReturn {
     }
   };
 
-  const incrementFactor = ( amount: number = 1 ) => {
+  const incrementFactor = async ( amount: number = 1 ) => {
     setPollinationFactor(prev => ({
         ...prev,
         factor: prev.factor + amount,
         totalHarvests: prev.totalHarvests + 1,
     }));
+
+    // Award XP for pollination event (citizen science contribution)
+    try {
+      const { awardPollinationXP } = await import('../lib/experienceSystem');
+      const xpEvent = await awardPollinationXP();
+      console.log(`🐝 Pollination XP: +${xpEvent.amount} (${xpEvent.description})`);
+    } catch (error) {
+      console.error('Failed to award pollination XP:', error);
+    }
   };
 
   const canSpawnBees = pollinationFactor.factor >= pollinationFactor.threshold;

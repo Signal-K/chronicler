@@ -1,9 +1,11 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import type { InventoryData } from '../../hooks/useGameState';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveVisual } from '../hives/HiveVisual';
+import { ExperienceBar } from '../ui/ExperienceBar';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -36,6 +38,7 @@ export function NestsContent({
   onInventoryUpdate,
   onNectarUpdate,
 }: NestsContentProps) {
+  const { experience, loading } = usePlayerExperience();
 
   return (
     <ScrollView 
@@ -45,6 +48,37 @@ export function NestsContent({
     >
       {/* Dashboard Row - Compact Stats */}
       <View style={styles.dashboardRow}>
+        {/* Experience Card */}
+        <View style={styles.dashboardCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardEmoji}>⭐</Text>
+            <Text style={styles.cardTitle}>Experience</Text>
+          </View>
+          
+          <View style={styles.experienceContent}>
+            {loading ? (
+              <Text style={styles.loadingText}>Loading...</Text>
+            ) : experience ? (
+              <>
+                <Text style={styles.levelNumber}>Level {experience.level}</Text>
+                <ExperienceBar
+                  level={experience.level}
+                  currentXP={experience.xpInCurrentLevel}
+                  nextLevelXP={experience.xpNeededForNext}
+                  progress={experience.progress}
+                  compact={true}
+                  showDetails={false}
+                />
+                <Text style={styles.smallStat}>
+                  {experience.totalXP} Total XP
+                </Text>
+              </>
+            ) : (
+              <Text style={styles.errorText}>Error loading</Text>
+            )}
+          </View>
+        </View>
+
         {/* Pollination Card */}
         <View style={styles.dashboardCard}>
           <View style={styles.cardHeader}>
@@ -281,5 +315,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#b45309',
     fontWeight: '600',
+  },
+  experienceContent: {
+    alignItems: 'center',
+    gap: 4,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  levelNumber: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  loadingText: {
+    fontSize: 12,
+    color: '#78350f',
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#dc2626',
+    textAlign: 'center',
   },
 });

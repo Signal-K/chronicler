@@ -1,5 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { migrateExperienceData } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
 import type { AuthContextType } from '../types/auth';
 
@@ -56,9 +57,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setLoading(false);
+      
+      // Run experience migration when session is established
+      if (event === 'SIGNED_IN' && session) {
+        try {
+          await migrateExperienceData();
+        } catch (error) {
+          console.error('Error migrating experience data:', error);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();

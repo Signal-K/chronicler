@@ -86,6 +86,27 @@ export async function fulfillOrder(
   const remainingOrders = orders.filter(o => o.id !== orderId);
   await saveActiveOrders(remainingOrders);
   
+  // Award XP based on order complexity
+  try {
+    const { awardSaleXP } = await import('./experienceSystem');
+    
+    // Determine complexity based on order type and requirements
+    let complexity: 'simple' | 'medium' | 'complex' = 'simple';
+    
+    if (order.type === 'nectar') {
+      complexity = 'complex'; // Nectar orders are most complex
+    } else if (order.type === 'crop-group') {
+      complexity = 'medium'; // Multi-crop orders are medium complexity
+    } else if (order.type === 'crop' && order.quantity > 5) {
+      complexity = 'medium'; // Large single crop orders are medium complexity
+    }
+    
+    const xpEvent = await awardSaleXP(complexity);
+    console.log(`💰 Sale XP: +${xpEvent.amount} (${xpEvent.description})`);
+  } catch (error) {
+    console.error('Failed to award sale XP:', error);
+  }
+  
   // Increase merchant affinity (2-5 points based on order value)
   const affinityPoints = Math.min(5, Math.max(2, Math.floor(order.totalReward / 100)));
   await increaseAffinity(order.merchantId, affinityPoints);

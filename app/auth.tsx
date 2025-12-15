@@ -12,6 +12,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { 
+  signInWithProgressPreservation, 
+  signUpWithProgressPreservation,
+  upgradeGuestWithProgressPreservation,
+  migrateExperienceData
+} from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
 
 export default function AuthScreen() {
@@ -27,6 +33,8 @@ export default function AuthScreen() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.is_anonymous) {
         setIsGuest(true);
+        // For guests connecting to existing accounts, default to sign in
+        setIsSignUp(false);
       }
     };
     checkGuestStatus();
@@ -34,64 +42,65 @@ export default function AuthScreen() {
 
   const signUp = async () => {
     setIsLoading(true);
-    console.log("Attempting sign up with: ", email);
-    const { error, data } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      console.error("Sign up error: ", error);
-      alert(`Sign up failed: ${error.message}`);
+    console.log("Attempting sign up with progress preservation: ", email);
+    
+    const result = await signUpWithProgressPreservation(email, password);
+    
+    if (!result.success) {
+      alert(`Sign up failed: ${result.error}`);
     } else {
-      console.log("Sign up success: ", data);
-      alert("Success! Check email for verification link");
-    };
+      if (result.needsEmailVerification) {
+        alert("Success! Check email for verification link. Your progress has been preserved!");
+      } else {
+        // Immediate login, migrate data and go to home
+        await migrateExperienceData();
+        alert("Welcome! Your progress has been preserved.");
+        router.replace("/home");
+      }
+    }
 
     setIsLoading(false);
   };
 
-  const upgradeGuestAccount = async () => {
+  const connectToAccount = async () => {
     setIsLoading(true);
-    console.log("Attempting to upgrade guest account to full profile with: ", email);
+    console.log("Attempting to connect to account with progress preservation: ", email);
 
-    try {
-      const { data, error } = await supabase.auth.updateUser({
-        email: email,
-        password: password,
-      });
-
-      if (error) {
-        console.error("Upgrade error: ", error);
-        alert(`Failed to connect account: ${error.message}`);
+    // Try to sign in first (for existing accounts)
+    const signInResult = await signInWithProgressPreservation(email, password);
+    
+    if (signInResult.success) {
+      // Successfully connected to existing account
+      await migrateExperienceData();
+      alert("Connected! Your progress has been preserved and you're now signed in to your account.");
+      router.replace("/home");
+    } else {
+      // Sign in failed, could be wrong password or account doesn't exist
+      if (signInResult.error?.includes('Invalid login credentials') || signInResult.error?.includes('Email not confirmed')) {
+        alert(`Sign in failed: ${signInResult.error}\n\nTip: Make sure you're using the correct password, or try "Create Account" if you don't have an account yet.`);
       } else {
-        console.log("Guest account upgraded successfully, ", data);
-        alert("Success! Your progress is now saved. Please check your email");
-        router.replace("/home");
-      };
-    } catch (error: any) {
-      console.error("Error upgrading guest account: ", error);
-      alert(error?.message || "Failed to connect account");
-    } finally {
-      setIsLoading(false);
-    };
+        alert(`Failed to connect: ${signInResult.error}`);
+      }
+    }
+    
+    setIsLoading(false);
   };
 
   const signIn = async () => {
     setIsLoading(true);
-    console.log('🟢 Attempting sign in with:', email);
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      console.error('🔴 Sign in error:', error);
-      alert(`Sign in failed: ${error.message}`);
+    console.log('🟢 Attempting sign in with progress preservation:', email);
+    
+    const result = await signInWithProgressPreservation(email, password);
+    
+    if (!result.success) {
+      alert(`Sign in failed: ${result.error}`);
     } else {
-      console.log('🟢 Sign in success:', data);
+      // Migrate experience data after successful login
+      await migrateExperienceData();
+      alert("Welcome back! Your local progress has been preserved.");
       router.replace('/home');
     }
+    
     setIsLoading(false);
   };
 
@@ -127,12 +136,21 @@ export default function AuthScreen() {
       console.log('Error: Please fill in all fields');
       return;
     }
-    if (isGuest) {
-      // If user is upgrading from guest account
-      upgradeGuestAccount();
+    
+    // Always use the appropriate auth method based on user choice
+    // For guests: allow both connecting to existing accounts and creating new ones
+    // For non-guests: normal sign up/sign in flow
+    if (isGuest && !isSignUp) {
+      // Guest connecting to existing account
+      connectToAccount();
+    } else if (isGuest && isSignUp) {
+      // Guest creating new account
+      signUp();
     } else if (isSignUp) {
+      // Normal sign up
       signUp();
     } else {
+      // Normal sign in
       signIn();
     }
   };
@@ -160,10 +178,13 @@ export default function AuthScreen() {
               </Text>
               <Text style={styles.subtitle}>
                 {isGuest 
-                  ? 'Link your guest account to save your progress permanently'
+                  ? (isSignUp 
+                    ? 'Create a new account and your progress will be preserved'
+                    : 'Sign into your existing account and keep all your progress'
+                  )
                   : (isSignUp 
                     ? 'Create your account to save your discoveries'
-                    : 'Welcome back! Sign into Star Sailors'
+                    : 'Welcome back! Sign into Bee Garden'
                   )
                 }
               </Text>
@@ -196,7 +217,9 @@ export default function AuthScreen() {
               >
                 <Text style={styles.primaryButtonText}>
                   {isLoading ? 'Loading...' : (
-                    isGuest ? 'Connect Account' : (isSignUp ? 'Create Account' : 'Sign In')
+                    isGuest 
+                      ? (isSignUp ? 'Create New Account' : 'Sign Into Existing Account')
+                      : (isSignUp ? 'Create Account' : 'Sign In')
                   )}
                 </Text>
               </TouchableOpacity>

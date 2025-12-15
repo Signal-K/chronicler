@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { getLocalDataSummary } from '../lib/progressPreservation';
+import { getUserStats } from '../lib/userStats';
 import { supabase } from '../lib/supabase';
 
 export default function SettingsScreen() {
@@ -13,11 +15,36 @@ export default function SettingsScreen() {
   const [locationPermission, setLocationPermission] = useState<string>('unknown');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
+  const [autoFillHoneyEnabled, setAutoFillHoneyEnabled] = useState<boolean>(true);
+  const [isFastForwarding, setIsFastForwarding] = useState<boolean>(false);
+  const [plots, setPlots] = useState<any[]>([]);
+  const [localDataSummary, setLocalDataSummary] = useState<{
+    totalKeys: number;
+    totalDataSize: number;
+    keyDetails: Array<{ key: string; size: number; hasData: boolean }>;
+  }>({ totalKeys: 0, totalDataSize: 0, keyDetails: [] });
+
+  // Load plots data
+  useEffect(() => {
+    const loadPlots = async () => {
+      try {
+        const plotsData = await AsyncStorage.getItem('plots');
+        if (plotsData) {
+          setPlots(JSON.parse(plotsData));
+        }
+      } catch (error) {
+        console.error('Error loading plots:', error);
+      }
+    };
+    loadPlots();
+  }, []);
 
   useEffect(() => {
     checkAuthState();
     checkLocationPermission();
     loadPlotStates();
+    loadHoneySettings();
+    loadLocalDataSummary();
     
     // Auto-refresh timer display every second for watered plots
     const interval = setInterval(() => {
@@ -26,6 +53,15 @@ export default function SettingsScreen() {
     
     return () => clearInterval(interval);
   }, []);
+
+  const loadLocalDataSummary = async () => {
+    try {
+      const summary = await getLocalDataSummary();
+      setLocalDataSummary(summary);
+    } catch (error) {
+      console.error('Error loading local data summary:', error);
+    }
+  };
 
   const checkAuthState = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -53,7 +89,77 @@ export default function SettingsScreen() {
       console.log('Error loading plot states:', error);
     }
   };
+  const loadHoneySettings = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('autoFillHoneyEnabled');
+      if (saved !== null) {
+        setAutoFillHoneyEnabled(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading honey settings:', error);
+    }
+  };
 
+  const fastForwardHoneyProduction = async () => {
+    if (!autoFillHoneyEnabled) {
+      alert('Auto-fill honey must be enabled to use fast forward.');
+      return;
+    }
+
+    setIsFastForwarding(true);
+    
+    try {
+      // Check if we have any active crops or recently harvested plants
+      const userStatsData = await AsyncStorage.getItem('user_stats');
+      let recentlyHarvestedCount = 0;
+
+      if (userStatsData) {
+        const userStats = JSON.parse(userStatsData);
+        const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+        recentlyHarvestedCount = userStats.harvestedPlants
+          ?.filter((harvest: any) => harvest.harvestedAt > twentyFourHoursAgo)
+          ?.length || 0;
+      }
+
+      // Count active crops from loaded plots
+      const activeCrops = plots.filter(plot => 
+        plot && (plot.state === 'planted' || plot.state === 'growing') && plot.cropType
+      );
+
+      console.log('Active crops:', activeCrops.length);
+      console.log('Recently harvested plants:', recentlyHarvestedCount);
+      console.log('Plots data:', plots);
+
+      if (activeCrops.length === 0 && recentlyHarvestedCount === 0) {
+        alert('No crops found! Plant some flowers or wait for recent harvests to produce honey.');
+        setIsFastForwarding(false);
+        return;
+      }
+
+      // Trigger fast forward through AsyncStorage - the main honey production hook will pick this up
+      const hoursToSimulate = 8;
+      await AsyncStorage.setItem('honeyFastForwardRequest', JSON.stringify({
+        hours: hoursToSimulate,
+        timestamp: Date.now(),
+        activeCropsCount: activeCrops.length,
+        recentHarvestsCount: recentlyHarvestedCount
+      }));
+      
+      // Show progress
+      setTimeout(() => {
+        alert(`✅ Fast forward complete! Your bees collected nectar from ${activeCrops.length} active crops and ${recentlyHarvestedCount} recently harvested plants for ${hoursToSimulate} hours. Check your hives!`);
+        setIsFastForwarding(false);
+        
+        // Trigger a storage update to notify other components
+        AsyncStorage.setItem('honeyFastForwardTrigger', Date.now().toString());
+      }, 2000); // 2 second delay for realism
+      
+    } catch (error) {
+      console.error('Error during fast forward:', error);
+      alert('Failed to fast forward honey production. Please try again.');
+      setIsFastForwarding(false);
+    }
+  };
   // Format remaining time for watered plots
   const formatTimeRemaining = (wateredAt: number) => {
     const now = Date.now();
@@ -108,6 +214,18 @@ export default function SettingsScreen() {
     setIsDarkMode(!isDarkMode);
     // TODO: Implement actual dark mode functionality
     console.log(`Dark Mode: ${!isDarkMode ? 'enabled' : 'disabled'} (Coming soon!)`);
+  };
+
+  const toggleAutoFillHoney = async () => {
+    const newValue = !autoFillHoneyEnabled;
+    setAutoFillHoneyEnabled(newValue);
+    
+    // Save to AsyncStorage
+    try {
+      await AsyncStorage.setItem('autoFillHoneyEnabled', JSON.stringify(newValue));
+    } catch (error) {
+      console.error('Failed to save honey auto-fill setting:', error);
+    }
   };
 
   const getPermissionStatusText = () => {
@@ -182,6 +300,32 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Local Progress Section */}
+        <View style={[styles.section, isDarkMode && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Local Progress</Text>
+          
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Saved Data</Text>
+              <Text style={[styles.settingValue, isDarkMode && styles.darkText]}>
+                {localDataSummary.keyDetails.length} items saved
+              </Text>
+              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+                {Math.round(localDataSummary.totalDataSize / 1024)}KB • Experience, inventory, hives & more
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.progressInfoContainer}>
+            <Text style={[styles.progressInfoText, isDarkMode && styles.darkText]}>
+              💾 Your progress is automatically preserved when you sign in or create an account
+            </Text>
+            <Text style={[styles.progressInfoText, isDarkMode && styles.darkText]}>
+              🔒 All data stays on your device until you choose to sync
+            </Text>
+          </View>
+        </View>
+
         {/* Appearance Section */}
         <View style={[styles.section, isDarkMode && styles.darkSection]}>
           <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Appearance</Text>
@@ -199,6 +343,64 @@ export default function SettingsScreen() {
               trackColor={{ false: '#767577', true: '#81b0ff' }}
               thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
             />
+          </View>
+        </View>
+
+        {/* Honey Production Section */}
+        <View style={[styles.section, isDarkMode && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>🍯 Honey Production</Text>
+          
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Auto-Fill Honey</Text>
+              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+                Automatically track honey production based on planted and harvested crops
+              </Text>
+              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+                {autoFillHoneyEnabled 
+                  ? '🐝 Bees will collect nectar from your active crops' 
+                  : '⭕ Manual honey management only'
+                }
+              </Text>
+            </View>
+            <Switch
+              value={autoFillHoneyEnabled}
+              onValueChange={toggleAutoFillHoney}
+              trackColor={{ false: '#767577', true: '#FFB300' }}
+              thumbColor={autoFillHoneyEnabled ? '#FF8F00' : '#f4f3f4'}
+            />
+          </View>
+          
+          {/* Fast Forward Honey Production */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Fast Forward Production</Text>
+              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+                Simulate 8 hours of honey production from current/recent crops
+              </Text>
+              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+                {autoFillHoneyEnabled 
+                  ? '🍯 Ready to fast forward honey production' 
+                  : '⚠️ Requires Auto-Fill Honey to be enabled'
+                }
+              </Text>
+            </View>
+            <TouchableOpacity 
+              style={[
+                styles.actionButton,
+                styles.fastForwardButton,
+                (!autoFillHoneyEnabled || isFastForwarding) && styles.disabledButton
+              ]}
+              onPress={fastForwardHoneyProduction}
+              disabled={!autoFillHoneyEnabled || isFastForwarding}
+            >
+              <Text style={[
+                styles.actionButtonText,
+                styles.fastForwardButtonText
+              ]}>
+                {isFastForwarding ? '⏳ Fast Forwarding...' : '⚡ Fast Forward'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -532,5 +734,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'white',
     fontWeight: '600',
+  },
+  fastForwardButton: {
+    backgroundColor: '#FFB300',
+    minWidth: 120,
+  },
+  fastForwardButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  progressInfoContainer: {
+    backgroundColor: 'rgba(100, 200, 100, 0.1)',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(100, 200, 100, 0.3)',
+  },
+  progressInfoText: {
+    fontSize: 13,
+    color: '#4A90E2',
+    marginBottom: 4,
+    lineHeight: 18,
   },
 });
