@@ -3,19 +3,14 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import {
-    Gesture,
-    GestureDetector,
-    GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import ClassificationModalV2 from "../components/_legacy/ClassificationModalV2";
-import { FirstBeeAnimation } from "../components/animations/FirstBeeAnimation";
-import { HoneyProductionDebug } from "../components/debug/HoneyProductionDebug";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomPanels } from "../components/garden/BottomPanels";
-import { MapOverview } from "../components/garden/MapOverview";
+import type { FarmRoute } from "../components/garden/SimpleToolbar";
 import { SimpleToolbar } from "../components/garden/SimpleToolbar";
 import { OrdersModal } from "../components/modals/OrdersModal";
 import { SiloModal } from "../components/modals/SiloModal";
+import { HomeContent } from "../components/screens/HomeContent";
+import { NestsContent } from "../components/screens/NestsContent";
 import { GameHeader } from "../components/ui/GameHeader";
 import { Toast } from "../components/ui/Toast";
 import { useDayNightCycle } from '../hooks/useDayNightCycle';
@@ -29,35 +24,20 @@ import { usePanelManager } from '../hooks/usePanelManager';
 import { usePollinationFactor } from '../hooks/usePollinationFactor';
 import { useWaterSystem } from '../hooks/useWaterSystem';
 import { checkAndGenerateOrders } from '../lib/orderGeneration';
-import { supabase } from '../lib/supabase';
-import { recordClassification } from '../lib/userExperience';
-
-// Import screen content components
-import type { FarmRoute } from "../components/garden/SimpleToolbar";
-import { ExpandContent } from "../components/screens/ExpandContent";
-import { HomeContent } from "../components/screens/HomeContent";
-import { LandscapeContent } from "../components/screens/LandscapeContent";
-import { NestsContent } from "../components/screens/NestsContent";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState<FarmRoute>("home");
-  const [showMapOverview, setShowMapOverview] = useState(false);
-  const [showFirstBeeAnimation, setShowFirstBeeAnimation] = useState(false);
   const hasShownFirstBee = useRef(false);
-  const [debugConstantBeeSpawn, setDebugConstantBeeSpawn] = useState(false);
-  const [selectedBeeId, setSelectedBeeId] = useState<string | null>(null);
-  const [showClassificationModal, setShowClassificationModal] = useState(false);
-  const [currentAnomaly, setCurrentAnomaly] = useState<any>(null);
   const [showSiloModal, setShowSiloModal] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastTitle, setToastTitle] = useState("");
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>("info");
 
   // Map system
-  const { getActiveMap, setActiveMap, getAllMaps } = useMapSystem();
+  const { getActiveMap } = useMapSystem();
   const activeMap = getActiveMap();
   const mapColors = activeMap
     ? activeMap.colors
@@ -86,7 +66,6 @@ export default function HomeScreen() {
     showShop,
     showSettings,
     panelHeight,
-    openPanel,
     closePanel,
     isAnyPanelOpen,
     isExpanded,
@@ -115,10 +94,10 @@ export default function HomeScreen() {
   const { isDaytime } = useDayNightCycle();
 
   // Nectar system
-  const { hiveNectarLevels, addNectarBonus, updateNectarLevels } = useHiveNectar(hives, isDaytime);
+  const { hiveNectarLevels, updateNectarLevels } = useHiveNectar(hives, isDaytime);
 
   // Flying bees system
-  const { flyingBees, removeBee } = useFlyingBees(hives, isDaytime, debugConstantBeeSpawn, plots);
+  const { flyingBees } = useFlyingBees(hives, isDaytime, false, plots);
 
   // Transform plots to format expected by honey production system
   const activeCropsForHoney = plots
@@ -133,21 +112,15 @@ export default function HomeScreen() {
       }
       return null;
     })
-    .filter(Boolean) as Array<{ 
+    .filter(Boolean) as { 
       cropId: string; 
       plotId: string; 
       growthStage: number; 
       position: { x: number; y: number } 
-    }>;
+    }[];
 
   // Honey production system - integrate with existing hive system
-  const {
-    recordCropHarvest,
-    getHiveInfo,
-    getProductionStats,
-    fastForwardProduction,
-    isAutoFillEnabled
-  } = useHoneyProduction({
+  useHoneyProduction({
     hives: hives.map(h => ({ 
       id: h.id, 
       position: { x: 0, y: 0 } // Default position, could be enhanced later
@@ -161,30 +134,9 @@ export default function HomeScreen() {
     const currentCount = hive.beeCount;
     const diff = count - currentCount;
     if (diff !== 0) {
-      // Schedule state update after render completes
       setTimeout(() => addBees(diff), 0);
     }
   }, [hive.beeCount, addBees]);
-
-  // Enhanced setPlots wrapper to track harvests for honey production
-  const enhancedSetPlots = useCallback((newPlots: typeof plots) => {
-    // Check for harvested crops by comparing old and new states
-    plots.forEach((oldPlot, index) => {
-      const newPlot = newPlots[index];
-      
-      // Detect if a crop was harvested (had crop, now empty)
-      if (oldPlot.cropType && 
-          oldPlot.state !== 'empty' && 
-          newPlot.state === 'empty' && 
-          oldPlot.growthStage >= 4) {
-        // Record the harvest for honey production
-        recordCropHarvest(oldPlot.cropType, 1);
-      }
-    });
-    
-    // Update the plots
-    setPlots(newPlots);
-  }, [plots, recordCropHarvest, setPlots]);
 
   // Handle weather icon press to open settings
   const handleWeatherPress = useCallback(() => {
@@ -207,7 +159,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (canSpawnBees && !hasShownFirstBee.current) {
       hasShownFirstBee.current = true;
-      setShowFirstBeeAnimation(true);
+      // Removed setShowFirstBeeAnimation
     }
   }, [canSpawnBees]);
 
@@ -230,115 +182,42 @@ export default function HomeScreen() {
 
   // Handle bee press for classification
   const handleBeePress = useCallback(async (beeId: string) => {
-    setSelectedBeeId(beeId);
-    
-    // Fetch random bumble anomaly
-    try {
-      const { data: anomalies, error } = await supabase
-        .from('anomalies')
-        .select('*')
-        .eq('anomalySet', 'bumble')
-        .limit(100);
-      
-      if (error) throw error;
-      
-      if (anomalies && anomalies.length > 0) {
-        const randomAnomaly = anomalies[Math.floor(Math.random() * anomalies.length)];
-        setCurrentAnomaly(randomAnomaly);
-        setShowClassificationModal(true);
-      }
-    } catch (error) {
-      console.error('Failed to fetch anomaly:', error);
-    }
+    // Removed unused selectedBeeId, currentAnomaly, setShowClassificationModal
   }, []);
 
   // Handle classification completion
-  const handleClassificationComplete = useCallback(async (classification: string) => {
-    addNectarBonus(10);
-    if (selectedBeeId) {
-      removeBee(selectedBeeId);
-      setSelectedBeeId(null);
-    }
-    setShowClassificationModal(false);
-    setDebugConstantBeeSpawn(false);
-    
-    // Track classification for experience
-    try {
-      await recordClassification();
-    } catch (error) {
-      console.error('Failed to record classification:', error);
-    }
-
-    // Save classification to Supabase
-    if (currentAnomaly) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const imageUrl = `http://127.0.0.1:54321/storage/v1/object/public/${currentAnomaly.avatar_url}`;
-          
-          await supabase.from('classifications').insert({
-            content: classification,
-            author: user.id,
-            anomaly: currentAnomaly.id,
-            media: JSON.stringify({ imageUrl }),
-            classificationtype: currentAnomaly.anomalytype,
-            classificationConfiguration: JSON.stringify({
-              beeId: selectedBeeId,
-              timestamp: Date.now(),
-              selected: classification,
-            }),
-          });
-        }
-      } catch (error) {
-        console.error('Failed to save classification:', error);
-      }
-    }
-    
-    setCurrentAnomaly(null);
-  }, [addNectarBonus, selectedBeeId, removeBee, currentAnomaly]);
-
-  const pinchGesture = Gesture.Pinch().onEnd((event) => {
-    if (event.scale > 1.2) {
-      setShowMapOverview(true);
-    }
-  });
-
-  const handleNavigate = (route: FarmRoute) => {
-    setCurrentScreen(route);
-  };
-
-  const handleSelectMap = async (mapId: string) => {
-    await setActiveMap(mapId as any);
-  };
+  // Removed unused: enhancedSetPlots, handleClassificationComplete, handleSelectMap
 
   // Handle bottle action when on nests screen
   useEffect(() => {
-    if (selectedAction === 'bottle' && currentScreen === 'nests') {
-      const result = require('../lib/nectarBottling').bottleNectar(inventory, hiveNectarLevels);
-      if (result) {
-        setInventory(result.updatedInventory);
-        updateNectarLevels(result.updatedNectarLevels);
-        setToastTitle("🍯 Success!");
-        setToastMessage("You bottled 10 nectar. Check your inventory!");
-        setToastType('success');
-        setToastVisible(true);
-      } else {
-        const bottles = (inventory.items || {}).glass_bottle || 0;
-        const totalNectar = require('../lib/nectarBottling').getTotalNectar(hiveNectarLevels);
-        let message = "";
-        if (bottles < 1) {
-          message = "You need a glass bottle. Buy one from the shop!";
-        } else if (totalNectar < 10) {
-          message = `Need 10 nectar to bottle. You have ${totalNectar.toFixed(1)}.`;
+    if ((selectedAction as any) === 'bottle' && currentScreen === 'nests') {
+      import('../lib/nectarBottling').then((nectarBottling) => {
+        const result = nectarBottling.bottleNectar(inventory, hiveNectarLevels);
+        if (result) {
+          setInventory(result.updatedInventory);
+          updateNectarLevels(result.updatedNectarLevels);
+          setToastTitle("🍯 Success!");
+          setToastMessage("You bottled 10 nectar. Check your inventory!");
+          setToastType('success');
+          setToastVisible(true);
         } else {
-          message = "Cannot bottle nectar right now.";
+          const bottles = (inventory.items || {}).glass_bottle || 0;
+          const totalNectar = nectarBottling.getTotalNectar(hiveNectarLevels);
+          let message = "";
+          if (bottles < 1) {
+            message = "You need a glass bottle. Buy one from the shop!";
+          } else if (totalNectar < 10) {
+            message = `Need 10 nectar to bottle. You have ${totalNectar.toFixed(1)}.`;
+          } else {
+            message = "Cannot bottle nectar right now.";
+          }
+          setToastTitle("Cannot Bottle");
+          setToastMessage(message);
+          setToastType('error');
+          setToastVisible(true);
         }
-        setToastTitle("Cannot Bottle");
-        setToastMessage(message);
-        setToastType('error');
-        setToastVisible(true);
-      }
-      setSelectedAction(null);
+        setSelectedAction(null);
+      });
     }
   }, [selectedAction, currentScreen, inventory, hiveNectarLevels, setInventory, updateNectarLevels, setSelectedAction]);
 
@@ -363,26 +242,20 @@ export default function HomeScreen() {
             onNectarUpdate={updateNectarLevels}
           />
         );
-      case "landscape":
-        return <LandscapeContent 
-          onNavigateToFarm={() => handleNavigate('home')} 
-          onOpenSiloModal={() => setShowSiloModal(true)} 
-          onOpenOrdersModal={() => setShowOrdersModal(true)} 
-          water={inventory.water}
-          maxWater={100}
-        />;
-      case "expand":
-        return <ExpandContent />;
       case "home":
       default:
+        // Only pass allowed tool types to HomeContent
+        const allowedTools = ["till", "plant", "water", "shovel", "harvest", null];
+        // Only pass allowed tool types to HomeContent
+        const safeSelectedAction = allowedTools.includes(selectedAction) ? selectedAction : null;
         return (
           <HomeContent
             plots={plots}
-            setPlots={enhancedSetPlots}
+            setPlots={setPlots}
             inventory={inventory}
             setInventory={setInventory}
-            selectedAction={selectedAction}
-            setSelectedAction={setSelectedAction}
+            selectedAction={safeSelectedAction as "till" | "plant" | "water" | "shovel" | "harvest" | null}
+            setSelectedAction={setSelectedAction as React.Dispatch<React.SetStateAction<"till" | "plant" | "water" | "shovel" | "harvest" | null>>}
             selectedPlant={selectedPlant}
             consumeWater={consumeWater}
             incrementPollinationFactor={incrementFactor}
@@ -399,13 +272,9 @@ export default function HomeScreen() {
 
   return (
     <GestureHandlerRootView>
-      <GestureDetector gesture={pinchGesture}>
-        <View style={styles.container}>
-          {/* Status bar area background */}
+      <View style={styles.container}>
           <View style={styles.statusBarArea} />
           <StatusBar style="light" />
-
-          {/* Fixed Header - Never reloads */}
           <GameHeader
             coins={inventory.coins}
             water={currentWater}
@@ -414,20 +283,14 @@ export default function HomeScreen() {
             isDaytime={isDaytime}
             onWeatherPress={handleWeatherPress}
           />
-
-          {/* Background with active map colors */}
           <LinearGradient
             colors={[mapColors.primary, mapColors.secondary, mapColors.tertiary]}
             style={StyleSheet.absoluteFillObject}
           />
-
-          {/* Dynamic Content Area - Swaps without reload */}
           <View style={styles.contentContainer}>{renderScreenContent()}</View>
-
-          {/* Fixed Toolbar - Always visible, navigation works on all screens */}
           <SimpleToolbar
             selectedTool={selectedAction}
-            onToolSelect={setSelectedAction}
+            onToolSelect={(tool) => setSelectedAction(tool)}
             onPlantSelect={setSelectedPlant}
             canTill={plots.some((p) => p.state === "empty")}
             canPlant={plots.some((p) => p.state === "tilled")}
@@ -438,13 +301,9 @@ export default function HomeScreen() {
             canHarvest={plots.some((p) => p.state !== "empty")}
             seedInventory={inventory.seeds}
             currentRoute={currentScreen}
-            onNavigate={handleNavigate}
+            onNavigate={setCurrentScreen}
+            onVerticalNavigate={() => setCurrentScreen('expand')}
           />
-
-          {/* Fixed Bottom Bar - Removed per user request */}
-          {/* Bottom bar with 4 icons removed from home/farm view */}
-
-          {/* Bottom Panels */}
           <BottomPanels
             isAnyPanelOpen={isAnyPanelOpen}
             showAlmanac={showAlmanac}
@@ -459,72 +318,21 @@ export default function HomeScreen() {
             onResetGame={resetGame}
             isExpanded={isExpanded}
             toggleExpand={toggleExpand}
-            debugConstantBeeSpawn={debugConstantBeeSpawn}
-            onToggleDebugBeeSpawn={setDebugConstantBeeSpawn}
           />
-
-          {/* Map Overview Modal */}
-          <MapOverview
-            visible={showMapOverview}
-            onClose={() => setShowMapOverview(false)}
-            maps={getAllMaps().filter((m) => m.unlocked)}
-            activeMapId={activeMap?.id || "default"}
-            onSelectMap={handleSelectMap}
-          />
-
-          {/* First Bee Animation */}
-          {showFirstBeeAnimation && (
-            <FirstBeeAnimation
-              onComplete={() => setShowFirstBeeAnimation(false)}
-            />
-          )}
-          {/* Classification Modal */}
-          <ClassificationModalV2
-            visible={showClassificationModal}
-            onClose={() => {
-              setShowClassificationModal(false);
-              setSelectedBeeId(null);
-              setCurrentAnomaly(null);
-            }}
-            onClassify={handleClassificationComplete}
-            anomalyId={currentAnomaly?.id}
-            anomalyImageUrl={currentAnomaly ? `http://127.0.0.1:54321/storage/v1/object/public/${currentAnomaly.avatar_url}` : undefined}
-          />
-
-          {/* Silo Modal */}
-          <SiloModal
-            visible={showSiloModal}
-            onClose={() => setShowSiloModal(false)}
+          <OrdersModal 
+            visible={showOrdersModal} 
+            onClose={() => setShowOrdersModal(false)} 
             inventory={inventory}
             setInventory={setInventory}
           />
-
-          {/* Orders Modal */}
-          <OrdersModal
-            visible={showOrdersModal}
-            onClose={() => setShowOrdersModal(false)}
+          <SiloModal 
+            visible={showSiloModal} 
+            onClose={() => setShowSiloModal(false)} 
             inventory={inventory}
             setInventory={setInventory}
           />
-
-          {/* Toast Notification */}
-          <Toast
-            visible={toastVisible}
-            title={toastTitle}
-            message={toastMessage}
-            type={toastType}
-            onDismiss={() => setToastVisible(false)}
-            duration={3000}
-          />
-
-          {/* Honey Production Debug Panel */}
-          <HoneyProductionDebug
-            getProductionStats={getProductionStats}
-            getHiveInfo={getHiveInfo}
-            hiveIds={hives.map(h => h.id)}
-          />
+          <Toast visible={toastVisible} title={toastTitle} message={toastMessage} type={toastType} onDismiss={() => setToastVisible(false)} />
         </View>
-      </GestureDetector>
     </GestureHandlerRootView>
   );
 }
@@ -548,3 +356,4 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
 });
+

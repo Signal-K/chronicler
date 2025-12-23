@@ -100,7 +100,7 @@ export function HiveInfoModal({ hive, summary, onClose }: HiveInfoModalProps) {
   };
 
   const renderCompletedBatches = () => {
-    if (hive.completedBatches.length === 0) {
+    if (!hive.completedBatches || hive.completedBatches.length === 0) {
       return null;
     }
 
@@ -150,7 +150,7 @@ export function HiveInfoModal({ hive, summary, onClose }: HiveInfoModalProps) {
                 <Text style={styles.statLabel}>ml Honey Stored</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{hive.completedBatches.length}</Text>
+                <Text style={styles.statValue}>{hive.completedBatches?.length || 0}</Text>
                 <Text style={styles.statLabel}>Batches Made</Text>
               </View>
               <View style={styles.statItem}>

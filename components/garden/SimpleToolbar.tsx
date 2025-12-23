@@ -16,6 +16,7 @@ type ToolbarProps = {
   seedInventory?: Record<string, number>;
   currentRoute?: 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
   onNavigate?: (route: FarmRoute) => void;
+  onVerticalNavigate?: () => void;
   farmIds?: string[];
   currentFarmIndex?: number;
 };
@@ -32,8 +33,13 @@ export function SimpleToolbar({
   seedInventory = {},
   currentRoute = 'home',
   onNavigate,
+  onVerticalNavigate,
   farmIds = [],
   currentFarmIndex = 0,
+  verticalPage = 'main', // new prop
+  const handleDownNav = () => {
+    if (onVerticalNavigate) onVerticalNavigate();
+  };
 }: ToolbarProps) {
   const [showPlantMenu, setShowPlantMenu] = useState(false);
 
@@ -74,25 +80,15 @@ export function SimpleToolbar({
 
   const handleLeftNav = () => {
     if (!onNavigate) return;
-    
     if (currentRoute === 'home') {
       onNavigate('nests');
-    } else if (currentRoute === 'landscape') {
-      onNavigate('home');
-    } else if (currentRoute === 'expand') {
-      onNavigate('landscape');
     }
   };
 
   const handleRightNav = () => {
     if (!onNavigate) return;
-    
     if (currentRoute === 'nests') {
       onNavigate('home');
-    } else if (currentRoute === 'home') {
-      onNavigate('landscape');
-    } else if (currentRoute === 'landscape') {
-      onNavigate('expand');
     }
   };
 
@@ -120,15 +116,22 @@ export function SimpleToolbar({
         <TouchableOpacity
           onPress={handleLeftNav}
           disabled={!canGoLeft}
-          style={[
-            styles.navButton,
-            !canGoLeft && styles.navButtonDisabled
-          ]}
+          style={[styles.navButton, !canGoLeft && styles.navButtonDisabled]}
         >
           <Text style={[styles.navButtonText, !canGoLeft && styles.navButtonTextDisabled]}>
-            ◀
+            {verticalPage !== 'main' ? '▲' : '◀'}
           </Text>
         </TouchableOpacity>
+
+        {/* Down arrow for vertical navigation */}
+        {verticalPage === 'main' && (currentRoute === 'home' || currentRoute === 'nests') && (
+          <TouchableOpacity
+            onPress={handleDownNav}
+            style={styles.navButton}
+          >
+            <Text style={styles.navButtonText}>▼</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.screenIndicator}>
           <Text style={styles.screenIndicatorText}>
@@ -139,13 +142,10 @@ export function SimpleToolbar({
         <TouchableOpacity
           onPress={handleRightNav}
           disabled={!canGoRight}
-          style={[
-            styles.navButton,
-            !canGoRight && styles.navButtonDisabled
-          ]}
+          style={[styles.navButton, !canGoRight && styles.navButtonDisabled]}
         >
           <Text style={[styles.navButtonText, !canGoRight && styles.navButtonTextDisabled]}>
-            ▶
+            {verticalPage !== 'main' ? '▲' : '▶'}
           </Text>
         </TouchableOpacity>
       </View>

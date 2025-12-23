@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import type { InventoryData } from '../../hooks/useGameState';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveVisual } from '../hives/HiveVisual';
+import { HiveInfoModal } from '../hives/HiveInfoModal';
 import { ExperienceBar } from '../ui/ExperienceBar';
+import { ExperienceBreakdownModal } from '../ui/ExperienceBreakdownModal';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -39,6 +41,8 @@ export function NestsContent({
   onNectarUpdate,
 }: NestsContentProps) {
   const { experience, loading } = usePlayerExperience();
+  const [selectedHive, setSelectedHive] = useState<HiveData | null>(null);
+  const [xpModalVisible, setXPModalVisible] = useState(false);
 
   return (
     <ScrollView 
@@ -49,12 +53,11 @@ export function NestsContent({
       {/* Dashboard Row - Compact Stats */}
       <View style={styles.dashboardRow}>
         {/* Experience Card */}
-        <View style={styles.dashboardCard}>
+        <TouchableOpacity style={styles.dashboardCard} activeOpacity={0.85} onPress={() => setXPModalVisible(true)}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardEmoji}>⭐</Text>
             <Text style={styles.cardTitle}>Experience</Text>
           </View>
-          
           <View style={styles.experienceContent}>
             {loading ? (
               <Text style={styles.loadingText}>Loading...</Text>
@@ -77,7 +80,7 @@ export function NestsContent({
               <Text style={styles.errorText}>Error loading</Text>
             )}
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Pollination Card */}
         <View style={styles.dashboardCard}>
@@ -105,7 +108,12 @@ export function NestsContent({
       {/* Hives List */}
       <View style={styles.hivesList}>
         {hives.map((currentHive, index) => (
-          <View key={currentHive.id} style={styles.hiveCard}>
+          <TouchableOpacity
+            key={currentHive.id}
+            style={styles.hiveCard}
+            onPress={() => setSelectedHive(currentHive)}
+            activeOpacity={0.85}
+          >
             <View style={styles.hiveHeader}>
               <Text style={styles.hiveTitle}>Beehive {index + 1}</Text>
               {currentHive.beeCount >= 10 && (
@@ -114,14 +122,13 @@ export function NestsContent({
                 </View>
               )}
             </View>
-            
             <HiveVisual
               hiveId={currentHive.id}
               nectarLevel={hiveNectarLevels[currentHive.id] || 0}
               maxNectar={maxNectar}
               beeCount={currentHive.beeCount}
             />
-          </View>
+          </TouchableOpacity>
         ))}
 
         {/* Build New Hive Button */}
@@ -145,6 +152,36 @@ export function NestsContent({
 
       {/* Bottom padding for scrolling past bottom bar */}
       <View style={{ height: 100 }} />
+
+      {/* Hive Info Modal */}
+      {selectedHive && (
+        <HiveInfoModal
+          hive={selectedHive as any}
+          summary={{
+            currentProduction: '',
+            todaysCollection: '',
+            totalHoney: selectedHive.totalHoney || 0,
+            recentSources: selectedHive.recentSources || [],
+            qualityRating: selectedHive.qualityRating || '',
+          }}
+          onClose={() => setSelectedHive(null)}
+        />
+      )}
+
+      {/* Experience Breakdown Modal */}
+      {experience && (
+        <ExperienceBreakdownModal
+          visible={xpModalVisible}
+          onClose={() => setXPModalVisible(false)}
+          breakdown={{
+            totalXP: experience.totalXP,
+            harvestsCount: experience.harvestsCount,
+            uniqueHarvests: experience.uniqueHarvests,
+            pollinationEvents: experience.pollinationEvents,
+            salesCompleted: experience.salesCompleted,
+          }}
+        />
+      )}
     </ScrollView>
   );
 }

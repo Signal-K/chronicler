@@ -10,7 +10,7 @@ export type PlotData = {
   lastWateredAt?: number;
 };
 
-export type Tool = 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
+export type Tool = 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | 'bottle' | null;
 
 export type InventoryData = {
   coins: number;

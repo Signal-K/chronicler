@@ -7,6 +7,7 @@ import { CropsTab } from "./CropsTab";
 import { ExpansionsTab, ToolsTab } from "./InventoryExtras";
 import { InventoryTabs } from "./InventoryTabs";
 import { SeedsTab } from "./SeedsTab";
+import { HoneyBottle } from "./HoneyBottle";
 
 // Placeholder icons for React Native (replace with vector-icons or images as needed)
 type IconProps = {
@@ -67,6 +68,22 @@ export function Inventory({ inventory, setInventory, onClose, isExpanded, onTogg
         {activeTab === 'crops' && <CropsTab harvested={inventory.harvested} onSell={handleSell} />}
         {activeTab === 'tools' && <ToolsTab />}
         {activeTab === 'expansions' && <ExpansionsTab />}
+
+        {/* Honey Bottles Section */}
+        {inventory.bottledHoney && inventory.bottledHoney.length > 0 && (
+          <View style={{ marginTop: 24 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#92400E', marginBottom: 8 }}>Honey Bottles</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+              {inventory.bottledHoney.map((bottle) => (
+                <View key={bottle.id} style={{ alignItems: 'center', marginRight: 12, marginBottom: 12 }}>
+                  <HoneyBottle color={bottle.color} />
+                  <Text style={{ fontSize: 12, color: '#78350f', marginTop: 2 }}>{bottle.type}</Text>
+                  <Text style={{ fontSize: 12, color: '#92400E' }}>{bottle.amount}ml</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
       </ScrollView>
     </View>
   )
