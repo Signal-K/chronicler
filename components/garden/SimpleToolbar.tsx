@@ -17,6 +17,10 @@ type ToolbarProps = {
   currentRoute?: 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
   onNavigate?: (route: FarmRoute) => void;
   onVerticalNavigate?: () => void;
+  onVerticalUpNavigate?: () => void;
+  showDownArrow?: boolean;
+  showUpArrow?: boolean;
+  verticalPage?: 'main' | 'expand';
   farmIds?: string[];
   currentFarmIndex?: number;
 };
@@ -34,13 +38,16 @@ export function SimpleToolbar({
   currentRoute = 'home',
   onNavigate,
   onVerticalNavigate,
+  onVerticalUpNavigate,
+  showDownArrow = false,
+  showUpArrow = false,
   farmIds = [],
   currentFarmIndex = 0,
   verticalPage = 'main', // new prop
+}: ToolbarProps) {
   const handleDownNav = () => {
     if (onVerticalNavigate) onVerticalNavigate();
   };
-}: ToolbarProps) {
   const [showPlantMenu, setShowPlantMenu] = useState(false);
 
   const availablePlants = [
@@ -79,6 +86,11 @@ export function SimpleToolbar({
   };
 
   const handleLeftNav = () => {
+    if (verticalPage !== 'main') {
+      if (onVerticalUpNavigate) onVerticalUpNavigate();
+      return;
+    }
+
     if (!onNavigate) return;
     if (currentRoute === 'home') {
       onNavigate('nests');
@@ -86,13 +98,21 @@ export function SimpleToolbar({
   };
 
   const handleRightNav = () => {
+    // If on the main farm page, prefer vertical navigation to expand page.
+    if (currentRoute === 'home' && verticalPage === 'main') {
+      if (onVerticalNavigate) {
+        onVerticalNavigate();
+        return;
+      }
+    }
+
     if (!onNavigate) return;
     if (currentRoute === 'nests') {
       onNavigate('home');
     }
   };
 
-  const canGoLeft = currentRoute !== 'nests';
+  const canGoLeft = verticalPage !== 'main' || currentRoute !== 'nests';
   const canGoRight = currentRoute !== 'expand';
 
   // Get tools for current route from configuration
@@ -123,8 +143,17 @@ export function SimpleToolbar({
           </Text>
         </TouchableOpacity>
 
-        {/* Down arrow for vertical navigation */}
-        {verticalPage === 'main' && (currentRoute === 'home' || currentRoute === 'nests') && (
+        {/* Up arrow for vertical navigation (center) */}
+        {showUpArrow && (
+          <TouchableOpacity
+            onPress={onVerticalUpNavigate}
+            style={styles.navButton}
+          >
+            <Text style={styles.navButtonText}>▲</Text>
+          </TouchableOpacity>
+        )}
+        {/* Down arrow for vertical navigation (center) */}
+        {showDownArrow && (
           <TouchableOpacity
             onPress={handleDownNav}
             style={styles.navButton}
@@ -140,12 +169,19 @@ export function SimpleToolbar({
         </View>
 
         <TouchableOpacity
-          onPress={handleRightNav}
+          onPress={() => {
+            // If a down-arrow navigation is available on the farm page, prefer vertical navigation
+            if (currentRoute === 'home' && showDownArrow && onVerticalNavigate) {
+              onVerticalNavigate();
+              return;
+            }
+            handleRightNav();
+          }}
           disabled={!canGoRight}
           style={[styles.navButton, !canGoRight && styles.navButtonDisabled]}
         >
           <Text style={[styles.navButtonText, !canGoRight && styles.navButtonTextDisabled]}>
-            {verticalPage !== 'main' ? '▲' : '▶'}
+            {currentRoute === 'home' ? '▼' : verticalPage !== 'main' ? '▲' : '▶'}
           </Text>
         </TouchableOpacity>
       </View>

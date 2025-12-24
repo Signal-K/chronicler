@@ -3,13 +3,12 @@ import { useRouter } from "expo-router"
 import React from "react"
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { CoinIcon, GlassBottleIcon, PotatoSeedIcon, PumpkinSeedIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons"
+import { CROP_CONFIGS } from '../../lib/cropConfig';
+import { CropsTab } from '../../components/inventory/CropsTab';
+import type { InventoryData } from '../../hooks/useGameState';
 
 type ShopProps = {
-  inventory: {
-    coins: number
-    seeds: Record<string, number>
-    items?: Record<string, number>
-  }
+  inventory: InventoryData;
   setInventory: (inventory: any) => void
   onClose: () => void
   isExpanded: boolean
@@ -49,6 +48,45 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
       setInventory(newInventory);
     }
   }
+
+  // Sell a harvested crop
+  const handleSellCrop = (crop: string) => {
+    const harvestedCount = (inventory as any).harvested?.[crop] || 0;
+    if (harvestedCount > 0) {
+      const config = CROP_CONFIGS[crop];
+      const price = config?.sellPrice || 10;
+      setInventory((prev: any) => ({
+        ...prev,
+        coins: prev.coins + price,
+        harvested: {
+          ...prev.harvested,
+          [crop]: Math.max(0, (prev.harvested[crop] || 0) - 1),
+        },
+      }));
+    }
+  };
+
+  // Sell generic items (bottles, bottled_nectar, etc.)
+  const ITEM_SELL_PRICES: Record<string, number> = {
+    glass_bottle: 3,
+    bottled_nectar: 25,
+    bottled_honey: 40,
+  };
+
+  const handleSellItem = (itemType: string) => {
+    const count = ((inventory as any).items || {})[itemType] || 0;
+    if (count > 0) {
+      const price = ITEM_SELL_PRICES[itemType] || 5;
+      setInventory((prev: any) => ({
+        ...prev,
+        coins: prev.coins + price,
+        items: {
+          ...(prev.items || {}),
+          [itemType]: Math.max(0, (prev.items || {})[itemType] - 1),
+        },
+      }));
+    }
+  };
 
   const content = (
     <View style={[styles.container, isExpanded && styles.expandedContainer]}>
@@ -111,6 +149,24 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
             );
           })}
         </View>
+
+        {/* Sell harvested crops */}
+        <CropsTab harvested={(inventory as any).harvested || {}} onSell={handleSellCrop} />
+
+        {/* Sell miscellaneous items */}
+        {inventory.items && Object.keys(inventory.items).length > 0 && (
+          <View style={{ marginTop: 12 }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#92400E', marginBottom: 8 }}>Sell Items</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {Object.entries(inventory.items).map(([key, val]) => (
+                <TouchableOpacity key={key} onPress={() => handleSellItem(key)} disabled={(val as number) <= 0} style={{ padding: 8, backgroundColor: '#fff', borderRadius: 8, borderWidth: 2, borderColor: '#FDE68A', marginRight: 8, marginBottom: 8 }}>
+                  <Text style={{ fontWeight: '700', color: '#92400E' }}>{key.replace(/_/g, ' ')} x{val}</Text>
+                  <Text style={{ color: '#92400E' }}>Sell for {ITEM_SELL_PRICES[key] || 5} coins</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* View Orders Button */}
         <TouchableOpacity 

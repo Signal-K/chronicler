@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import type { InventoryData } from '../../hooks/useGameState';
+import { usePlayerExperience } from '../../hooks/usePlayerExperience';
+import { getHiveProductionSummary, type HiveState } from '../../lib/honeyProduction';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
-import { HiveVisual } from '../hives/HiveVisual';
 import { HiveInfoModal } from '../hives/HiveInfoModal';
+import { HiveVisual } from '../hives/HiveVisual';
 import { ExperienceBar } from '../ui/ExperienceBar';
 import { ExperienceBreakdownModal } from '../ui/ExperienceBreakdownModal';
 
@@ -154,19 +155,27 @@ export function NestsContent({
       <View style={{ height: 100 }} />
 
       {/* Hive Info Modal */}
-      {selectedHive && (
-        <HiveInfoModal
-          hive={selectedHive as any}
-          summary={{
-            currentProduction: '',
-            todaysCollection: '',
-            totalHoney: selectedHive.totalHoney || 0,
-            recentSources: selectedHive.recentSources || [],
-            qualityRating: selectedHive.qualityRating || '',
-          }}
-          onClose={() => setSelectedHive(null)}
-        />
-      )}
+      {selectedHive && (() => {
+        // Build a minimal HiveState from the existing HiveData for display purposes
+        const hiveState: HiveState = {
+          id: selectedHive.id,
+          currentBatch: null,
+          completedBatches: [],
+          totalHoneyStored: selectedHive.resources?.honey || selectedHive.nectarLevel || 0,
+          lastPollinationTime: new Date(),
+          dailyNectarCollection: {},
+        };
+
+        const summary = getHiveProductionSummary(hiveState);
+
+        return (
+          <HiveInfoModal
+            hive={hiveState}
+            summary={summary}
+            onClose={() => setSelectedHive(null)}
+          />
+        );
+      })()}
 
       {/* Experience Breakdown Modal */}
       {experience && (

@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import type { InventoryData, PlotData } from '../../hooks/useGameState';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
 import { usePlotActions } from '../../hooks/usePlotActions';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
 import { FlyingBee } from '../hives/FlyingBee';
+import GrassTexture from '../ui/GrassTexture';
 import { InfoDialog } from '../ui/InfoDialog';
 
 type FlyingBeeData = {
@@ -20,8 +21,8 @@ type HomeContentProps = {
   setPlots: React.Dispatch<React.SetStateAction<PlotData[]>>;
   inventory: InventoryData;
   setInventory: React.Dispatch<React.SetStateAction<InventoryData>>;
-  selectedAction: 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
-  setSelectedAction: React.Dispatch<React.SetStateAction<'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null>>;
+  selectedAction: Tool;
+  setSelectedAction: React.Dispatch<React.SetStateAction<Tool>>;
   selectedPlant: string;
   consumeWater: () => Promise<boolean>;
   incrementPollinationFactor?: (amount: number) => void;
@@ -31,6 +32,7 @@ type HomeContentProps = {
   updateHiveBeeCount?: (count: number) => void;
   flyingBees?: FlyingBeeData[];
   onBeePress?: (beeId: string) => void;
+  verticalPage?: 'main' | 'expand';
 };
 
 export function HomeContent({
@@ -49,6 +51,7 @@ export function HomeContent({
   updateHiveBeeCount,
   flyingBees = [],
   onBeePress,
+  verticalPage = 'main',
 }: HomeContentProps) {
   const [showHarvestAnimation, setShowHarvestAnimation] = React.useState(false);
   const [harvestReward, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
@@ -75,14 +78,26 @@ export function HomeContent({
 
   return (
     <>
-      {/* Garden with fence */}
-      <ScrollView contentContainerStyle={styles.content}>
-        <GardenGrid 
-          plots={plots}
-          selectedTool={selectedAction}
-          onPlotPress={handlePlotPress}
-        />
-      </ScrollView>
+      {verticalPage === 'expand' && (
+        <View style={styles.expandBanner}>
+          <Text style={styles.expandTitle}>Expanded Farm</Text>
+          <Text style={styles.expandText}>This is your expanded farm area — unlock more plots in the shop or via events.</Text>
+        </View>
+      )}
+      {/* Garden or expanded terrain */}
+      {verticalPage === 'expand' ? (
+        <View style={styles.expandTerrain}>
+          <GrassTexture style={{ flex: 1 }} />
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.content}>
+          <GardenGrid 
+            plots={plots}
+            selectedTool={selectedAction}
+            onPlotPress={handlePlotPress}
+          />
+        </ScrollView>
+      )}
 
       {/* Flying Bees - classification system */}
       {flyingBees.map((bee) => (
@@ -124,5 +139,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
     paddingHorizontal: 16,
+  },
+  expandBanner: {
+    position: 'absolute',
+    top: 12,
+    left: 16,
+    right: 16,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    padding: 12,
+    borderRadius: 12,
+    zIndex: 20,
+    alignItems: 'center',
+  },
+  expandTitle: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  expandText: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  expandTerrain: {
+    flex: 1,
+    backgroundColor: '#7ff3a1',
+    marginTop: 56,
+    borderRadius: 8,
+    width: '100%',
   },
 });

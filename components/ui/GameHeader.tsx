@@ -10,6 +10,7 @@ type GameHeaderProps = {
   maxWater?: number;
   isDaytime?: boolean;
   onWeatherPress?: () => void;
+  onOpenShop?: () => void;
   onHarvestClick?: () => void;
   onShovelClick?: () => void;
   canHarvest?: boolean;
@@ -25,6 +26,7 @@ export function GameHeader({
   maxWater = 100,
   isDaytime = true,
   onWeatherPress,
+  onOpenShop,
 }: GameHeaderProps) {
   const getWeatherIcon = () => {
     // Show moon at night, weather icons during day
@@ -67,10 +69,13 @@ export function GameHeader({
       </View>
 
       {/* Coins */}
-      <View style={styles.coinBadge}>
+      <Pressable
+        style={({ pressed }) => [styles.coinBadge, pressed && styles.weatherBadgePressed]}
+        onPress={onOpenShop}
+      >
         <Text style={styles.coinIcon}>🪙</Text>
         <Text style={styles.badgeText}>{coins}</Text>
-      </View>
+      </Pressable>
     </View>
   );
 }

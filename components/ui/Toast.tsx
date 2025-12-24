@@ -67,7 +67,7 @@ export function Toast({
     });
   };
 
-  if (!visible && opacity._value === 0) {
+  if (!visible) {
     return null;
   }
 

@@ -1,23 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getCropConfig } from '../../lib/cropConfig';
-
 const getPlotWidth = () => {
   // Fixed width for consistent 2x3 grid layout
   // Smaller size to ensure 2 columns fit side by side
   return 145;
+
 };
 
-type PlotData = {
-  state: 'empty' | 'tilled' | 'planted' | 'growing';
-  growthStage: number;
-  cropType: string | null;
-  needsWater: boolean;
-  plantedAt?: number;
-  lastWateredAt?: number;
-};
-
-type Tool = 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | null;
+import type { PlotData, Tool } from '../../hooks/useGameState';
 
 type PlotProps = {
   index: number;
@@ -107,6 +98,22 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
     return imageMap[cropType]?.[imageIndex] || null;
   };
 
+  // Deterministic per-plot variation so each plot appears unique but stable
+  const seededRandom = (seed: number) => {
+    // simple deterministic pseudo-random using sin
+    return Math.abs(Math.sin(seed) * 10000) % 1;
+  };
+
+  const getPlotOffsets = () => {
+    const seedBase = index + (plot.plantedAt || 0) / 1000;
+    const rx = (seededRandom(seedBase * 7) - 0.5) * 24; // -12..12 px
+    const ry = (seededRandom(seedBase * 13) - 0.5) * 14; // -7..7 px
+    const rot = (seededRandom(seedBase * 17) - 0.5) * 10; // -5..5 deg
+    return { translateX: Math.round(rx), translateY: Math.round(ry), rotate: Math.round(rot * 10) / 10 };
+  };
+
+  const offsets = getPlotOffsets();
+
   const getPlotStyle = () => {
     if (plot.state === 'empty') {
       return {
@@ -162,17 +169,19 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
       {/* Plant sprite - show based on growth stage */}
       {(plot.state === 'planted' || plot.state === 'growing') && plot.growthStage > 0 && (
         <View style={styles.grownPlant}>
-          {getCropImageSource(plot.cropType, plot.growthStage) ? (
-            <Image 
-              source={getCropImageSource(plot.cropType, plot.growthStage)} 
-              style={plot.growthStage === 5 ? styles.plantImageLarge : styles.plantImage}
-              resizeMode="contain"
-            />
-          ) : (
-            <Text style={plot.growthStage === 5 ? styles.plantEmojiLarge : styles.plantEmoji}>
-              🌱
-            </Text>
-          )}
+          <View style={{ transform: [{ translateX: offsets.translateX }, { translateY: offsets.translateY }, { rotate: `${offsets.rotate}deg` }] }}>
+            {getCropImageSource(plot.cropType, plot.growthStage) ? (
+              <Image 
+                source={getCropImageSource(plot.cropType, plot.growthStage)} 
+                style={plot.growthStage === 5 ? styles.plantImageLarge : styles.plantImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <Text style={plot.growthStage === 5 ? styles.plantEmojiLarge : styles.plantEmoji}>
+                🌱
+              </Text>
+            )}
+          </View>
           {plot.growthStage === 5 && (
             <Text style={styles.harvestable}>✨</Text>
           )}

@@ -1,0 +1,8 @@
+multipass: true
+plugins:
+  - name: preset-default
+  - name: removeDimensions
+  - name: convertColors
+    params:
+      currentColor: true
+  - name: cleanupIDs

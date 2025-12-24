@@ -1,3 +1,4 @@
+import type React from 'react';
 import { canPlantCrop, getCropConfig } from '../lib/cropConfig';
 import type { InventoryData, PlotData, Tool } from './useGameState';
 
@@ -11,7 +12,7 @@ interface UsePlotActionsParams {
   consumeWater: () => Promise<boolean>;
   setHarvestReward: (reward: { cropEmoji: string; cropCount: number; seedCount: number }) => void;
   setShowHarvestAnimation: (show: boolean) => void;
-  setSelectedAction: (action: Tool) => void;
+  setSelectedAction: React.Dispatch<React.SetStateAction<Tool>>;
   incrementPollinationFactor?: (amount: number) => void;
   onShowDialog?: (title: string, message: string, emoji?: string) => void;
 }

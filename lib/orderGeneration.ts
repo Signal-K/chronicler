@@ -282,9 +282,7 @@ export async function markOrdersGenerated(): Promise<void> {
  * Call this periodically (e.g., when app opens or every minute)
  */
 export async function checkAndGenerateOrders(): Promise<Order[]> {
-  console.log('🔍 Checking if should generate orders...');
   const should = await shouldGenerateOrders();
-  console.log('🔍 Should generate?', should);
   
   if (should) {
     console.log('📦 Generating new orders...');
