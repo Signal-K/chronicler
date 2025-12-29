@@ -7,7 +7,6 @@ type NavigationBarProps = {
   onOpenInventory: () => void;
   onOpenShop: () => void;
   onOpenSettings: () => void;
-  onOpenGodot?: () => void;
 };
 
 export function GardenBottomBar({
@@ -15,7 +14,6 @@ export function GardenBottomBar({
   onOpenInventory,
   onOpenShop,
   onOpenSettings,
-  onOpenGodot,
 }: NavigationBarProps) {
   return (
     <View style={styles.container}>

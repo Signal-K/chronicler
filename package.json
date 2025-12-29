@@ -15,9 +15,6 @@
     "build:android": "eas build --profile local --platform android",
     "build:ios": "eas build --profile local --platform ios",
     "build:prod": "eas build --profile production --platform all",
-    "godot:export:all": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android",
-    "godot:export:ios": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh ios && ./export_godot_GodotTest2.sh ios",
-    "godot:export:android": "export GODOT_EDITOR=\"/Applications/Godot4.5.app/Contents/MacOS/Godot\" && ./export_godot_GodotTest.sh android && ./export_godot_GodotTest2.sh android",
     "docker": "docker-compose up",
     "docker:build": "docker-compose up --build",
     "docker:ios": "docker-compose exec app npx expo start --ios",
@@ -35,7 +32,6 @@
     ]
   },
   "dependencies": {
-    "@borndotcom/react-native-godot": "^1.0.1",
     "@expo/metro-runtime": "~6.1.2",
     "@expo/vector-icons": "^15.0.2",
     "@hookform/resolvers": "^5.2.2",
