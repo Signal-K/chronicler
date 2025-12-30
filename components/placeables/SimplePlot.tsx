@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getCropConfig } from '../../lib/cropConfig';
 const getPlotWidth = () => {
   // Fixed width for consistent 2x3 grid layout
   // Smaller size to ensure 2 columns fit side by side
@@ -15,9 +14,11 @@ type PlotProps = {
   plot: PlotData;
   selectedTool?: Tool;
   onPress: () => void;
+  displayNumber?: number;
+  seedIndex?: number;
 };
 
-export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
+export function SimplePlot({ index, plot, selectedTool, onPress, displayNumber, seedIndex }: PlotProps) {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [plotWidth, setPlotWidth] = useState(getPlotWidth());
 
@@ -57,45 +58,22 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
 
   const getCropImageSource = (cropType: string | null, stage: number) => {
     if (!cropType) return null;
-    
-    const config = getCropConfig(cropType);
-    if (!config) return null;
-    
-    // Stage is 1-5, but growthImages array is 0-indexed with 4 items
-    // Stage 5 (fully grown) uses the same image as stage 4
+    // Use the wheat assets for all crops (shared placeholder assets)
+    // Stage is 1-5, growthImages index is 0-3; stage 5 maps to index 3
     const imageIndex = Math.min(stage - 1, 3);
-    const imagePath = config.growthImages[imageIndex];
-    
-    // Convert the path to a require statement
-    // For now, we'll use a mapping since we know the crops
-    const imageMap: Record<string, any[]> = {
-      wheat: [
-        require('../../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
-        require('../../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
-        require('../../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
-        require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
-      ],
-      tomato: [
-        require('../../assets/Sprites/Crops/Tomato/1 - Tomato Seed.png'),
-        require('../../assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png'),
-        require('../../assets/Sprites/Crops/Tomato/3 - Tomato Mid.png'),
-        require('../../assets/Sprites/Crops/Tomato/4 - Tomato Full.png'),
-      ],
-      pumpkin: [
-        require('../../assets/Sprites/Crops/Pumpkin/1 - Pumpkin Seed.png'),
-        require('../../assets/Sprites/Crops/Pumpkin/2 - Pumpkin Sprout.png'),
-        require('../../assets/Sprites/Crops/Pumpkin/3 - Pumpkin Mid.png'),
-        require('../../assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png'),
-      ],
-      potato: [
-        require('../../assets/Sprites/Crops/Potato/1 - Potato Seed.png'),
-        require('../../assets/Sprites/Crops/Potato/2 - Potato Sprout.png'),
-        require('../../assets/Sprites/Crops/Potato/3 - Potato Mid.png'),
-        require('../../assets/Sprites/Crops/Potato/4 - Potato Full.png'),
-      ],
-    };
-    
-    return imageMap[cropType]?.[imageIndex] || null;
+    const wheatImages = [
+      require('../../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+    ];
+    const src = wheatImages[imageIndex] || null;
+    try {
+      console.log('SimplePlot.getCropImageSource', { cropType, stage, hasImage: !!src });
+    } catch (e) {
+      // ignore logging errors in production
+    }
+    return src;
   };
 
   // Deterministic per-plot variation so each plot appears unique but stable
@@ -105,7 +83,8 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
   };
 
   const getPlotOffsets = () => {
-    const seedBase = index + (plot.plantedAt || 0) / 1000;
+    const base = typeof seedIndex === 'number' ? seedIndex : index;
+    const seedBase = base + (plot.plantedAt || 0) / 1000;
     const rx = (seededRandom(seedBase * 7) - 0.5) * 24; // -12..12 px
     const ry = (seededRandom(seedBase * 13) - 0.5) * 14; // -7..7 px
     const rot = (seededRandom(seedBase * 17) - 0.5) * 10; // -5..5 deg
@@ -157,6 +136,12 @@ export function SimplePlot({ index, plot, selectedTool, onPress }: PlotProps) {
       style={[styles.plot, plotStyle, { width: plotWidth, height: plotWidth }]}
       activeOpacity={0.7}
     >
+      {/* Plot number badge */}
+      {typeof displayNumber === 'number' && (
+        <View style={styles.plotNumberBadge}>
+          <Text style={styles.plotNumberText}>{displayNumber}</Text>
+        </View>
+      )}
       {/* Tilled lines */}
       {plot.state !== 'empty' && (
         <View style={styles.tilledLines}>
@@ -297,6 +282,21 @@ const styles = StyleSheet.create({
   },
   waterIcon: {
     fontSize: 24,
+  },
+  plotNumberBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    zIndex: 10,
+  },
+  plotNumberText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
   stageIndicator: {
     fontSize: 10,

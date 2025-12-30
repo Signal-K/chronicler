@@ -66,6 +66,8 @@ export function FarmPager({
     <HomeContent
       plots={pagePlots}
       setPlots={setPagePlots}
+      totalPlots={plots.length}
+      baseIndex={verticalPage === 'main' ? 0 : plotsPerPage}
       inventory={inventory}
       setInventory={setInventory}
       selectedAction={selectedAction}

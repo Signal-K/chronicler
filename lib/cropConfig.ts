@@ -51,8 +51,8 @@ export interface CropConfig {
   };
   /** Sell price per unit */
   sellPrice: number;
-  /** Growth stage images - paths to image files for each growth stage */
-  growthImages: [string, string, string, string]; // [seed/sprout, young, mature, ready]
+  /** Growth stage images - require() of image files for each growth stage */
+  growthImages: any[]; // [seed/sprout, young, mature, ready]
   /** Nectar and honey production properties */
   nectar: NectarProperties;
 }
@@ -73,10 +73,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 15,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Tomato/1 - Tomato Seed.png'),
+      require('../assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png'),
+      require('../assets/Sprites/Crops/Tomato/3 - Tomato Mid.png'),
+      require('../assets/Sprites/Crops/Tomato/4 - Tomato Full.png'),
     ],
     nectar: {
       producesNectar: true,
@@ -112,10 +112,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 12,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Pumpkin/1 - Pumpkin Seed.png'),
+      require('../assets/Sprites/Crops/Pumpkin/2 - Pumpkin Sprout.png'),
+      require('../assets/Sprites/Crops/Pumpkin/3 - Pumpkin Mid.png'),
+      require('../assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png'),
     ],
     nectar: {
       producesNectar: true,
@@ -151,10 +151,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 8,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
     ],
     nectar: {
       producesNectar: false, // Wheat is wind-pollinated
@@ -190,10 +190,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 10,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Potato/1 - Potato Seed.png'),
+      require('../assets/Sprites/Crops/Potato/2 - Potato Sprout.png'),
+      require('../assets/Sprites/Crops/Potato/3 - Potato Mid.png'),
+      require('../assets/Sprites/Crops/Potato/4 - Potato Full.png'),
     ],
     nectar: {
       producesNectar: true,
@@ -229,10 +229,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 20,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
     ],
     nectar: {
       producesNectar: true,

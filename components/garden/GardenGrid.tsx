@@ -8,9 +8,10 @@ interface GardenGridProps {
   plots: PlotData[];
   selectedTool: Tool;
   onPlotPress: (index: number) => void;
+  baseIndex?: number;
 }
 
-export function GardenGrid({ plots, selectedTool, onPlotPress }: GardenGridProps) {
+export function GardenGrid({ plots, selectedTool, onPlotPress, baseIndex = 0 }: GardenGridProps) {
   return (
     <View style={styles.gardenWrapper}>
       <View style={styles.gardenContainer}>
@@ -18,15 +19,20 @@ export function GardenGrid({ plots, selectedTool, onPlotPress }: GardenGridProps
         
         {/* Garden grid */}
         <View style={styles.grid}>
-          {plots.map((plot, index) => (
-            <SimplePlot
-              key={index}
-              index={index}
-              plot={plot}
-              selectedTool={selectedTool}
-              onPress={() => onPlotPress(index)}
-            />
-          ))}
+          {plots.map((plot, index) => {
+            const globalIndex = (baseIndex ?? 0) + index;
+            return (
+              <SimplePlot
+                key={globalIndex}
+                index={index}
+                plot={plot}
+                selectedTool={selectedTool}
+                onPress={() => onPlotPress(index)}
+                seedIndex={globalIndex}
+                displayNumber={globalIndex + 1}
+              />
+            );
+          })}
         </View>
       </View>
     </View>
@@ -40,6 +46,7 @@ const styles = StyleSheet.create({
     borderWidth: 10,
     borderColor: '#22c55e',
     padding: 12,
+    alignSelf: 'center',
   },
   gardenContainer: {
     position: 'relative',
