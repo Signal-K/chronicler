@@ -5,7 +5,6 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { getLocalDataSummary } from '../lib/progressPreservation';
-import { getUserStats } from '../lib/userStats';
 import { supabase } from '../lib/supabase';
 
 export default function SettingsScreen() {
@@ -33,7 +32,7 @@ export default function SettingsScreen() {
           setPlots(JSON.parse(plotsData));
         }
       } catch (error) {
-        console.error('Error loading plots:', error);
+        // error loading plots
       }
     };
     loadPlots();
@@ -59,7 +58,7 @@ export default function SettingsScreen() {
       const summary = await getLocalDataSummary();
       setLocalDataSummary(summary);
     } catch (error) {
-      console.error('Error loading local data summary:', error);
+      // error loading local data summary
     }
   };
 
@@ -86,7 +85,7 @@ export default function SettingsScreen() {
         setPlotStates(JSON.parse(saved));
       }
     } catch (error) {
-      console.log('Error loading plot states:', error);
+      // error loading plot states
     }
   };
   const loadHoneySettings = async () => {
@@ -96,7 +95,7 @@ export default function SettingsScreen() {
         setAutoFillHoneyEnabled(JSON.parse(saved));
       }
     } catch (error) {
-      console.error('Error loading honey settings:', error);
+      // error loading honey settings
     }
   };
 
@@ -126,9 +125,7 @@ export default function SettingsScreen() {
         plot && (plot.state === 'planted' || plot.state === 'growing') && plot.cropType
       );
 
-      console.log('Active crops:', activeCrops.length);
-      console.log('Recently harvested plants:', recentlyHarvestedCount);
-      console.log('Plots data:', plots);
+      // active crops and recent harvest counts available for fast-forward logic
 
       if (activeCrops.length === 0 && recentlyHarvestedCount === 0) {
         alert('No crops found! Plant some flowers or wait for recent harvests to produce honey.');
@@ -155,8 +152,8 @@ export default function SettingsScreen() {
       }, 2000); // 2 second delay for realism
       
     } catch (error) {
-      console.error('Error during fast forward:', error);
-      alert('Failed to fast forward honey production. Please try again.');
+      // error handling for fast forward
+        alert('Failed to fast forward honey production. Please try again.');
       setIsFastForwarding(false);
     }
   };
@@ -178,13 +175,10 @@ export default function SettingsScreen() {
   };
 
   const handleSignOut = async () => {
-    console.log('Sign Out: Are you sure you want to sign out?');
     // Automatically proceed with sign out
     setIsLoading(true);
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.log('Error:', error.message);
-    } else {
+    if (!error) {
       router.replace('/auth');
     }
     setIsLoading(false);
@@ -199,21 +193,16 @@ export default function SettingsScreen() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       setLocationPermission(status);
       
-      if (status === 'granted') {
-        console.log('Success: Location permission granted!');
-      } else {
-        console.log('Permission Denied: Location permission is needed for weather features.');
-      }
+      // location permission updated
     } catch (error) {
-      console.error('Error requesting location permission:', error);
-      console.log('Error: Failed to request location permission');
+      // location request error
     }
   };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     // TODO: Implement actual dark mode functionality
-    console.log(`Dark Mode: ${!isDarkMode ? 'enabled' : 'disabled'} (Coming soon!)`);
+    // dark mode toggle changed
   };
 
   const toggleAutoFillHoney = async () => {
@@ -224,7 +213,7 @@ export default function SettingsScreen() {
     try {
       await AsyncStorage.setItem('autoFillHoneyEnabled', JSON.stringify(newValue));
     } catch (error) {
-      console.error('Failed to save honey auto-fill setting:', error);
+      // error saving honey auto-fill setting
     }
   };
 

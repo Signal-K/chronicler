@@ -12,11 +12,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { 
-  signInWithProgressPreservation, 
-  signUpWithProgressPreservation,
-  upgradeGuestWithProgressPreservation,
-  migrateExperienceData
+import {
+    migrateExperienceData,
+    signInWithProgressPreservation,
+    signUpWithProgressPreservation
 } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
 
@@ -42,7 +41,7 @@ export default function AuthScreen() {
 
   const signUp = async () => {
     setIsLoading(true);
-    console.log("Attempting sign up with progress preservation: ", email);
+    
     
     const result = await signUpWithProgressPreservation(email, password);
     
@@ -64,7 +63,7 @@ export default function AuthScreen() {
 
   const connectToAccount = async () => {
     setIsLoading(true);
-    console.log("Attempting to connect to account with progress preservation: ", email);
+    
 
     // Try to sign in first (for existing accounts)
     const signInResult = await signInWithProgressPreservation(email, password);
@@ -88,7 +87,7 @@ export default function AuthScreen() {
 
   const signIn = async () => {
     setIsLoading(true);
-    console.log('🟢 Attempting sign in with progress preservation:', email);
+    
     
     const result = await signInWithProgressPreservation(email, password);
     
@@ -107,24 +106,21 @@ export default function AuthScreen() {
   const signInAsGuest = async () => {
     setIsLoading(true);
     try {
-      console.log('🔵 Creating anonymous guest account...');
-      console.log('🔵 Supabase URL:', process.env.EXPO_PUBLIC_SUPABASE_URL);
+      
       
       // Use Supabase's built-in anonymous authentication
       const { data, error } = await supabase.auth.signInAnonymously();
 
       if (error) {
-        console.error('� Anonymous signin error:', error);
         alert(`Guest sign in failed: ${error.message}`);
         throw error;
       }
-
-      console.log('� Anonymous guest account created successfully');
-      console.log('� User ID:', data.user?.id);
+      
+      // Guest account created successfully
+      // user id: data.user?.id
       
       router.replace('/home');
     } catch (error: any) {
-      console.error('� Error creating guest account:', error);
       alert(error?.message || 'Failed to create guest account. Please try signing up with an email.');
     } finally {
       setIsLoading(false);
@@ -133,7 +129,7 @@ export default function AuthScreen() {
 
   const handleSubmit = () => {
     if (!email || !password) {
-      console.log('Error: Please fill in all fields');
+      // Missing fields; caller handles UI
       return;
     }
     

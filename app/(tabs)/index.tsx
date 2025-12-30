@@ -11,7 +11,7 @@ export default function HomeScreen() {
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.log('Error:', error.message);
+      // sign out error handled silently here
     } else {
       router.replace('/auth');
     }

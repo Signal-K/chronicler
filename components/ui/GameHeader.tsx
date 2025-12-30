@@ -17,6 +17,8 @@ type GameHeaderProps = {
   canShovel?: boolean;
   isHarvestSelected?: boolean;
   isShovelSelected?: boolean;
+  level?: number;
+  onLevelPress?: () => void;
 };
 
 export function GameHeader({ 
@@ -27,13 +29,14 @@ export function GameHeader({
   isDaytime = true,
   onWeatherPress,
   onOpenShop,
+  level,
+  onLevelPress,
 }: GameHeaderProps) {
   const getWeatherIcon = () => {
     // Show moon at night, weather icons during day
     if (!isDaytime) {
       return '🌙';
     }
-    
     switch (weather) {
       case 'rainy':
         return '🌧️';
@@ -62,8 +65,26 @@ export function GameHeader({
         <Text style={styles.weatherIcon}>{getWeatherIcon()}</Text>
       </Pressable>
 
+      {/* Level badge (debug: clickable, alert, log, color change) */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.levelBadge,
+          pressed && { backgroundColor: '#f87171', borderColor: '#b91c1c' }
+        ]}
+        onPress={() => {
+          if (onLevelPress) {
+            console.log('🟢 GameHeader: Level badge pressed');
+            onLevelPress();
+          } else {
+            console.log('🟡 GameHeader: onLevelPress not defined');
+          }
+        }}
+      >
+        <Text style={styles.levelText}>Lv.{level ?? 0}</Text>
+      </Pressable>
+
       {/* Water balance */}
-      <View style={[styles.waterBadge, { backgroundColor: waterColor, borderColor: waterBorderColor }]}>
+      <View style={[styles.waterBadge, { backgroundColor: waterColor, borderColor: waterBorderColor }]}> 
         <Text style={styles.waterIcon}>💧</Text>
         <Text style={styles.badgeText}>{water}/{maxWater}</Text>
       </View>
@@ -144,5 +165,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: '#1c1917',
+  },
+  levelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#a16207',
+    marginHorizontal: 4,
+    minWidth: 48,
+    justifyContent: 'center',
+  },
+  levelText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#a16207',
   },
 });

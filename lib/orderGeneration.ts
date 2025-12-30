@@ -291,6 +291,5 @@ export async function checkAndGenerateOrders(): Promise<Order[]> {
     await markOrdersGenerated();
     return newOrders;
   }
-  console.log('⏸️  Not generating orders (time not right or slots full)');
   return [];
 }

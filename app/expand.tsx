@@ -8,11 +8,13 @@ import { MapCard } from '../components/garden/MapCard';
 import { SimpleToolbar } from '../components/garden/SimpleToolbar';
 import { GameHeader } from '../components/ui/GameHeader';
 import { useMapSystem } from '../hooks/useMapSystem';
+import { usePlayerExperience } from '../hooks/usePlayerExperience';
 
 export default function ExpandScreen() {
   const router = useRouter();
   const { getAllMaps, unlockMap, setActiveMap, activeMapId, isLoading } = useMapSystem();
   const [coins, setCoins] = useState(500); // TODO: Get from game state
+  const { experience } = usePlayerExperience();
 
   const handleNavigate = (route: string) => {
     router.replace(route as any);
@@ -72,6 +74,10 @@ export default function ExpandScreen() {
         canShovel={false} 
         isHarvestSelected={false}
         isShovelSelected={false}
+        level={experience?.level ?? 0}
+        onLevelPress={() => {
+          router.push('/experience');
+        }}
       />
       
       {/* Background */}

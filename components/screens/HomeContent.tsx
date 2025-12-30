@@ -5,7 +5,6 @@ import { usePlotActions } from '../../hooks/usePlotActions';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
 import { FlyingBee } from '../hives/FlyingBee';
-import GrassTexture from '../ui/GrassTexture';
 import { InfoDialog } from '../ui/InfoDialog';
 
 type FlyingBeeData = {
@@ -85,9 +84,14 @@ export function HomeContent({
         </View>
       )}
       {/* Garden or expanded terrain */}
+      {/* Show the garden grid for both main and expanded pages. FarmPager passes the correct page plots. */}
       {verticalPage === 'expand' ? (
         <View style={styles.expandTerrain}>
-          <GrassTexture style={{ flex: 1 }} />
+          <GardenGrid 
+            plots={plots}
+            selectedTool={selectedAction}
+            onPlotPress={handlePlotPress}
+          />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.content}>

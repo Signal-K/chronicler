@@ -73,10 +73,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 15,
     growthImages: [
-      'assets/Sprites/Crops/Tomato/1 - Tomato Seed.png',
-      'assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png',
-      'assets/Sprites/Crops/Tomato/3 - Tomato Mid.png',
-      'assets/Sprites/Crops/Tomato/4 - Tomato Full.png',
+      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
+      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
+      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
+      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
     nectar: {
       producesNectar: true,
@@ -112,10 +112,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 12,
     growthImages: [
-      'assets/Sprites/Crops/Pumpkin/1 - Pumpkin Seed.png',
-      'assets/Sprites/Crops/Pumpkin/2 - Pumpkin Sprout.png',
-      'assets/Sprites/Crops/Pumpkin/3 - Pumpkin Mid.png',
-      'assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png',
+      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
+      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
+      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
+      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
     nectar: {
       producesNectar: true,
@@ -190,10 +190,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 10,
     growthImages: [
-      'assets/Sprites/Crops/Potato/1 - Potato Seed.png',
-      'assets/Sprites/Crops/Potato/2 - Potato Sprout.png',
-      'assets/Sprites/Crops/Potato/3 - Potato Mid.png',
-      'assets/Sprites/Crops/Potato/4 - Potato Full.png',
+      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
+      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
+      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
+      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
     nectar: {
       producesNectar: true,
@@ -229,10 +229,10 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 20,
     growthImages: [
-      'assets/Sprites/Crops/Sunflower/1 - Sunflower Seed.png',
-      'assets/Sprites/Crops/Sunflower/2 - Sunflower Sprout.png',
-      'assets/Sprites/Crops/Sunflower/3 - Sunflower Mid.png',
-      'assets/Sprites/Crops/Sunflower/4 - Sunflower Full.png',
+      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
+      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
+      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
+      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
     ],
     nectar: {
       producesNectar: true,

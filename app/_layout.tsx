@@ -10,11 +10,9 @@ import { useColorScheme } from '../hooks/use-color-scheme';
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   
-  console.log('📱 RootLayout rendering', { colorScheme });
-  
-  // Add test to ensure component is mounting
+  // Root layout mounted; using color scheme from hook
   useEffect(() => {
-    console.log('✅ RootLayout mounted successfully');
+    // no-op mount side-effect
   }, []);
 
   return (
@@ -31,6 +29,7 @@ export default function RootLayout() {
           <Stack.Screen name="inventory" options={{ headerShown: false }} />
           <Stack.Screen name="orders" options={{ headerShown: false }} />
           <Stack.Screen name="settings" options={{ headerShown: false }} />
+          <Stack.Screen name="experience" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="auto" />

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type PlotData = {
   state: 'empty' | 'tilled' | 'planted' | 'growing';
@@ -41,23 +41,30 @@ export function useGameState() {
   const [selectedAction, setSelectedAction] = useState<Tool>(null);
   const [selectedPlant, setSelectedPlant] = useState<string>('tomato');
   const [loaded, setLoaded] = useState(false);
+  const lastPlotsTsRef = useRef<number>(0);
+  const lastInventoryTsRef = useRef<number>(0);
 
   // Load from storage
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [plotsData, inventoryData] = await Promise.all([
+        const [plotsData, inventoryData, plotsTs, inventoryTs] = await Promise.all([
           AsyncStorage.getItem('plots'),
           AsyncStorage.getItem('inventory'),
+          AsyncStorage.getItem('plots_updated_at'),
+          AsyncStorage.getItem('inventory_updated_at'),
         ]);
-        
+
         if (plotsData) {
           setPlots(JSON.parse(plotsData));
         }
-        
+
         if (inventoryData) {
           setInventory(JSON.parse(inventoryData));
         }
+
+        lastPlotsTsRef.current = plotsTs ? Number(plotsTs) : 0;
+        lastInventoryTsRef.current = inventoryTs ? Number(inventoryTs) : 0;
       } catch (e) {
         console.error('Failed to load data', e);
       } finally {
@@ -70,16 +77,87 @@ export function useGameState() {
 
   // Save plots to storage (only after initial load)
   useEffect(() => {
-    if (loaded) {
-      AsyncStorage.setItem('plots', JSON.stringify(plots));
-    }
+    if (!loaded) return;
+
+    let cancelled = false;
+
+    const savePlots = async () => {
+      try {
+        const [storedString, storedTsString] = await Promise.all([
+          AsyncStorage.getItem('plots'),
+          AsyncStorage.getItem('plots_updated_at'),
+        ]);
+
+        const storedTs = storedTsString ? Number(storedTsString) : 0;
+
+        // If storage has a newer version, adopt it instead of overwriting
+        if (storedTs > lastPlotsTsRef.current && storedString) {
+          setPlots(JSON.parse(storedString));
+          lastPlotsTsRef.current = storedTs;
+          return;
+        }
+
+        const currentString = JSON.stringify(plots);
+
+        // If storage already matches our state, skip writing
+        if (storedString === currentString) {
+          return;
+        }
+
+        const now = Date.now();
+        await AsyncStorage.setItem('plots', currentString);
+        await AsyncStorage.setItem('plots_updated_at', String(now));
+        lastPlotsTsRef.current = now;
+      } catch (e) {
+        console.error('Failed to save plots', e);
+      }
+    };
+
+    savePlots();
+
+    return () => {
+      cancelled = true;
+    };
   }, [plots, loaded]);
   
   // Save inventory to storage (only after initial load)
   useEffect(() => {
-    if (loaded) {
-      AsyncStorage.setItem('inventory', JSON.stringify(inventory));
-    }
+    if (!loaded) return;
+
+    let cancelled = false;
+
+    const saveInventory = async () => {
+      try {
+        const [storedString, storedTsString] = await Promise.all([
+          AsyncStorage.getItem('inventory'),
+          AsyncStorage.getItem('inventory_updated_at'),
+        ]);
+
+        const storedTs = storedTsString ? Number(storedTsString) : 0;
+
+        if (storedTs > lastInventoryTsRef.current && storedString) {
+          setInventory(JSON.parse(storedString));
+          lastInventoryTsRef.current = storedTs;
+          return;
+        }
+
+        const currentString = JSON.stringify(inventory);
+        if (storedString === currentString) return;
+
+        const now = Date.now();
+        await AsyncStorage.setItem('inventory', currentString);
+        await AsyncStorage.setItem('inventory_updated_at', String(now));
+        lastInventoryTsRef.current = now;
+      } catch (e) {
+        console.error('Failed to save inventory', e);
+      }
+    };
+
+    saveInventory();
+
+    return () => {
+      cancelled = true;
+    };
   }, [inventory, loaded]);
 
   // Growth timer

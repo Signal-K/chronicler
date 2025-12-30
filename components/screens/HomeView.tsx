@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -13,6 +14,7 @@ import { useHiveState } from '../../hooks/useHiveState';
 import { useHoneyProduction } from '../../hooks/useHoneyProduction';
 import { useMapSystem } from '../../hooks/useMapSystem';
 import { usePanelManager } from '../../hooks/usePanelManager';
+import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import { usePollinationFactor } from '../../hooks/usePollinationFactor';
 import { useWaterSystem } from '../../hooks/useWaterSystem';
 import { checkAndGenerateOrders } from '../../lib/orderGeneration';
@@ -26,6 +28,7 @@ import { FarmPager } from './FarmPager';
 import { NestsContent } from './NestsContent';
 
 export function HomeView() {
+  const { experience } = usePlayerExperience();
   const [verticalPage, setVerticalPage] = useState<'main' | 'expand'>('main');
   const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState<'nests' | 'home' | 'landscape' | 'expand' | 'godot'>('home');
@@ -97,6 +100,24 @@ export function HomeView() {
     const interval = setInterval(() => checkAndGenerateOrders().catch(err => console.error('Failed to check orders:', err)), 60000);
     return () => clearInterval(interval);
   }, []);
+  
+    // When the user navigates to the expanded farm page, reload plots from storage
+    useEffect(() => {
+      const refreshPlotsFromStorage = async () => {
+        try {
+          const [storedPlots, storedInventory] = await Promise.all([
+            AsyncStorage.getItem('plots'),
+            AsyncStorage.getItem('inventory'),
+          ]);
+          if (storedPlots) setPlotsState(JSON.parse(storedPlots));
+          if (storedInventory) setInventory(JSON.parse(storedInventory));
+        } catch (e) {
+          // ignore storage read errors
+        }
+      };
+
+      refreshPlotsFromStorage();
+    }, [verticalPage, setPlotsState]);
 
   useEffect(() => {
     if ((selectedAction as any) === 'bottle' && currentScreen === 'nests') {
@@ -125,7 +146,19 @@ export function HomeView() {
       <View style={styles.container}>
         <View style={styles.statusBarArea} />
         <StatusBar style="light" hidden />
-        <GameHeader coins={inventory.coins} water={currentWater} maxWater={maxWater} weather="sunny" isDaytime={isDaytime} onWeatherPress={handleWeatherPress} onOpenShop={() => openPanel('shop')} />
+        <GameHeader 
+          coins={inventory.coins} 
+          water={currentWater} 
+          maxWater={maxWater} 
+          weather="sunny" 
+          isDaytime={isDaytime} 
+          onWeatherPress={handleWeatherPress} 
+          onOpenShop={() => openPanel('shop')} 
+          level={experience?.level ?? 0}
+          onLevelPress={() => {
+            router.push('/experience');
+          }}
+        />
         <LinearGradient colors={[mapColors.primary, mapColors.secondary, mapColors.tertiary]} style={StyleSheet.absoluteFillObject} />
         <View style={styles.contentContainer}>{renderScreenContent()}</View>
         <SimpleToolbar selectedTool={selectedAction} onToolSelect={(tool) => setSelectedAction(tool)} onPlantSelect={setSelectedPlant} canTill={plots.some(p => p.state === 'empty')} canPlant={plots.some(p => p.state === 'tilled')} canWater={plots.some(p => (p.state === 'planted' || p.state === 'growing') && p.needsWater)} canHarvest={plots.some(p => p.state !== 'empty')} seedInventory={inventory.seeds} currentRoute={currentScreen} onNavigate={setCurrentScreen} verticalPage={verticalPage} onVerticalNavigate={() => setVerticalPage('expand')} onVerticalUpNavigate={() => setVerticalPage('main')} showDownArrow={verticalPage === 'main' && plots.length > 6} />

@@ -84,67 +84,43 @@ export function Settings({
 
   // Function to reset all local game state
   const handleResetGame = async () => {
-    console.log('🔴 handleResetGame called, onResetGame exists:', !!onResetGame);
-    console.log('Reset Game: Are you sure you want to reset all game progress?');
+    
     
     // Automatically proceed with reset
     try {
-      console.log('🔴 Reset confirmed, starting...');
       // Clear all AsyncStorage keys
-      console.log('🔴 Clearing AsyncStorage...');
       await AsyncStorage.multiRemove([
         'plotStates',
         'user_stats',
         'inventory'
       ]);
-      console.log('🔴 AsyncStorage cleared');
-      
-      // Close the modal
-      console.log('🔴 Closing modal...');
+
+      // Close the modal and notify parent to reset state
       onClose();
-      
-      // Notify parent to reset state
-      console.log('🔴 Calling onResetGame...');
       if (onResetGame) {
         onResetGame();
-        console.log('🔴 onResetGame called successfully');
-      } else {
-        console.log('🔴 WARNING: onResetGame is undefined!');
       }
-      
-      // Show success message
-      console.log('Game Reset: Your game has been reset successfully!');
-      console.log('🔴 Reset complete');
     } catch (error) {
-      console.error('🔴 Error resetting game:', error);
-      console.log('Error: Failed to reset game. Please try again.');
+      // swallow errors; caller UI will reflect failure where appropriate
     }
   };
 
   // Function to logout
   const handleLogout = async () => {
-    console.log('🔵 handleLogout called');
-    console.log('Logout: Are you sure you want to logout?');
+    
     
     // Automatically proceed with logout
     try {
-      console.log('🔵 Calling supabase.auth.signOut()...');
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('🔵 Supabase signOut error:', error);
         throw error;
       }
-      console.log('🔵 Supabase signOut successful');
-      console.log('🔵 Closing modal...');
       onClose();
-      console.log('🔵 Forcing redirect to /auth');
       setTimeout(() => {
         router.replace('/auth');
       }, 100);
-      console.log('🔵 Logout complete');
     } catch (error) {
-      console.error('🔵 Error logging out:', error);
-      console.log('Error: Failed to logout. Please try again.');
+      // error handling left to caller or UI toast
     }
   };
 
@@ -259,18 +235,14 @@ export function Settings({
           {/* DEBUG: Direct reset without confirmation */}
           <TouchableOpacity
             onPress={async () => {
-              console.log('🟣 DIRECT RESET (no confirmation)')
               try {
                 await AsyncStorage.multiRemove(['plotStates', 'user_stats', 'inventory'])
-                console.log('🟣 AsyncStorage cleared')
                 if (onResetGame) {
                   onResetGame()
-                  console.log('🟣 onResetGame called')
                 }
                 onClose()
-                console.log('Debug: Direct reset executed');
               } catch (error) {
-                console.error('🟣 Error:', error)
+                // swallow errors in debug flow
               }
             }}
             style={[styles.button, { backgroundColor: '#9333EA' }]}
@@ -281,19 +253,17 @@ export function Settings({
           {/* DEBUG: Direct logout without confirmation */}
           <TouchableOpacity
             onPress={async () => {
-              console.log('🟣 DIRECT LOGOUT (no confirmation)')
               try {
                 const { error } = await supabase.auth.signOut()
-                console.log('🟣 Supabase signOut result:', error ? 'ERROR' : 'SUCCESS')
-                if (error) console.error('🟣 Error:', error)
+                if (error) {
+                  // ignore for debug flow
+                }
                 onClose()
-                // Force redirect to auth screen
-                console.log('🟣 Forcing redirect to /auth')
                 setTimeout(() => {
                   router.replace('/auth')
                 }, 100)
               } catch (error) {
-                console.error('🟣 Error:', error)
+                // ignore
               }
             }}
             style={[styles.button, { backgroundColor: '#9333EA', marginTop: 8 }]}
@@ -309,7 +279,6 @@ export function Settings({
           
           <TouchableOpacity
             onPress={() => {
-              console.log('🟡 Reset button PRESSED')
               handleResetGame()
             }}
             style={[styles.button, styles.buttonDanger]}
@@ -323,7 +292,6 @@ export function Settings({
           
           <TouchableOpacity
             onPress={() => {
-              console.log('🟡 Logout button PRESSED')
               handleLogout()
             }}
             style={[styles.button, styles.buttonSecondary]}
