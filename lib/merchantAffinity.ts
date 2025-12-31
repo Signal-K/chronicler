@@ -9,9 +9,9 @@ export const MERCHANTS: Merchant[] = [
     id: 'baker',
     name: 'The Village Baker',
     emoji: '👨‍🍳',
-    description: 'Loves wheat and grains for baking',
+    description: 'Loves grains and baking ingredients',
     affinity: 0,
-    specialties: ['wheat', 'potato'],
+    specialties: ['lavender', 'blueberry'],
   },
   {
     id: 'chef',
@@ -19,7 +19,7 @@ export const MERCHANTS: Merchant[] = [
     emoji: '👩‍🍳',
     description: 'Needs fresh vegetables for cooking',
     affinity: 0,
-    specialties: ['tomato', 'pumpkin', 'lettuce', 'potato'],
+    specialties: ['tomato', 'blueberry', 'lavender', 'blueberry'],
   },
   {
     id: 'beekeeper',
@@ -35,7 +35,7 @@ export const MERCHANTS: Merchant[] = [
     emoji: '🧑‍💼',
     description: 'Buys and sells everything',
     affinity: 0,
-    specialties: ['tomato', 'pumpkin', 'wheat', 'potato', 'lettuce', 'potato'],
+    specialties: ['tomato', 'blueberry', 'lavender', 'blueberry', 'lavender', 'blueberry'],
   },
   {
     id: 'herbalist',

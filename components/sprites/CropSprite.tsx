@@ -14,11 +14,18 @@ export function CropSprite({ crop, growthStage }: CropSpriteProps) {
     return null;
   }
 
-  // Growth stage is 1-4, array is 0-indexed
-  const imageIndex = Math.min(Math.max(growthStage - 1, 0), 3);
+  // Growth stage is 1..N, array is 0-indexed. Don't clamp to 3 here; handle clamping per-source.
+  const rawIndex = Math.max(growthStage - 1, 0);
   
   // Map crop types to their image sources
   const getImageSource = () => {
+    // Prefer the growthImages defined on the crop config
+    if (config.growthImages && config.growthImages.length > 0) {
+      const idx = Math.min(rawIndex, config.growthImages.length - 1);
+      return config.growthImages[idx];
+    }
+
+    // Fallback to built-in map for older crops
     const imageMap: Record<string, any[]> = {
       wheat: [
         require('../../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
@@ -26,7 +33,6 @@ export function CropSprite({ crop, growthStage }: CropSpriteProps) {
         require('../../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
         require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
-      // Placeholder requires for other crops - replace with actual images when available
       tomato: [
         require('../../assets/Sprites/Crops/Tomato/1 - Tomato Seed.png'),
         require('../../assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png'),
@@ -52,8 +58,10 @@ export function CropSprite({ crop, growthStage }: CropSpriteProps) {
         require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
       ],
     };
-    
-    return imageMap[crop]?.[imageIndex];
+
+    const fallback = imageMap[crop];
+    if (!fallback) return undefined;
+    return fallback[Math.min(rawIndex, fallback.length - 1)];
   };
 
   const imageSource = getImageSource();

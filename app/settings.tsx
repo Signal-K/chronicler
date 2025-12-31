@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -6,11 +5,16 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { getLocalDataSummary } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setOverride as setThemeOverride } from '../hooks/themeManager';
+import { useThemeColor } from '../hooks/use-theme-color';
+import { useColorScheme } from '../hooks/use-color-scheme';
 
 export default function SettingsScreen() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [isGuest, setIsGuest] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
   const [locationPermission, setLocationPermission] = useState<string>('unknown');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
@@ -44,6 +48,19 @@ export default function SettingsScreen() {
     loadPlotStates();
     loadHoneySettings();
     loadLocalDataSummary();
+
+    // load persisted dark mode preference (set runtime override)
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem('darkMode');
+        if (stored !== null) {
+          const v = stored === 'true';
+          setThemeOverride(v ? 'dark' : 'light');
+        }
+      } catch {
+        // ignore
+      }
+    })();
     
     // Auto-refresh timer display every second for watered plots
     const interval = setInterval(() => {
@@ -199,10 +216,14 @@ export default function SettingsScreen() {
     }
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // TODO: Implement actual dark mode functionality
-    // dark mode toggle changed
+  const toggleDarkMode = async () => {
+    const newValue = !isDark;
+    try {
+      await AsyncStorage.setItem('darkMode', newValue ? 'true' : 'false');
+    } catch (e) {
+      // ignore write errors
+    }
+    setThemeOverride(newValue ? 'dark' : 'light');
   };
 
   const toggleAutoFillHoney = async () => {
@@ -242,18 +263,18 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+    <View style={[styles.container, isDark && styles.darkContainer]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isDark && styles.darkHeader]}>
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => router.back()}
         >
-          <Text style={[styles.backButtonText, isDarkMode && styles.darkText]}>← Back</Text>
+          <Text style={[styles.backButtonText, isDark && styles.darkText]}>← Back</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, isDarkMode && styles.darkText]}>Settings</Text>
+        <Text style={[styles.headerTitle, isDark && styles.darkText]}>Settings</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -261,14 +282,14 @@ export default function SettingsScreen() {
       <View style={styles.content}>
         
         {/* Account Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Account</Text>
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Account</Text>
           
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>User</Text>
-              <Text style={[styles.settingValue, isDarkMode && styles.darkText]}>{userEmail}</Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>User</Text>
+              <Text style={[styles.settingValue, isDark && styles.darkText]}>{userEmail}</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 {isGuest ? 'Guest Account' : 'Full Account'}
               </Text>
             </View>
@@ -290,62 +311,62 @@ export default function SettingsScreen() {
         </View>
 
         {/* Local Progress Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Local Progress</Text>
+          <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Local Progress</Text>
           
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Saved Data</Text>
-              <Text style={[styles.settingValue, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Saved Data</Text>
+              <Text style={[styles.settingValue, isDark && styles.darkText]}>
                 {localDataSummary.keyDetails.length} items saved
               </Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 {Math.round(localDataSummary.totalDataSize / 1024)}KB • Experience, inventory, hives & more
               </Text>
             </View>
           </View>
 
           <View style={styles.progressInfoContainer}>
-            <Text style={[styles.progressInfoText, isDarkMode && styles.darkText]}>
+            <Text style={[styles.progressInfoText, isDark && styles.darkText]}>
               💾 Your progress is automatically preserved when you sign in or create an account
             </Text>
-            <Text style={[styles.progressInfoText, isDarkMode && styles.darkText]}>
+            <Text style={[styles.progressInfoText, isDark && styles.darkText]}>
               🔒 All data stays on your device until you choose to sync
             </Text>
           </View>
         </View>
 
         {/* Appearance Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Appearance</Text>
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Appearance</Text>
           
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Dark Mode</Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Dark Mode</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 Switch between light and dark themes
               </Text>
             </View>
             <Switch
-              value={isDarkMode}
+              value={isDark}
               onValueChange={toggleDarkMode}
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
+              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({}, 'tint') }}
+              thumbColor={isDark ? useThemeColor({}, 'tint') : useThemeColor({}, 'background')}
             />
           </View>
         </View>
 
         {/* Honey Production Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>🍯 Honey Production</Text>
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🍯 Honey Production</Text>
           
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Auto-Fill Honey</Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Auto-Fill Honey</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 Automatically track honey production based on planted and harvested crops
               </Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 {autoFillHoneyEnabled 
                   ? '🐝 Bees will collect nectar from your active crops' 
                   : '⭕ Manual honey management only'
@@ -355,19 +376,19 @@ export default function SettingsScreen() {
             <Switch
               value={autoFillHoneyEnabled}
               onValueChange={toggleAutoFillHoney}
-              trackColor={{ false: '#767577', true: '#FFB300' }}
-              thumbColor={autoFillHoneyEnabled ? '#FF8F00' : '#f4f3f4'}
+              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({ light: '#FFB300', dark: '#FFB300' }, 'tint') }}
+              thumbColor={autoFillHoneyEnabled ? useThemeColor({ light: '#FF8F00', dark: '#FF8F00' }, 'tint') : useThemeColor({}, 'background')}
             />
           </View>
           
           {/* Fast Forward Honey Production */}
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Fast Forward Production</Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Fast Forward Production</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 Simulate 8 hours of honey production from current/recent crops
               </Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 {autoFillHoneyEnabled 
                   ? '🍯 Ready to fast forward honey production' 
                   : '⚠️ Requires Auto-Fill Honey to be enabled'
@@ -394,13 +415,13 @@ export default function SettingsScreen() {
         </View>
 
         {/* Permissions Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>Permissions</Text>
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Permissions</Text>
           
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Location</Text>
-              <Text style={[styles.settingSubtext, isDarkMode && styles.darkText]}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Location</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
                 Required for weather features
               </Text>
               <Text style={[styles.permissionStatus, { color: getPermissionStatusColor() }]}>
@@ -419,17 +440,17 @@ export default function SettingsScreen() {
         </View>
 
         {/* Growth Algorithm Section */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>🌱 Plant Growth Algorithm</Text>
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🌱 Plant Growth Algorithm</Text>
           
           <View style={styles.algorithmInfo}>
-            <Text style={[styles.algorithmText, isDarkMode && styles.darkText]}>
+            <Text style={[styles.algorithmText, isDark && styles.darkText]}>
               The growth rate system calculates optimal conditions for your plants based on real-time environmental data:
             </Text>
             
             <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDarkMode && styles.darkText]}>🌡️ Temperature Factor</Text>
-              <Text style={[styles.factorDetails, isDarkMode && styles.darkText]}>
+              <Text style={[styles.factorTitle, isDark && styles.darkText]}>🌡️ Temperature Factor</Text>
+              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
                 • Optimal: 18-25°C (100% efficiency){'\n'}
                 • Good: 10-18°C or 25-30°C (50-100%){'\n'}
                 • Poor: 5-10°C or 30-35°C (10-50%){'\n'}
@@ -438,8 +459,8 @@ export default function SettingsScreen() {
             </View>
             
             <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDarkMode && styles.darkText]}>💧 Humidity Factor</Text>
-              <Text style={[styles.factorDetails, isDarkMode && styles.darkText]}>
+              <Text style={[styles.factorTitle, isDark && styles.darkText]}>💧 Humidity Factor</Text>
+              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
                 • Optimal: 40-70% (100% efficiency){'\n'}
                 • Moderate: 20-40% or 70-85% (50-100%){'\n'}
                 • Poor: Below 20% or above 85% (≤70%)
@@ -447,8 +468,8 @@ export default function SettingsScreen() {
             </View>
             
             <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDarkMode && styles.darkText]}>🪐 Planetary Factor</Text>
-              <Text style={[styles.factorDetails, isDarkMode && styles.darkText]}>
+              <Text style={[styles.factorTitle, isDark && styles.darkText]}>🪐 Planetary Factor</Text>
+              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
                 • Earth: No penalty (100%){'\n'}
                 • Other Planets: 90% growth penalty (10% efficiency){'\n'}
                 • Reflects challenges of off-world cultivation
@@ -456,8 +477,8 @@ export default function SettingsScreen() {
             </View>
             
             <View style={styles.formulaSection}>
-              <Text style={[styles.formulaTitle, isDarkMode && styles.darkText]}>📊 Final Calculation</Text>
-              <Text style={[styles.formulaText, isDarkMode && styles.darkText]}>
+              <Text style={[styles.formulaTitle, isDark && styles.darkText]}>📊 Final Calculation</Text>
+              <Text style={[styles.formulaText, isDark && styles.darkText]}>
                 Growth Rate = Base Rate × Temperature Factor × Humidity Factor × Planet Factor
               </Text>
             </View>
@@ -465,31 +486,31 @@ export default function SettingsScreen() {
         </View>
 
         {/* Debugging Section - Plot States */}
-        <View style={[styles.section, isDarkMode && styles.darkSection]}>
+        <View style={[styles.section, isDark && styles.darkSection]}>
           <View style={styles.debugHeader}>
-            <Text style={[styles.sectionTitle, isDarkMode && styles.darkText]}>🐛 Plot Debug Info</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🐛 Plot Debug Info</Text>
             <TouchableOpacity 
-              style={[styles.refreshButton, isDarkMode && styles.darkRefreshButton]}
+              style={[styles.refreshButton, isDark && styles.darkRefreshButton]}
               onPress={loadPlotStates}
             >
-              <Text style={[styles.refreshText, isDarkMode && styles.darkText]}>🔄 Refresh</Text>
+              <Text style={[styles.refreshText, isDark && styles.darkText]}>🔄 Refresh</Text>
             </TouchableOpacity>
           </View>
           
           <View style={styles.debugGrid}>
             {[0, 1, 2, 3, 4, 5].map(plotId => (
-              <View key={plotId} style={[styles.debugPlot, isDarkMode && styles.darkDebugPlot]}>
-                <Text style={[styles.debugPlotTitle, isDarkMode && styles.darkText]}>
+              <View key={plotId} style={[styles.debugPlot, isDark && styles.darkDebugPlot]}>
+                <Text style={[styles.debugPlotTitle, isDark && styles.darkText]}>
                   Plot {plotId + 1}
                 </Text>
-                <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                <Text style={[styles.debugText, isDark && styles.darkText]}>
                   💧 Watered: {plotStates[plotId]?.watered ? '✅' : '❌'}
                 </Text>
-                <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                <Text style={[styles.debugText, isDark && styles.darkText]}>
                   🌱 Planted: {plotStates[plotId]?.planted ? '✅' : '❌'}
                 </Text>
                 {plotStates[plotId]?.watered && plotStates[plotId]?.wateredAt && (
-                  <Text style={[styles.debugText, isDarkMode && styles.darkText]}>
+                  <Text style={[styles.debugText, isDark && styles.darkText]}>
                     ⏱️ Timer: {formatTimeRemaining(plotStates[plotId].wateredAt!)}
                   </Text>
                 )}
@@ -523,6 +544,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  darkHeader: {
+    backgroundColor: '#151718',
   },
   backButton: {
     padding: 5,

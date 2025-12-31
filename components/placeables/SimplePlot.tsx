@@ -8,6 +8,7 @@ const getPlotWidth = () => {
 };
 
 import type { PlotData, Tool } from '../../hooks/useGameState';
+import { getCropConfig } from '../../lib/cropConfig';
 
 type PlotProps = {
   index: number;
@@ -58,9 +59,19 @@ export function SimplePlot({ index, plot, selectedTool, onPress, displayNumber, 
 
   const getCropImageSource = (cropType: string | null, stage: number) => {
     if (!cropType) return null;
-    // Use the wheat assets for all crops (shared placeholder assets)
-    // Stage is 1-5, growthImages index is 0-3; stage 5 maps to index 3
-    const imageIndex = Math.min(stage - 1, 3);
+    // Prefer images defined on the crop config (supports 5 stages)
+    const config = getCropConfig(cropType);
+    if (config && config.growthImages && config.growthImages.length > 0) {
+      const idx = Math.min(Math.max(stage - 1, 0), config.growthImages.length - 1);
+      const src = config.growthImages[idx];
+      try {
+        console.log('SimplePlot.getCropImageSource (from config)', { cropType, stage, idx, hasImage: !!src });
+      } catch (e) {}
+      return src;
+    }
+
+    // Fallback to wheat placeholder assets if crop config missing images
+    const imageIndex = Math.min(Math.max(stage - 1, 0), 3);
     const wheatImages = [
       require('../../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
       require('../../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
@@ -69,10 +80,8 @@ export function SimplePlot({ index, plot, selectedTool, onPress, displayNumber, 
     ];
     const src = wheatImages[imageIndex] || null;
     try {
-      console.log('SimplePlot.getCropImageSource', { cropType, stage, hasImage: !!src });
-    } catch (e) {
-      // ignore logging errors in production
-    }
+      console.log('SimplePlot.getCropImageSource (fallback wheat)', { cropType, stage, imageIndex, hasImage: !!src });
+    } catch (e) {}
     return src;
   };
 

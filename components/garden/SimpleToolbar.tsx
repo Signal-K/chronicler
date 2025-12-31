@@ -52,15 +52,25 @@ export function SimpleToolbar({
 
   const availablePlants = [
     { id: 'tomato', name: 'Tomato', icon: '🍅', color: '#ef4444' },
-    { id: 'carrot', name: 'Carrot', icon: '🥕', color: '#f97316' },
-    { id: 'wheat', name: 'Wheat', icon: '🌾', color: '#ca8a04' },
-    { id: 'corn', name: 'Corn', icon: '🌽', color: '#eab308' },
+    { id: 'sunflower', name: 'Sunflower', icon: '🌻', color: '#f59e0b' },
+    { id: 'blueberry', name: 'Blueberry', icon: '🫐', color: '#2563eb' },
+    { id: 'lavender', name: 'Lavender', icon: '🌸', color: '#7c3aed' },
   ];
 
   // Get crop image for plant selection
   const getCropImageForPlant = (cropId: string) => {
-    // Always use the wheat sprite as a placeholder until other crop assets are available
-    return require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png');
+    switch (cropId) {
+      case 'tomato':
+        return require('../../assets/Sprites/Crops/Tomato.png');
+      case 'sunflower':
+        return require('../../assets/Sprites/Crops/Sunflower.png');
+      case 'blueberry':
+        return require('../../assets/Sprites/Crops/Blueberry.png');
+      case 'lavender':
+        return require('../../assets/Sprites/Crops/Lavender.png');
+      default:
+        return require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png');
+    }
   };
 
   const handlePlantClick = () => {

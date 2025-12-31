@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ExperienceBar } from '../components/ui/ExperienceBar';
+import { useThemeColor } from '../hooks/use-theme-color';
 import { useGameState } from '../hooks/useGameState';
 import { usePlayerExperience } from '../hooks/usePlayerExperience';
 
@@ -23,6 +24,12 @@ export default function ExperienceDetailsScreen() {
   const salesCompleted = experience?.salesCompleted ?? 0;
 
   const { plots, setPlots, inventory, setInventory } = useGameState();
+  const bg = useThemeColor({}, 'background');
+  const headerColor = useThemeColor({}, 'tint');
+  const titleColor = useThemeColor({}, 'text');
+  const sectionColor = useThemeColor({}, 'icon');
+  const cardBg = useThemeColor({ light: '#fff7ed', dark: '#0f1720' }, 'background');
+  const cardBorder = useThemeColor({ light: '#f3d9bf', dark: '#262b2b' }, 'icon');
 
   const isUpgradePurchased = (pagesToHave: number) => {
     return plots.length >= pagesToHave * 6;
@@ -69,11 +76,11 @@ export default function ExperienceDetailsScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: bg }] }>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>{'< Back'}</Text>
+        <Text style={[styles.backButtonText, { color: titleColor }]}>{'< Back'}</Text>
       </TouchableOpacity>
-      <Text style={styles.header}>Level {level}</Text>
+      <Text style={[styles.header, { color: headerColor }]}>Level {level}</Text>
       <ExperienceBar
         level={level}
         currentXP={xpInCurrentLevel}
@@ -81,21 +88,21 @@ export default function ExperienceDetailsScreen() {
         progress={progress}
         showDetails
       />
-      <Text style={styles.sectionTitle}>Experience Breakdown</Text>
-      <View style={styles.breakdownContainer}>
-        <Text style={styles.breakdownItem}>Total XP: {totalXP}</Text>
-        <Text style={styles.breakdownItem}>Harvests: {harvestsCount}</Text>
-        <Text style={styles.breakdownItem}>First-Time Harvests: {uniqueHarvests}</Text>
-        <Text style={styles.breakdownItem}>Pollination Events: {pollinationEvents}</Text>
-        <Text style={styles.breakdownItem}>Sales Completed: {salesCompleted}</Text>
+      <Text style={[styles.sectionTitle, { color: sectionColor }]}>Experience Breakdown</Text>
+      <View style={[styles.breakdownContainer, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>Total XP: {totalXP}</Text>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>Harvests: {harvestsCount}</Text>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>First-Time Harvests: {uniqueHarvests}</Text>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>Pollination Events: {pollinationEvents}</Text>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>Sales Completed: {salesCompleted}</Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Upgrades</Text>
+      <Text style={[styles.sectionTitle, { color: sectionColor }]}>Upgrades</Text>
       <View style={styles.upgradesContainer}>
-        <View style={styles.upgradeCard}>
-          <Text style={styles.upgradeTitle}>Extra Farm Page (6 plots)</Text>
-          <Text style={styles.upgradeDesc}>Unlock a second farm page with 6 additional crop slots.</Text>
-          <Text style={styles.upgradeInfo}>Unlocks at Level 3 · Cost: 20 coins</Text>
+        <View style={[styles.upgradeCard, { backgroundColor: cardBg, borderColor: cardBorder }] }>
+          <Text style={[styles.upgradeTitle, { color: titleColor }]}>Extra Farm Page (6 plots)</Text>
+          <Text style={[styles.upgradeDesc, { color: titleColor }]}>Unlock a second farm page with 6 additional crop slots.</Text>
+          <Text style={[styles.upgradeInfo, { color: titleColor }]}>Unlocks at Level 3 · Cost: 20 coins</Text>
           <TouchableOpacity
             style={[styles.upgradeButton, (isUpgradePurchased(2) || level < 3) ? styles.buttonDisabled : null]}
             onPress={() => purchaseUpgrade(3, 20, 2)}
@@ -105,10 +112,10 @@ export default function ExperienceDetailsScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.upgradeCard}>
-          <Text style={styles.upgradeTitle}>Extra Farm Page (6 plots)</Text>
-          <Text style={styles.upgradeDesc}>Unlock another farm page with 6 more crop slots.</Text>
-          <Text style={styles.upgradeInfo}>Unlocks at Level 6 · Cost: 40 coins</Text>
+        <View style={[styles.upgradeCard, { backgroundColor: cardBg, borderColor: cardBorder }] }>
+          <Text style={[styles.upgradeTitle, { color: titleColor }]}>Extra Farm Page (6 plots)</Text>
+          <Text style={[styles.upgradeDesc, { color: titleColor }]}>Unlock another farm page with 6 more crop slots.</Text>
+          <Text style={[styles.upgradeInfo, { color: titleColor }]}>Unlocks at Level 6 · Cost: 40 coins</Text>
           <TouchableOpacity
             style={[styles.upgradeButton, (isUpgradePurchased(3) || level < 6) ? styles.buttonDisabled : null]}
             onPress={() => purchaseUpgrade(6, 40, 3)}

@@ -1,11 +1,12 @@
 
-import { useRouter } from "expo-router"
-import React from "react"
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { CoinIcon, GlassBottleIcon, PotatoSeedIcon, PumpkinSeedIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons"
-import { CROP_CONFIGS } from '../../lib/cropConfig';
+import { useRouter } from "expo-router";
+import React from "react";
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CropsTab } from '../../components/inventory/CropsTab';
+import { CoinIcon, GlassBottleIcon, PotatoSeedIcon, PumpkinSeedIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons";
+import { useThemeColor } from '../../hooks/use-theme-color';
 import type { InventoryData } from '../../hooks/useGameState';
+import { CROP_CONFIGS } from '../../lib/cropConfig';
 
 type ShopProps = {
   inventory: InventoryData;
@@ -25,6 +26,15 @@ const shopItems = [
 
 export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExpand }: ShopProps) {
   const router = useRouter()
+  const bg = useThemeColor({}, 'background');
+  const headerBg = useThemeColor({ light: '#FDE68A', dark: '#1a1a1a' }, 'background');
+  const headerBorder = useThemeColor({ light: '#92400E', dark: '#2b2b2b' }, 'icon');
+  const headerText = useThemeColor({}, 'tint');
+  const cardBg = useThemeColor({ light: '#FEF9C3', dark: '#0f1720' }, 'background');
+  const cardBorder = useThemeColor({ light: '#F59E0B', dark: '#2b2b2b' }, 'icon');
+  const itemText = useThemeColor({}, 'text');
+  const priceBg = useThemeColor({ light: '#FEF3C7', dark: '#0f1720' }, 'background');
+  const primaryBtnBg = useThemeColor({ light: '#92400E', dark: '#7c341f' }, 'icon');
   
   const handlePurchase = (item: (typeof shopItems)[0]) => {
     if (inventory.coins >= item.price) {
@@ -89,27 +99,27 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
   };
 
   const content = (
-    <View style={[styles.container, isExpanded && styles.expandedContainer]}>
+    <View style={[styles.container, isExpanded && styles.expandedContainer, { backgroundColor: bg }] }>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>🛍️ Shop</Text>
+      <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }] }>
+        <Text style={[styles.headerTitle, { color: headerText }]}>🛍️ Shop</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={onToggleExpand} style={styles.iconButton}>
-            <Text style={styles.iconButtonText}>{isExpanded ? "−" : "+"}</Text>
+            <Text style={[styles.iconButtonText, { color: headerText }]}>{isExpanded ? "−" : "+"}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={onClose} style={styles.iconButton}>
-            <Text style={styles.iconButtonText}>✕</Text>
+            <Text style={[styles.iconButtonText, { color: headerText }]}>✕</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Coins Display */}
-        <View style={styles.coinsCard}>
+        <View style={[styles.coinsCard, { backgroundColor: cardBg, borderColor: cardBorder }] }>
           <CoinIcon size={32} />
           <View style={styles.coinsInfo}>
             <Text style={styles.coinsLabel}>Your Balance</Text>
-            <Text style={styles.coinsValue}>{inventory.coins}</Text>
+            <Text style={[styles.coinsValue, { color: itemText }]}>{inventory.coins}</Text>
           </View>
         </View>
 
@@ -122,7 +132,7 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
             return (
               <TouchableOpacity
                 key={item.type}
-                style={[styles.gridItem, !canAfford && styles.gridItemDisabled]}
+                style={[styles.gridItem, !canAfford && styles.gridItemDisabled, { backgroundColor: bg, borderColor: cardBorder }]}
                 onPress={() => handlePurchase(item)}
                 disabled={!canAfford}
                 activeOpacity={0.7}
@@ -130,13 +140,13 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
                 <View style={styles.itemIconContainer}>
                   <ItemIcon size={56} />
                 </View>
-                <Text style={styles.itemNameText}>{item.shortName}</Text>
+                <Text style={[styles.itemNameText, { color: itemText }]}>{item.shortName}</Text>
                 {item.description && (
-                  <Text style={styles.itemDescText} numberOfLines={1}>{item.description}</Text>
+                  <Text style={[styles.itemDescText, { color: itemText }]} numberOfLines={1}>{item.description}</Text>
                 )}
                 <View style={styles.priceContainer}>
                   <CoinIcon size={16} />
-                  <Text style={[styles.priceText, !canAfford && styles.priceTextDisabled]}>
+                  <Text style={[styles.priceText, !canAfford && styles.priceTextDisabled, { color: itemText }]}>
                     {item.price}
                   </Text>
                 </View>
@@ -156,12 +166,12 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
         {/* Sell miscellaneous items */}
         {inventory.items && Object.keys(inventory.items).length > 0 && (
           <View style={{ marginTop: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#92400E', marginBottom: 8 }}>Sell Items</Text>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: itemText, marginBottom: 8 }}>Sell Items</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {Object.entries(inventory.items).map(([key, val]) => (
-                <TouchableOpacity key={key} onPress={() => handleSellItem(key)} disabled={(val as number) <= 0} style={{ padding: 8, backgroundColor: '#fff', borderRadius: 8, borderWidth: 2, borderColor: '#FDE68A', marginRight: 8, marginBottom: 8 }}>
-                  <Text style={{ fontWeight: '700', color: '#92400E' }}>{key.replace(/_/g, ' ')} x{val}</Text>
-                  <Text style={{ color: '#92400E' }}>Sell for {ITEM_SELL_PRICES[key] || 5} coins</Text>
+                <TouchableOpacity key={key} onPress={() => handleSellItem(key)} disabled={(val as number) <= 0} style={{ padding: 8, backgroundColor: cardBg, borderRadius: 8, borderWidth: 2, borderColor: cardBorder, marginRight: 8, marginBottom: 8 }}>
+                  <Text style={{ fontWeight: '700', color: itemText }}>{key.replace(/_/g, ' ')} x{val}</Text>
+                  <Text style={{ color: itemText }}>Sell for {ITEM_SELL_PRICES[key] || 5} coins</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -170,12 +180,12 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
 
         {/* View Orders Button */}
         <TouchableOpacity 
-          style={styles.viewOrdersButton}
+          style={[styles.viewOrdersButton, { backgroundColor: primaryBtnBg, borderColor: cardBorder }]}
           onPress={() => router.push('/orders' as any)}
           activeOpacity={0.8}
         >
           <Text style={styles.viewOrdersIcon}>📦</Text>
-          <Text style={styles.viewOrdersButtonText}>View Orders</Text>
+          <Text style={[styles.viewOrdersButtonText, { color: priceBg }]}>View Orders</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

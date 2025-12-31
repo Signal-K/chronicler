@@ -14,10 +14,10 @@ export function Toolbar({ selectedTool, onToolSelect, onPlantSelect }: ToolbarPr
   const [showPlantMenu, setShowPlantMenu] = useState(false)
 
   const availablePlants = [
-    { id: "tomato", name: "Tomato", icon: "🍅", color: "bg-red-500" },
-    { id: "pumpkin", name: "Pumpkin", icon: "🎃", color: "bg-orange-500" },
-    { id: "wheat", name: "Wheat", icon: "🌾", color: "bg-yellow-600" },
-    { id: "potato", name: "Potato", icon: "🥔", color: "bg-yellow-700" },
+    { id: "tomato", name: "Tomato", image: "/assets/Sprites/Crops/Tomato.png", color: "bg-red-500" },
+    { id: "sunflower", name: "Sunflower", image: "/assets/Sprites/Crops/Sunflower.png", color: "bg-yellow-400" },
+    { id: "blueberry", name: "Blueberry", image: "/assets/Sprites/Crops/Blueberry.png", color: "bg-blue-700" },
+    { id: "lavender", name: "Lavender", image: "/assets/Sprites/Crops/Lavender.png", color: "bg-indigo-600" },
   ]
 
   const handlePlantClick = () => {
@@ -115,7 +115,7 @@ export function Toolbar({ selectedTool, onToolSelect, onPlantSelect }: ToolbarPr
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <span className="text-2xl mb-1">{plant.icon}</span>
+                      <img src={plant.image} alt={plant.name} className="w-8 h-8 mb-1" />
                       <span className="text-xs text-white font-bold">{plant.name}</span>
                     </motion.button>
                   ))}
