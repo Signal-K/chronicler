@@ -52,20 +52,25 @@ export function SimpleToolbar({
 
   const availablePlants = [
     { id: 'tomato', name: 'Tomato', icon: '🍅', color: '#ef4444' },
-    { id: 'carrot', name: 'Carrot', icon: '🥕', color: '#f97316' },
-    { id: 'wheat', name: 'Wheat', icon: '🌾', color: '#ca8a04' },
-    { id: 'corn', name: 'Corn', icon: '🌽', color: '#eab308' },
+    { id: 'sunflower', name: 'Sunflower', icon: '🌻', color: '#f59e0b' },
+    { id: 'blueberry', name: 'Blueberry', icon: '🫐', color: '#2563eb' },
+    { id: 'lavender', name: 'Lavender', icon: '🌸', color: '#7c3aed' },
   ];
 
   // Get crop image for plant selection
   const getCropImageForPlant = (cropId: string) => {
-    const seedIcons: Record<string, any> = {
-      wheat: require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
-      tomato: require('../../assets/Sprites/Crops/Tomato/4 - Tomato Full.png'),
-      pumpkin: require('../../assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png'),
-      potato: require('../../assets/Sprites/Crops/Potato/4 - Potato Full.png'),
-    };
-    return seedIcons[cropId];
+    switch (cropId) {
+      case 'tomato':
+        return require('../../assets/Sprites/Crops/Tomato.png');
+      case 'sunflower':
+        return require('../../assets/Sprites/Crops/Sunflower.png');
+      case 'blueberry':
+        return require('../../assets/Sprites/Crops/Blueberry.png');
+      case 'lavender':
+        return require('../../assets/Sprites/Crops/Lavender.png');
+      default:
+        return require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png');
+    }
   };
 
   const handlePlantClick = () => {
@@ -152,19 +157,19 @@ export function SimpleToolbar({
             <Text style={styles.navButtonText}>▲</Text>
           </TouchableOpacity>
         )}
-        {/* Down arrow for vertical navigation (center) */}
-        {showDownArrow && (
-          <TouchableOpacity
-            onPress={handleDownNav}
-            style={styles.navButton}
-          >
-            <Text style={styles.navButtonText}>▼</Text>
-          </TouchableOpacity>
-        )}
+        {/* Down arrow removed (left-most duplicate) */}
 
         <View style={styles.screenIndicator}>
           <Text style={styles.screenIndicatorText}>
-            {currentRoute === 'nests' ? 'HIVES' : currentRoute === 'landscape' ? 'LANDSCAPE' : currentRoute === 'expand' ? 'EXPAND' : 'FARM'}
+            {currentRoute === 'nests'
+              ? 'HIVES'
+              : currentRoute === 'landscape'
+              ? 'LANDSCAPE'
+              : currentRoute === 'expand'
+              ? 'EXPAND'
+              : currentRoute === 'home'
+              ? `FARM ${verticalPage === 'main' ? 1 : 2}`
+              : 'FARM'}
           </Text>
         </View>
 

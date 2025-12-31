@@ -51,8 +51,8 @@ export interface CropConfig {
   };
   /** Sell price per unit */
   sellPrice: number;
-  /** Growth stage images - paths to image files for each growth stage */
-  growthImages: [string, string, string, string]; // [seed/sprout, young, mature, ready]
+  /** Growth stage images - require() of image files for each growth stage */
+  growthImages: any[]; // [seed/sprout, young, mature, ready]
   /** Nectar and honey production properties */
   nectar: NectarProperties;
 }
@@ -73,10 +73,11 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 15,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      require('../assets/Sprites/Crops/Tomato.png'),
     ],
     nectar: {
       producesNectar: true,
@@ -97,121 +98,84 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       peakNectarHours: [8, 12]
     },
   },
-  pumpkin: {
-    id: 'pumpkin',
-    name: 'Pumpkin',
-    category: 'vegetable',
-    emoji: '🎃',
+  blueberry: {
+    id: 'blueberry',
+    name: 'Blueberry',
+    category: 'fruit',
+    emoji: '🫐',
     plantRequirement: {
       type: 'seed',
       amount: 1,
     },
     harvestYield: {
-      crop: { min: 2, max: 3 }, // Vegetables give more crops, no seeds
-      seeds: undefined,
+      crop: { min: 1, max: 3 },
+      seeds: { min: 0, max: 2 },
     },
-    sellPrice: 12,
+    sellPrice: 14,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      require('../assets/Sprites/Crops/Blueberry.png'),
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 75,
-      nectarQuality: 80,
+      nectarAmount: 50,
+      nectarQuality: 70,
       honeyProfile: {
         type: 'light',
+        flavor: 'sweet',
+        color: '#D0C6FF',
+        description: 'Delicate, sweet honey with light berry notes from blueberry blossoms'
+      },
+      pollen: {
+        amount: 55,
+        quality: 65,
+        color: '#A3C1E6'
+      },
+      beeAttraction: 65,
+      peakNectarHours: [8, 13]
+    },
+  },
+  lavender: {
+    id: 'lavender',
+    name: 'Lavender',
+    category: 'flower',
+    emoji: '🌸',
+    plantRequirement: {
+      type: 'seed',
+      amount: 1,
+    },
+    harvestYield: {
+      crop: { min: 1, max: 1 },
+      seeds: { min: 1, max: 2 },
+    },
+    sellPrice: 18,
+    growthImages: [
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      require('../assets/Sprites/Crops/Lavender.png'),
+    ],
+    nectar: {
+      producesNectar: true,
+      nectarAmount: 90,
+      nectarQuality: 95,
+      honeyProfile: {
+        type: 'specialty',
         flavor: 'floral',
-        color: '#F7E7A1',
-        description: 'Delicate, light honey with sweet floral notes from large pumpkin blossoms'
+        color: '#E6D1FF',
+        description: 'Fragrant, floral honey with aromatic notes from lavender fields'
       },
       pollen: {
         amount: 85,
-        quality: 75,
-        color: '#FFA500'
+        quality: 90,
+        color: '#CBB5FF'
       },
-      beeAttraction: 90,
-      peakNectarHours: [6, 10]
-    },
-  },
-  wheat: {
-    id: 'wheat',
-    name: 'Wheat',
-    category: 'grain',
-    emoji: '🌾',
-    plantRequirement: {
-      type: 'seed',
-      amount: 1,
-    },
-    harvestYield: {
-      crop: { min: 1, max: 2 },
-      seeds: { min: 2, max: 4 }, // Grains produce lots of seeds
-    },
-    sellPrice: 8,
-    growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
-    ],
-    nectar: {
-      producesNectar: false, // Wheat is wind-pollinated
-      nectarAmount: 0,
-      nectarQuality: 0,
-      honeyProfile: {
-        type: 'light',
-        flavor: 'mild',
-        color: '#F5F5DC',
-        description: 'No honey production - wheat is wind-pollinated and produces no nectar'
-      },
-      pollen: {
-        amount: 15, // Some pollen but not useful for bees
-        quality: 20,
-        color: '#F4E4A6'
-      },
-      beeAttraction: 5,
-      peakNectarHours: [0, 0]
-    },
-  },
-  potato: {
-    id: 'potato',
-    name: 'Potato',
-    category: 'vegetable',
-    emoji: '🥔',
-    plantRequirement: {
-      type: 'seed',
-      amount: 1,
-    },
-    harvestYield: {
-      crop: { min: 2, max: 3 },
-      seeds: undefined,
-    },
-    sellPrice: 10,
-    growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
-    ],
-    nectar: {
-      producesNectar: true,
-      nectarAmount: 40,
-      nectarQuality: 55,
-      honeyProfile: {
-        type: 'light',
-        flavor: 'mild',
-        color: '#F8E8B8',
-        description: 'Light, clean honey with a subtle earthy undertone from potato flowers'
-      },
-      pollen: {
-        amount: 50,
-        quality: 60,
-        color: '#FFEB3B'
-      },
-      beeAttraction: 45,
-      peakNectarHours: [9, 14]
+      beeAttraction: 98,
+      peakNectarHours: [6, 12]
     },
   },
   sunflower: {
@@ -229,10 +193,11 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     },
     sellPrice: 20,
     growthImages: [
-      'assets/Sprites/Crops/Wheat/1---Wheat-Seed.png',
-      'assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png',
-      'assets/Sprites/Crops/Wheat/3---Wheat-Mid.png',
-      'assets/Sprites/Crops/Wheat/4---Wheat-Full.png',
+      require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
+      require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
+      require('../assets/Sprites/Crops/Wheat/3---Wheat-Mid.png'),
+      require('../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
+      require('../assets/Sprites/Crops/Sunflower.png'),
     ],
     nectar: {
       producesNectar: true,

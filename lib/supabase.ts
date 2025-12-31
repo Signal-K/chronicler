@@ -21,15 +21,25 @@ const safeAsyncStorage = {
 };
 
 // Debug logging for environment variables (only in browser)
-if (isBrowser) {
+// Read env vars into locals for clarity
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+// Clearer runtime logging to help diagnose missing configuration in dev builds
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('❗ Supabase configuration missing. Make sure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set.');
+  console.error('Current values -> URL:', SUPABASE_URL ? SUPABASE_URL : '<MISSING>', 'Anon Key present?:', !!SUPABASE_ANON_KEY);
+} else {
+  // Mask key when logging
+  const maskedKey = SUPABASE_ANON_KEY.substring(0, 8) + '...' + SUPABASE_ANON_KEY.slice(-4);
   console.log('🔧 Supabase Configuration:');
-  console.log('📍 URL:', process.env.EXPO_PUBLIC_SUPABASE_URL);
-  console.log('🔑 Anon Key:', process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
+  console.log('📍 URL:', SUPABASE_URL);
+  console.log('🔑 Anon Key (masked):', maskedKey);
 }
 
 export const supabase = createClient(
-  process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
+  SUPABASE_URL!,
+  SUPABASE_ANON_KEY!,
   {
     auth: {
       storage: safeAsyncStorage,

@@ -32,6 +32,8 @@ type HomeContentProps = {
   flyingBees?: FlyingBeeData[];
   onBeePress?: (beeId: string) => void;
   verticalPage?: 'main' | 'expand';
+  totalPlots?: number;
+  baseIndex?: number;
 };
 
 export function HomeContent({
@@ -51,6 +53,8 @@ export function HomeContent({
   flyingBees = [],
   onBeePress,
   verticalPage = 'main',
+  totalPlots,
+  baseIndex = 0,
 }: HomeContentProps) {
   const [showHarvestAnimation, setShowHarvestAnimation] = React.useState(false);
   const [harvestReward, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
@@ -75,9 +79,11 @@ export function HomeContent({
     },
   });
 
+  const farmPages = Math.ceil((totalPlots ?? plots.length) / 6);
+
   return (
     <>
-      {verticalPage === 'expand' && (
+      {verticalPage === 'expand' && farmPages <= 1 && (
         <View style={styles.expandBanner}>
           <Text style={styles.expandTitle}>Expanded Farm</Text>
           <Text style={styles.expandText}>This is your expanded farm area — unlock more plots in the shop or via events.</Text>
@@ -91,6 +97,7 @@ export function HomeContent({
             plots={plots}
             selectedTool={selectedAction}
             onPlotPress={handlePlotPress}
+            baseIndex={baseIndex}
           />
         </View>
       ) : (
@@ -166,7 +173,7 @@ const styles = StyleSheet.create({
   expandTerrain: {
     flex: 1,
     backgroundColor: '#7ff3a1',
-    marginTop: 56,
+    marginTop: 20,
     borderRadius: 8,
     width: '100%',
   },

@@ -30,8 +30,8 @@ const INITIAL_PLOTS: PlotData[] = Array(6).fill(null).map(() => ({
 const INITIAL_INVENTORY: InventoryData = {
   coins: 100,
   water: 100,
-  seeds: { tomato: 5, pumpkin: 5, wheat: 5, potato: 5 },
-  harvested: { tomato: 0, pumpkin: 0, wheat: 0, potato: 0 },
+  seeds: { tomato: 5, sunflower: 5, blueberry: 5, lavender: 5 },
+  harvested: { tomato: 0, sunflower: 0, blueberry: 0, lavender: 0 },
   items: { glass_bottle: 0, bottled_nectar: 0 },
 };
 
