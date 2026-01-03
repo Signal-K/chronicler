@@ -1,20 +1,83 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { setOverride as setThemeOverride } from '../hooks/themeManager';
+import { useColorScheme } from '../hooks/use-color-scheme';
+import { useThemeColor } from '../hooks/use-theme-color';
 import { getLocalDataSummary } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setOverride as setThemeOverride } from '../hooks/themeManager';
-import { useThemeColor } from '../hooks/use-theme-color';
-import { useColorScheme } from '../hooks/use-color-scheme';
+import type { PollinationFactorData } from '../types/pollinationFactor';
+
+interface SettingsDrawerProps {
+  pollinationFactor?: PollinationFactorData;
+  onFillHives?: () => void;
+}
+
+export function Settings({ pollinationFactor, onFillHives }: SettingsDrawerProps) {
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
+  const bgColor = useThemeColor({ light: '#f5f5f5', dark: '#1a1a1a' });
+  const textColor = useThemeColor({ light: '#000', dark: '#fff' });
+  const cardBgColor = useThemeColor({ light: '#fff', dark: '#2a2a2a' });
+  const accentColor = useThemeColor({ light: '#4CAF50', dark: '#66BB6A' });
+
+  const handleFillHives = useCallback(() => {
+    console.log('🐝 Settings: handleFillHives called');
+    console.log('onFillHives prop exists:', !!onFillHives);
+    if (onFillHives) {
+      console.log('🐝 Calling onFillHives');
+      onFillHives();
+    } else {
+      console.warn('⚠️ onFillHives prop is not provided');
+    }
+  }, [onFillHives]);
+
+  return (
+    <ScrollView
+      style={[styles.drawerContainer, { backgroundColor: bgColor }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={[styles.card, { backgroundColor: cardBgColor }]}>
+        <Text style={[styles.cardTitle, { color: textColor }]}>🐝 Fill Hives</Text>
+        <Text style={[styles.cardDescription, { color: textColor }]}>
+          Use your pollination score to fill hive capacity
+        </Text>
+        {pollinationFactor && (
+          <Text style={[styles.pollinationInfo, { color: accentColor }]}>
+            Available: {Math.floor(pollinationFactor.factor)} bees
+          </Text>
+        )}
+        <TouchableOpacity
+          style={[styles.fillButton, { backgroundColor: accentColor }]}
+          onPress={() => {
+            console.log('🐝 Fill Hives button pressed');
+            handleFillHives();
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buttonText}>Fill Hives</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+}
 
 export default function SettingsScreen() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
+  // Move useThemeColor calls to top level to avoid React Hook errors
+  const darkHeaderBg = useThemeColor({ light: 'white', dark: '#151718' });
+  const darkText = useThemeColor({ light: '#333', dark: '#fff' });
+  const darkSwitchTrackFalse = useThemeColor({ light: '#767577', dark: '#444' }, 'icon');
+  const darkSwitchTrackTrue = useThemeColor({}, 'tint');
+  const darkSwitchThumb = useThemeColor({}, 'background');
+  const darkHoneySwitchTrack = useThemeColor({ light: '#FFB300', dark: '#FFB300' }, 'tint');
+  const darkHoneySwitchThumb = useThemeColor({ light: '#FF8F00', dark: '#FF8F00' }, 'tint');
   const [locationPermission, setLocationPermission] = useState<string>('unknown');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
@@ -24,7 +87,7 @@ export default function SettingsScreen() {
   const [localDataSummary, setLocalDataSummary] = useState<{
     totalKeys: number;
     totalDataSize: number;
-    keyDetails: Array<{ key: string; size: number; hasData: boolean }>;
+    keyDetails: { key: string; size: number; hasData: boolean }[];
   }>({ totalKeys: 0, totalDataSize: 0, keyDetails: [] });
 
   // Load plots data
@@ -74,7 +137,7 @@ export default function SettingsScreen() {
     try {
       const summary = await getLocalDataSummary();
       setLocalDataSummary(summary);
-    } catch (error) {
+    } catch {
       // error loading local data summary
     }
   };
@@ -101,7 +164,7 @@ export default function SettingsScreen() {
       if (saved) {
         setPlotStates(JSON.parse(saved));
       }
-    } catch (error) {
+    } catch {
       // error loading plot states
     }
   };
@@ -111,7 +174,7 @@ export default function SettingsScreen() {
       if (saved !== null) {
         setAutoFillHoneyEnabled(JSON.parse(saved));
       }
-    } catch (error) {
+    } catch {
       // error loading honey settings
     }
   };
@@ -170,7 +233,7 @@ export default function SettingsScreen() {
       
     } catch (error) {
       // error handling for fast forward
-        alert('Failed to fast forward honey production. Please try again.');
+      alert('Failed to fast forward honey production. Please try again');
       setIsFastForwarding(false);
     }
   };
@@ -211,7 +274,7 @@ export default function SettingsScreen() {
       setLocationPermission(status);
       
       // location permission updated
-    } catch (error) {
+    } catch {
       // location request error
     }
   };
@@ -220,7 +283,7 @@ export default function SettingsScreen() {
     const newValue = !isDark;
     try {
       await AsyncStorage.setItem('darkMode', newValue ? 'true' : 'false');
-    } catch (e) {
+    } catch {
       // ignore write errors
     }
     setThemeOverride(newValue ? 'dark' : 'light');
@@ -233,7 +296,7 @@ export default function SettingsScreen() {
     // Save to AsyncStorage
     try {
       await AsyncStorage.setItem('autoFillHoneyEnabled', JSON.stringify(newValue));
-    } catch (error) {
+    } catch {
       // error saving honey auto-fill setting
     }
   };
@@ -279,7 +342,7 @@ export default function SettingsScreen() {
       </View>
 
       {/* Settings Content */}
-      <View style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         
         {/* Account Section */}
         <View style={[styles.section, isDark && styles.darkSection]}>
@@ -350,8 +413,8 @@ export default function SettingsScreen() {
             <Switch
               value={isDark}
               onValueChange={toggleDarkMode}
-              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({}, 'tint') }}
-              thumbColor={isDark ? useThemeColor({}, 'tint') : useThemeColor({}, 'background')}
+              trackColor={{ false: darkSwitchTrackFalse, true: darkSwitchTrackTrue }}
+              thumbColor={isDark ? darkSwitchTrackTrue : darkSwitchThumb}
             />
           </View>
         </View>
@@ -376,8 +439,8 @@ export default function SettingsScreen() {
             <Switch
               value={autoFillHoneyEnabled}
               onValueChange={toggleAutoFillHoney}
-              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({ light: '#FFB300', dark: '#FFB300' }, 'tint') }}
-              thumbColor={autoFillHoneyEnabled ? useThemeColor({ light: '#FF8F00', dark: '#FF8F00' }, 'tint') : useThemeColor({}, 'background')}
+              trackColor={{ false: darkSwitchTrackFalse, true: darkHoneySwitchTrack }}
+              thumbColor={autoFillHoneyEnabled ? darkHoneySwitchThumb : darkSwitchThumb}
             />
           </View>
           
@@ -409,6 +472,179 @@ export default function SettingsScreen() {
                 styles.fastForwardButtonText
               ]}>
                 {isFastForwarding ? '⏳ Fast Forwarding...' : '⚡ Fast Forward'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Fill Hives Section */}
+        <View style={[styles.section, isDark && styles.darkSection]}>
+          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🐝 Fill Hives</Text>
+          
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Fill Hives with Bees</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
+                Use your pollination score to fill hive capacity
+              </Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
+                🐝 Fill all hives to capacity based on your progress
+              </Text>
+            </View>
+            <TouchableOpacity 
+              style={[
+                styles.actionButton,
+                styles.fillHivesButton
+              ]}
+              onPress={async () => {
+                console.log('🐝 Fill Hives button (SettingsScreen) pressed');
+                try {
+                  // Get pollination factor, hives, and last fill time from storage
+                  const pollinationData = await AsyncStorage.getItem('pollination_factor');
+                  const hivesData = await AsyncStorage.getItem('hives');
+                  const lastFillTimeData = await AsyncStorage.getItem('lastBeeFillTime');
+                  
+                  console.log('🐝 Retrieved pollination data:', pollinationData);
+                  console.log('🐝 Retrieved hives data:', hivesData);
+                  console.log('🐝 Last fill time:', lastFillTimeData);
+                  
+                  if (pollinationData && hivesData) {
+                    const pollinationFactor = JSON.parse(pollinationData);
+                    const hives = JSON.parse(hivesData);
+                    const lastFillTime = lastFillTimeData ? parseInt(lastFillTimeData) : Date.now();
+                    
+                    console.log('🐝 Parsed pollination factor:', pollinationFactor);
+                    console.log('🐝 Parsed hives:', hives);
+                    
+                    // Calculate bees earned based on time elapsed
+                    const now = Date.now();
+                    const elapsedMs = now - lastFillTime;
+                    const elapsedHours = elapsedMs / (1000 * 60 * 60); // Convert ms to hours
+                    
+                    // Generation rate: 1 bee per hour per 10 pollination score (i.e., 0.1 bees per pollination per hour)
+                    const beesPerHour = pollinationFactor.factor / 10;
+                    const beesEarned = elapsedHours * beesPerHour;
+                    
+                    console.log('🐝 Elapsed time:', elapsedHours.toFixed(2), 'hours');
+                    console.log('🐝 Bees per hour:', beesPerHour.toFixed(2));
+                    console.log('🐝 Bees earned:', beesEarned.toFixed(2));
+                    
+                    const HIVE_CAPACITY = 100;
+                    const totalCapacity = hives.length * HIVE_CAPACITY;
+                    const currentTotal = hives.reduce((sum: number, h: any) => sum + h.beeCount, 0);
+                    const projectedTotal = currentTotal + Math.floor(beesEarned);
+                    const remainingCapacity = totalCapacity - currentTotal;
+                    
+                    console.log('🐝 Total capacity:', totalCapacity);
+                    console.log('🐝 Current total bees:', currentTotal);
+                    console.log('🐝 Projected total after earning:', projectedTotal);
+                    console.log('🐝 Remaining capacity:', remainingCapacity);
+                    
+                    // Only add bees if projected total would be >= 10 or if current is already >= 10
+                    if (projectedTotal >= 10) {
+                      const beesToAdd = Math.min(Math.floor(beesEarned), remainingCapacity);
+                      
+                      console.log('🐝 Bees to add:', beesToAdd);
+                      
+                      if (beesToAdd > 0) {
+                        let remaining = beesToAdd;
+                        const updatedHives = hives.map((h: any) => {
+                          const hiveCapacity = HIVE_CAPACITY - h.beeCount;
+                          const beesForThisHive = Math.min(remaining, hiveCapacity);
+                          remaining -= beesForThisHive;
+                          console.log(`🐝 Updating hive ${h.id}: ${h.beeCount} + ${beesForThisHive} = ${h.beeCount + beesForThisHive}`);
+                          return {
+                            ...h,
+                            beeCount: h.beeCount + beesForThisHive
+                          };
+                        });
+                        
+                        console.log('🐝 Updated hives:', updatedHives);
+                        await AsyncStorage.setItem('hives', JSON.stringify(updatedHives));
+                        
+                        // Update the last fill time
+                        await AsyncStorage.setItem('lastBeeFillTime', now.toString());
+                        console.log('🐝 Updated last fill time to:', new Date(now).toISOString());
+                        
+                        // Trigger a refresh signal so HomeView's useHiveState hook will re-read the data
+                        await AsyncStorage.setItem('hivesRefreshSignal', now.toString());
+                        console.log('🐝 Refresh signal sent at', now);
+                        
+                        alert(`✅ Added ${beesToAdd} bees to your hives!\nEarned at ${beesPerHour.toFixed(2)} bees/hour`);
+                      } else {
+                        console.log('🐝 No remaining capacity to add bees');
+                        alert('⚠️ Your hives are at full capacity!');
+                      }
+                    } else {
+                      console.log('🐝 Projected total bees would be less than 10 minimum');
+                      alert(`⚠️ Not enough bees earned yet. You'll have ${projectedTotal.toFixed(1)} bees (minimum 10 required to fill)`);
+                    }
+                  } else {
+                    console.warn('⚠️ Missing pollination data or hives data');
+                    alert('⚠️ Could not load game data');
+                  }
+                } catch (error) {
+                  console.error('🐝 Error in Fill Hives button:', error);
+                  alert('❌ Error filling hives. Check console for details.');
+                }
+              }}
+            >
+              <Text style={[
+                styles.actionButtonText,
+                styles.fillHivesButtonText
+              ]}>
+                Fill Hives
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Delete All Bees</Text>
+              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
+                Remove all bees from all hives
+              </Text>
+            </View>
+            <TouchableOpacity 
+              style={[
+                styles.actionButton,
+                { backgroundColor: '#FF6B6B' }
+              ]}
+              onPress={async () => {
+                console.log('🗑️ Delete All Bees button pressed');
+                try {
+                  const hivesData = await AsyncStorage.getItem('hives');
+                  
+                  if (hivesData) {
+                    const hives = JSON.parse(hivesData);
+                    console.log('🗑️ Current hives:', hives);
+                    
+                    const emptyHives = hives.map((h: any) => ({
+                      ...h,
+                      beeCount: 0
+                    }));
+                    
+                    console.log('🗑️ Empty hives:', emptyHives);
+                    await AsyncStorage.setItem('hives', JSON.stringify(emptyHives));
+                    
+                    // Trigger a refresh signal
+                    const timestamp = Date.now();
+                    await AsyncStorage.setItem('hivesRefreshSignal', timestamp.toString());
+                    console.log('🗑️ All bees deleted');
+                    
+                    alert('✅ All bees have been removed from your hives!');
+                  }
+                } catch (error) {
+                  console.error('🗑️ Error deleting bees:', error);
+                  alert('❌ Error deleting bees. Check console for details.');
+                }
+              }}
+            >
+              <Text style={[
+                styles.actionButtonText,
+                { color: '#fff' }
+              ]}>
+                Delete All Bees
               </Text>
             </TouchableOpacity>
           </View>
@@ -519,7 +755,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -568,7 +804,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    paddingBottom: 32,
   },
   section: {
     backgroundColor: 'white',
@@ -757,6 +996,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
+  fillHivesButton: {
+    backgroundColor: '#16A34A',
+    minWidth: 120,
+  },
+  fillHivesButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   progressInfoContainer: {
     backgroundColor: 'rgba(100, 200, 100, 0.1)',
     borderRadius: 8,
@@ -770,5 +1018,47 @@ const styles = StyleSheet.create({
     color: '#4A90E2',
     marginBottom: 4,
     lineHeight: 18,
+  },
+  // Drawer component styles
+  drawerContainer: {
+    flex: 1,
+    padding: 12,
+  },
+  card: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  cardDescription: {
+    fontSize: 14,
+    marginBottom: 12,
+    opacity: 0.7,
+  },
+  pollinationInfo: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  fillButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

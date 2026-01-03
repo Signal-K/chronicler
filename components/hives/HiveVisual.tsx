@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import Svg, { Defs, Path, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 interface HiveVisualProps {
@@ -95,7 +95,11 @@ export function HiveVisual({ nectarLevel, maxNectar, beeCount, hiveId }: HiveVis
         </View>
         
         <View style={styles.statusBadge}>
-          <Text style={styles.statusEmoji}>🍯</Text>
+          <Image
+            source={require('../../assets/Sprites/Honey_Bottle.png')}
+            style={styles.honeyBottleIcon}
+            resizeMode="contain"
+          />
           <Text style={styles.statusText}>{Math.floor(nectarPercentage)}%</Text>
         </View>
       </View>
@@ -212,6 +216,10 @@ const styles = StyleSheet.create({
   },
   statusEmoji: {
     fontSize: 14,
+  },
+  honeyBottleIcon: {
+    width: 18,
+    height: 24,
   },
   statusText: {
     fontSize: 12,

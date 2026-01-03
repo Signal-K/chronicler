@@ -4,6 +4,7 @@ import type { HiveData } from '../types/hive';
 
 const STORAGE_KEY = 'hives';
 const HIVE_COST = 100; // Cost in coins to build a new hive
+const REFRESH_SIGNAL_KEY = 'hivesRefreshSignal';
 
 export function useHiveState() {
   // Users start with exactly one beehive with no bees
@@ -33,6 +34,32 @@ export function useHiveState() {
     loadHives();
   }, []);
 
+  // Listen for refresh signals from AsyncStorage changes (e.g., from Fill Hives button)
+  useEffect(() => {
+    const checkForRefreshSignal = async () => {
+      try {
+        const signal = await AsyncStorage.getItem(REFRESH_SIGNAL_KEY);
+        if (signal) {
+          console.log('🐝 Refresh signal detected, reloading hives from storage');
+          const stored = await AsyncStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            setHives(parsed);
+            console.log('📂 Reloaded hives from storage after refresh signal:', parsed);
+          }
+          // Clear the signal after processing
+          await AsyncStorage.removeItem(REFRESH_SIGNAL_KEY);
+        }
+      } catch (error) {
+        console.error('Error checking refresh signal:', error);
+      }
+    };
+
+    // Check for refresh signal periodically
+    const interval = setInterval(checkForRefreshSignal, 500);
+    return () => clearInterval(interval);
+  }, []);
+
   // Save to storage whenever hives change
   useEffect(() => {
     if (loaded) {
@@ -41,21 +68,28 @@ export function useHiveState() {
   }, [hives, loaded]);
 
   const addBees = (count: number, hiveId?: string) => {  
+    console.log(`🐝 addBees called with count=${count}, hiveId=${hiveId}`);
     if (count <= 0) {
+      console.log('addBees: count <= 0, returning');
       return;
     };
 
     setHives(prev => {
+      console.log('addBees: updating hives', prev);
       // Update the first hive if no ID specified, or the specified hive
-      return prev.map((hive, index) => {
+      const updated = prev.map((hive, index) => {
         if (hiveId ? hive.id === hiveId : index === 0) {
+          const newBeeCount = Math.max(0, hive.beeCount + count);
+          console.log(`Updated hive ${hive.id}: ${hive.beeCount} -> ${newBeeCount}`);
           return {
             ...hive,
-            beeCount: Math.max(0, hive.beeCount + count),
+            beeCount: newBeeCount,
           };
         }
         return hive;
       });
+      console.log('Updated hives state:', updated);
+      return updated;
     });
   };
 

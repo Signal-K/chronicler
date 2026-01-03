@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ExperienceBar } from '../../../components/ui/ExperienceBar';
-import { useGameState } from '../../../hooks/useGameState';
+import { useGameState, type PlotData } from '../../../hooks/useGameState';
 import { usePlayerExperience } from '../../../hooks/usePlayerExperience';
 
 export default function ExperienceDetailsScreen() {
@@ -27,9 +27,9 @@ export default function ExperienceDetailsScreen() {
     return plots.length >= pagesToHave * 6;
   };
 
-  const makeEmptyPlots = (count: number) => {
+  const makeEmptyPlots = (count: number): PlotData[] => {
     return Array.from({ length: count }).map(() => ({
-      state: 'empty',
+      state: 'empty' as const,
       growthStage: 0,
       cropType: null,
       needsWater: false,

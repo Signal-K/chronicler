@@ -2,8 +2,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { CropsTab } from '../../components/inventory/CropsTab';
-import { CoinIcon, GlassBottleIcon, PotatoSeedIcon, PumpkinSeedIcon, TomatoSeedIcon, WheatSeedIcon } from "../../components/ui/ShopIcons";
+import { CoinIcon, GlassBottleIcon, TomatoSeedIcon, BlueberrySeedIcon, LavenderSeedIcon, SunflowerSeedIcon } from "../../components/ui/ShopIcons";
 import { useThemeColor } from '../../hooks/use-theme-color';
 import type { InventoryData } from '../../hooks/useGameState';
 import { CROP_CONFIGS } from '../../lib/cropConfig';
@@ -17,10 +16,10 @@ type ShopProps = {
 }
 
 const shopItems = [
-  { name: "Tomato Seeds", shortName: "Tomato", price: 10, type: "tomato", category: "seeds", icon: TomatoSeedIcon },
-  { name: "Pumpkin Seeds", shortName: "Pumpkin", price: 8, type: "pumpkin", category: "seeds", icon: PumpkinSeedIcon },
-  { name: "Wheat Seeds", shortName: "Wheat", price: 5, type: "wheat", category: "seeds", icon: WheatSeedIcon },
-  { name: "Potato Seeds", shortName: "Potato", price: 7, type: "potato", category: "seeds", icon: PotatoSeedIcon },
+  { name: "Tomato Seeds", shortName: "Tomato Seeds", price: 10, type: "tomato", category: "seeds", icon: TomatoSeedIcon },
+  { name: "Blueberry Seeds", shortName: "Blueberry Seeds", price: 12, type: "blueberry", category: "seeds", icon: BlueberrySeedIcon },
+  { name: "Lavender Seeds", shortName: "Lavender Seeds", price: 15, type: "lavender", category: "seeds", icon: LavenderSeedIcon },
+  { name: "Sunflower Seeds", shortName: "Sunflower Seeds", price: 18, type: "sunflower", category: "seeds", icon: SunflowerSeedIcon },
   { name: "Glass Bottle", shortName: "Bottle", price: 20, type: "glass_bottle", category: "items", icon: GlassBottleIcon, description: "Holds 10 nectar" },
 ]
 
@@ -58,23 +57,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
       setInventory(newInventory);
     }
   }
-
-  // Sell a harvested crop
-  const handleSellCrop = (crop: string) => {
-    const harvestedCount = (inventory as any).harvested?.[crop] || 0;
-    if (harvestedCount > 0) {
-      const config = CROP_CONFIGS[crop];
-      const price = config?.sellPrice || 10;
-      setInventory((prev: any) => ({
-        ...prev,
-        coins: prev.coins + price,
-        harvested: {
-          ...prev.harvested,
-          [crop]: Math.max(0, (prev.harvested[crop] || 0) - 1),
-        },
-      }));
-    }
-  };
 
   // Sell generic items (bottles, bottled_nectar, etc.)
   const ITEM_SELL_PRICES: Record<string, number> = {
@@ -159,9 +141,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
             );
           })}
         </View>
-
-        {/* Sell harvested crops */}
-        <CropsTab harvested={(inventory as any).harvested || {}} onSell={handleSellCrop} />
 
         {/* Sell miscellaneous items */}
         {inventory.items && Object.keys(inventory.items).length > 0 && (

@@ -92,6 +92,61 @@ export function HomeView() {
   const updateHiveBeeCount = useCallback((count: number) => { const currentCount = hive.beeCount; const diff = count - currentCount; if (diff !== 0) setTimeout(() => addBees(diff), 0); }, [hive.beeCount, addBees]);
   const handleWeatherPress = useCallback(() => { router.push('/settings'); }, [router]);
   const handleBuildHive = useCallback(() => { if (canBuildNewHive(inventory.coins)) { buildNewHive(); setInventory(prev => ({ ...prev, coins: prev.coins - hiveCost })); } }, [buildNewHive, canBuildNewHive, inventory.coins, hiveCost, setInventory]);
+  const handleFillHivesFromPollinationFactor = useCallback(() => {
+    console.log('🐝 handleFillHivesFromPollinationFactor called');
+    console.log('Pollination factor:', pollinationFactor);
+    console.log('Hives:', hives);
+    
+    // Note: This callback uses a simplified calculation. For time-based bee generation,
+    // use the Fill Hives button in Settings which properly tracks elapsed time.
+    // This function calculates bees earned from pollination score instantaneously.
+    
+    const HIVE_CAPACITY = 100;
+    const totalCapacity = hives.length * HIVE_CAPACITY;
+    const currentTotal = hives.reduce((sum, h) => sum + h.beeCount, 0);
+    const remainingCapacity = totalCapacity - currentTotal;
+    const projectedTotal = currentTotal + Math.floor(pollinationFactor.factor * 0.1);
+    
+    console.log('Total capacity:', totalCapacity);
+    console.log('Current total bees:', currentTotal);
+    console.log('Remaining capacity:', remainingCapacity);
+    console.log('Pollination score * 0.1:', pollinationFactor.factor * 0.1);
+    
+    // Only proceed if projected total would be >= 10 (minimum requirement)
+    if (projectedTotal >= 10) {
+      const beesToAdd = Math.min(Math.floor(pollinationFactor.factor * 0.1), remainingCapacity);
+      
+      console.log('Bees to add:', beesToAdd);
+      
+      if (beesToAdd > 0) {
+        let remaining = beesToAdd;
+        // Calculate all updates first before calling addBees
+        const updates: Array<{hiveId: string, count: number}> = [];
+        
+        for (const h of hives) {
+          const hiveCapacity = HIVE_CAPACITY - h.beeCount;
+          const beesForThisHive = Math.min(remaining, hiveCapacity);
+          console.log(`Adding ${beesForThisHive} bees to hive ${h.id} (current: ${h.beeCount})`);
+          if (beesForThisHive > 0) {
+            updates.push({ hiveId: h.id, count: beesForThisHive });
+            remaining -= beesForThisHive;
+          }
+        }
+        
+        // Apply all updates
+        updates.forEach(update => {
+          console.log(`Calling addBees(${update.count}, ${update.hiveId})`);
+          addBees(update.count, update.hiveId);
+        });
+        
+        console.log('🐝 Bees added successfully, total updates:', updates.length);
+      } else {
+        console.log('No remaining capacity - hives are full');
+      }
+    } else {
+      console.log(`Not enough bees - projected total ${projectedTotal} is less than minimum 10`);
+    }
+  }, [pollinationFactor.factor, hives, addBees]);
 
   useEffect(() => { if (canSpawnBees && !hasShownFirstBee.current) hasShownFirstBee.current = true; }, [canSpawnBees]);
 
@@ -162,7 +217,7 @@ export function HomeView() {
         <LinearGradient colors={[mapColors.primary, mapColors.secondary, mapColors.tertiary]} style={StyleSheet.absoluteFillObject} />
         <View style={styles.contentContainer}>{renderScreenContent()}</View>
         <SimpleToolbar selectedTool={selectedAction} onToolSelect={(tool) => setSelectedAction(tool)} onPlantSelect={setSelectedPlant} canTill={plots.some(p => p.state === 'empty')} canPlant={plots.some(p => p.state === 'tilled')} canWater={plots.some(p => (p.state === 'planted' || p.state === 'growing') && p.needsWater)} canHarvest={plots.some(p => p.state !== 'empty')} seedInventory={inventory.seeds} currentRoute={currentScreen} onNavigate={setCurrentScreen} verticalPage={verticalPage} onVerticalNavigate={() => setVerticalPage('expand')} onVerticalUpNavigate={() => setVerticalPage('main')} showDownArrow={verticalPage === 'main' && plots.length > 6} />
-        <BottomPanels isAnyPanelOpen={isAnyPanelOpen} showAlmanac={showAlmanac} showInventory={showInventory} showShop={showShop} showSettings={showSettings} panelHeight={panelHeight} inventory={inventory} setInventory={setInventory} onSellCrop={() => {}} closePanel={closePanel} onResetGame={resetGame} isExpanded={isExpanded} toggleExpand={toggleExpand} />
+        <BottomPanels isAnyPanelOpen={isAnyPanelOpen} showAlmanac={showAlmanac} showInventory={showInventory} showShop={showShop} showSettings={showSettings} panelHeight={panelHeight} inventory={inventory} setInventory={setInventory} onSellCrop={() => {}} closePanel={closePanel} onResetGame={resetGame} isExpanded={isExpanded} toggleExpand={toggleExpand} pollinationFactor={pollinationFactor} onFillHives={handleFillHivesFromPollinationFactor} />
         <OrdersModal visible={showOrdersModal} onClose={() => setShowOrdersModal(false)} inventory={inventory} setInventory={setInventory} />
         <SiloModal visible={showSiloModal} onClose={() => setShowSiloModal(false)} inventory={inventory} setInventory={setInventory} />
         <Toast visible={toastVisible} title={toastTitle} message={toastMessage} type={toastType} onDismiss={() => setToastVisible(false)} />

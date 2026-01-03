@@ -42,15 +42,7 @@ export function useFlyingBees(
 
         const trySpawnBee = () => {
             setFlyingBees(prev => {
-                // Check for additional mature crops - growth stage >= 3
-                const matureCrops = plots.filter(
-                    plot => (plot.state === 'planted' || plot.state === 'growing') && plot.growthStage >= 3
-                );
-
-                if (matureCrops.length === 0) {
-                    return prev;
-                };
-
+                // Bees should always spawn during daytime, regardless of plants
                 if (prev.length >= maxFlyingBees) {
                     return prev;
                 };

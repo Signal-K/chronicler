@@ -1,9 +1,10 @@
 import React from 'react';
 import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { Almanac } from '../../app/screens/almanac';
-import { Settings } from '../../app/screens/settings';
+import { Settings } from '../../app/settings';
 import { Shop } from '../../app/screens/shop';
 import type { InventoryData } from '../../hooks/useGameState';
+import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { Inventory } from '../inventory/inventory';
 
 interface BottomPanelsProps {
@@ -20,8 +21,8 @@ interface BottomPanelsProps {
   onResetGame: () => void;
   isExpanded: boolean;
   toggleExpand: () => void;
-  debugConstantBeeSpawn?: boolean;
-  onToggleDebugBeeSpawn?: (value: boolean) => void;
+  pollinationFactor?: PollinationFactorData;
+  onFillHives?: () => void;
 }
 
 export function BottomPanels({
@@ -38,8 +39,8 @@ export function BottomPanels({
   onResetGame,
   isExpanded,
   toggleExpand,
-  debugConstantBeeSpawn = false,
-  onToggleDebugBeeSpawn,
+  pollinationFactor,
+  onFillHives,
 }: BottomPanelsProps) {
   if (!isAnyPanelOpen) {
     return null;
@@ -90,8 +91,8 @@ export function BottomPanels({
             setRealWeather={() => {}} 
             setNextRainTime={() => {}}
             onResetGame={onResetGame}
-            debugConstantBeeSpawn={debugConstantBeeSpawn}
-            onToggleDebugBeeSpawn={onToggleDebugBeeSpawn}
+            pollinationFactor={pollinationFactor}
+            onFillHives={onFillHives}
           />
         )}
       </Animated.View>

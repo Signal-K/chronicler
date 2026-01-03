@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getToolsForRoute, type ToolType } from '../../constants/toolbarConfig';
 
-export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand';
+export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
 
 type ToolbarProps = {
   selectedTool: ToolType;
@@ -14,7 +14,7 @@ type ToolbarProps = {
   canShovel?: boolean;
   canHarvest?: boolean;
   seedInventory?: Record<string, number>;
-  currentRoute?: 'nests' | 'home' | 'landscape' | 'expand';
+  currentRoute?: FarmRoute;
   onNavigate?: (route: FarmRoute) => void;
   onVerticalNavigate?: () => void;
   onVerticalUpNavigate?: () => void;
