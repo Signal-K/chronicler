@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 interface HoneyBottleProps {
   color?: string; // Hex color for honey type (deprecated - using image instead)

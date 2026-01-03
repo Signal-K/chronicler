@@ -1,11 +1,11 @@
-import type { ParallaxProps } from '../types/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
-    interpolate,
-    useAnimatedRef,
-    useAnimatedStyle,
-    useScrollOffset,
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollOffset,
 } from 'react-native-reanimated';
+import type { ParallaxProps } from '../types/ui';
 
 import { ThemedView } from '../components/themed-view';
 import { useColorScheme } from '../hooks/use-color-scheme';

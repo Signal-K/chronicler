@@ -2,11 +2,11 @@
 // Usage: npx ts-node --skipProject test-progress-preservation.ts
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { 
-  backupLocalData,
-  restoreLocalData,
-  getLocalDataSummary,
-  migrateExperienceData 
+import {
+    backupLocalData,
+    getLocalDataSummary,
+    migrateExperienceData,
+    restoreLocalData
 } from './lib/progressPreservation';
 
 async function createTestData() {

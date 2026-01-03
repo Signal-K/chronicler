@@ -26,6 +26,15 @@ export function useFlyingBees(
     const [flyingBees, setFlyingBees] = useState<FlyingBeeData[]>([]);
     const spawnIntervalRef = useRef<number | null>(null);
 
+    // Clear all flying bees when all hives have zero bees (e.g., when delete all bees button is pressed)
+    useEffect(() => {
+        const totalBees = hives.reduce((sum, h) => sum + (h.beeCount || 0), 0);
+        if (totalBees === 0) {
+            setFlyingBees([]);
+            console.log('🐝 All bees deleted, clearing flying bees');
+        }
+    }, [hives]);
+
     useEffect(() => {
         if (!isDaytime && !debugMode) {
             if (spawnIntervalRef.current) {

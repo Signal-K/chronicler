@@ -4,10 +4,10 @@ import { CROP_CONFIGS } from "../../lib/cropConfig";
 import { CROP_PRICES, InventoryProps } from "../../types/inventory";
 import { CoinsDisplay } from "./CoinsDisplay";
 import { CropsTab } from "./CropsTab";
+import { HoneyBottle } from "./HoneyBottle";
 import { ExpansionsTab, ToolsTab } from "./InventoryExtras";
 import { InventoryTabs } from "./InventoryTabs";
 import { SeedsTab } from "./SeedsTab";
-import { HoneyBottle } from "./HoneyBottle";
 
 // Placeholder icons for React Native (replace with vector-icons or images as needed)
 type IconProps = {

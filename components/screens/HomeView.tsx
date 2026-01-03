@@ -22,6 +22,7 @@ import { BottomPanels } from '../garden/BottomPanels';
 import { SimpleToolbar } from '../garden/SimpleToolbar';
 import { OrdersModal } from '../modals/OrdersModal';
 import { SiloModal } from '../modals/SiloModal';
+import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
 import { Toast } from '../ui/Toast';
 import { FarmPager } from './FarmPager';
@@ -39,6 +40,9 @@ export function HomeView() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastTitle, setToastTitle] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
+  
+  // New bee hatching alert state
+  const [beeHatchAlert, setBeeHatchAlert] = useState({ visible: false, message: '' });
 
   const { getActiveMap } = useMapSystem();
   const activeMap = getActiveMap();
@@ -73,6 +77,19 @@ export function HomeView() {
 
   const { currentWater, maxWater, consumeWater } = useWaterSystem(false);
   const { pollinationFactor, incrementFactor, canSpawnBees } = usePollinationFactor();
+  
+  // Callback to show bee hatch alert that can be accessed globally
+  const showBeeHatchAlert = useCallback((message: string) => {
+    setBeeHatchAlert({ visible: true, message });
+  }, []);
+
+  // Make showBeeHatchAlert globally accessible for the functional code
+  useEffect(() => {
+    (globalThis as any).showBeeHatchAlert = showBeeHatchAlert;
+    return () => {
+      delete (globalThis as any).showBeeHatchAlert;
+    };
+  }, [showBeeHatchAlert]);
   const { hive, hives, addBees, buildNewHive, canBuildNewHive, getAvailableHives, hiveCost } = useHiveState();
   const { isDaytime } = useDayNightCycle();
   const { hiveNectarLevels, updateNectarLevels } = useHiveNectar(hives, isDaytime);
@@ -192,7 +209,7 @@ export function HomeView() {
       case 'nests':
         return <NestsContent pollinationFactor={pollinationFactor} canSpawnBees={canSpawnBees} hive={hive} hives={hives} onBuildHive={handleBuildHive} canBuildHive={canBuildNewHive(inventory.coins)} hiveCost={hiveCost} coinBalance={inventory.coins} hiveNectarLevels={hiveNectarLevels} maxNectar={100} inventory={inventory} onInventoryUpdate={setInventory} onNectarUpdate={updateNectarLevels} />;
       default:
-        return <FarmPager plots={plots} setPlotsState={setPlotsState} inventory={inventory} setInventory={setInventory} selectedAction={selectedAction as Tool} setSelectedAction={setSelectedAction} selectedPlant={selectedPlant} consumeWater={consumeWater} incrementPollinationFactor={incrementFactor} isDaytime={isDaytime} pollinationFactor={pollinationFactor.factor} hiveCount={getAvailableHives().length} updateHiveBeeCount={updateHiveBeeCount} flyingBees={flyingBees} onBeePress={handleBeePress} verticalPage={verticalPage} />;
+        return <FarmPager plots={plots} setPlotsState={setPlotsState} inventory={inventory} setInventory={setInventory} selectedAction={selectedAction as Tool} setSelectedAction={setSelectedAction} selectedPlant={selectedPlant} consumeWater={consumeWater} incrementPollinationFactor={incrementFactor} isDaytime={isDaytime} pollinationFactor={pollinationFactor.factor} hiveCount={getAvailableHives().length} hives={hives} updateHiveBeeCount={updateHiveBeeCount} flyingBees={flyingBees} onBeePress={handleBeePress} verticalPage={verticalPage} />;
     }
   };
 
@@ -220,6 +237,11 @@ export function HomeView() {
         <BottomPanels isAnyPanelOpen={isAnyPanelOpen} showAlmanac={showAlmanac} showInventory={showInventory} showShop={showShop} showSettings={showSettings} panelHeight={panelHeight} inventory={inventory} setInventory={setInventory} onSellCrop={() => {}} closePanel={closePanel} onResetGame={resetGame} isExpanded={isExpanded} toggleExpand={toggleExpand} pollinationFactor={pollinationFactor} onFillHives={handleFillHivesFromPollinationFactor} />
         <OrdersModal visible={showOrdersModal} onClose={() => setShowOrdersModal(false)} inventory={inventory} setInventory={setInventory} />
         <SiloModal visible={showSiloModal} onClose={() => setShowSiloModal(false)} inventory={inventory} setInventory={setInventory} />
+        <BeeHatchAlert 
+          visible={beeHatchAlert.visible} 
+          message={beeHatchAlert.message}
+          onClose={() => setBeeHatchAlert({ visible: false, message: '' })}
+        />
         <Toast visible={toastVisible} title={toastTitle} message={toastMessage} type={toastType} onDismiss={() => setToastVisible(false)} />
       </View>
     </GestureHandlerRootView>

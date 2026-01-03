@@ -227,7 +227,7 @@ export async function upgradeGuestWithProgressPreservation(
 export async function getLocalDataSummary(): Promise<{
   totalKeys: number;
   totalDataSize: number;
-  keyDetails: Array<{ key: string; size: number; hasData: boolean }>;
+  keyDetails: { key: string; size: number; hasData: boolean }[];
 }> {
   try {
     const results = await AsyncStorage.multiGet(LOCAL_DATA_KEYS as readonly string[]);

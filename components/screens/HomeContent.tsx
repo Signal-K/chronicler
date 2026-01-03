@@ -1,9 +1,14 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
 import { usePlotActions } from '../../hooks/usePlotActions';
+import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
+import { useClassificationTracking } from '../../hooks/useClassificationTracking';
+import type { HiveData } from '../../types/hive';
+import ClassificationModal from '../modals/ClassificationModal';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
+import { HoveringBeesManager } from '../garden/HoveringBeesManager';
 import { FlyingBee } from '../hives/FlyingBee';
 import { InfoDialog } from '../ui/InfoDialog';
 
@@ -28,6 +33,7 @@ type HomeContentProps = {
   isDaytime?: boolean;
   pollinationFactor?: number;
   hiveCount?: number;
+  hives?: HiveData[];
   updateHiveBeeCount?: (count: number) => void;
   flyingBees?: FlyingBeeData[];
   onBeePress?: (beeId: string) => void;
@@ -49,6 +55,7 @@ export function HomeContent({
   isDaytime = true,
   pollinationFactor = 0,
   hiveCount = 1,
+  hives = [],
   updateHiveBeeCount,
   flyingBees = [],
   onBeePress,
@@ -56,6 +63,52 @@ export function HomeContent({
   totalPlots,
   baseIndex = 0,
 }: HomeContentProps) {
+  // Classification modal state
+  const [classificationModal, setClassificationModal] = useState<{
+    visible: boolean;
+    bee: HoveringBeeData | null;
+  }>({
+    visible: false,
+    bee: null,
+  });
+
+  // Classification tracking hook
+  const { canClassifyHiveSync, submitClassification } = useClassificationTracking(hives);
+
+  // Bee press handler for classification
+  const handleBeePress = useCallback((bee: HoveringBeeData) => {
+    setClassificationModal({
+      visible: true,
+      bee,
+    });
+  }, []);
+
+  // Handle classification submission
+  const handleClassification = useCallback(async (classificationType: string) => {
+    if (!classificationModal.bee) return;
+    
+    const success = await submitClassification(
+      classificationModal.bee.identity.hiveId,
+      classificationType
+    );
+    
+    if (success) {
+      Alert.alert(
+        'Classification Recorded! ✓',
+        `Thank you! You've classified bee ${classificationModal.bee.identity.name} as a ${classificationType}.`
+      );
+    } else {
+      Alert.alert(
+        'Classification Failed',
+        'You may have already classified a bee from this hive today.'
+      );
+    }
+    
+    setClassificationModal({ visible: false, bee: null });
+  }, [classificationModal.bee, submitClassification]);
+
+  // Use hovering bees hook
+  const { hoveringBees } = useHoveringBees(hives, isDaytime, plots);
   const [showHarvestAnimation, setShowHarvestAnimation] = React.useState(false);
   const [harvestReward, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
   const [dialogVisible, setDialogVisible] = React.useState(false);
@@ -110,6 +163,13 @@ export function HomeContent({
         </ScrollView>
       )}
 
+      {/* Hovering Bees with Tags - New Feature */}
+      <HoveringBeesManager 
+        bees={hoveringBees} 
+        onBeePress={handleBeePress}
+        canClassifyBee={canClassifyHiveSync}
+      />
+
       {/* Flying Bees - classification system */}
       {flyingBees.map((bee) => (
         <FlyingBee
@@ -138,6 +198,14 @@ export function HomeContent({
         message={dialogData.message}
         emoji={dialogData.emoji}
         onClose={() => setDialogVisible(false)}
+      />
+
+      {/* Classification Modal */}
+      <ClassificationModal
+        visible={classificationModal.visible}
+        onClose={() => setClassificationModal({ visible: false, bee: null })}
+        onClassify={handleClassification}
+        beeIdentifier={classificationModal.bee?.identity.name}
       />
     </>
   );

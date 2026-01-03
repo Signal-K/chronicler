@@ -64,9 +64,6 @@ export function SimplePlot({ index, plot, selectedTool, onPress, displayNumber, 
     if (config && config.growthImages && config.growthImages.length > 0) {
       const idx = Math.min(Math.max(stage - 1, 0), config.growthImages.length - 1);
       const src = config.growthImages[idx];
-      try {
-        console.log('SimplePlot.getCropImageSource (from config)', { cropType, stage, idx, hasImage: !!src });
-      } catch (e) {}
       return src;
     }
 
@@ -79,9 +76,6 @@ export function SimplePlot({ index, plot, selectedTool, onPress, displayNumber, 
       require('../../assets/Sprites/Crops/Wheat/4---Wheat-Full.png'),
     ];
     const src = wheatImages[imageIndex] || null;
-    try {
-      console.log('SimplePlot.getCropImageSource (fallback wheat)', { cropType, stage, imageIndex, hasImage: !!src });
-    } catch (e) {}
     return src;
   };
 

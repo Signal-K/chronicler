@@ -2,10 +2,9 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { CoinIcon, GlassBottleIcon, TomatoSeedIcon, BlueberrySeedIcon, LavenderSeedIcon, SunflowerSeedIcon } from "../../components/ui/ShopIcons";
+import { BlueberrySeedIcon, CoinIcon, GlassBottleIcon, LavenderSeedIcon, SunflowerSeedIcon, TomatoSeedIcon } from "../../components/ui/ShopIcons";
 import { useThemeColor } from '../../hooks/use-theme-color';
 import type { InventoryData } from '../../hooks/useGameState';
-import { CROP_CONFIGS } from '../../lib/cropConfig';
 
 type ShopProps = {
   inventory: InventoryData;

@@ -55,20 +55,6 @@ const animateToWaypoint = (index: number) => {
       duration,
       useNativeDriver: true,
     }),
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(rotation, {
-          toValue: 0.1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotation, {
-          toValue: -0.1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ])
-    ),
   ]).start(() => animateToWaypoint(index + 1));
 };
 

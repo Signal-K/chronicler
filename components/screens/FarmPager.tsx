@@ -1,5 +1,6 @@
 import React from 'react';
 import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
+import type { HiveData } from '../../types/hive';
 import { HomeContent } from './HomeContent';
 
 type FarmPagerProps = {
@@ -15,6 +16,7 @@ type FarmPagerProps = {
   isDaytime: boolean;
   pollinationFactor: number;
   hiveCount: number;
+  hives: HiveData[]; // Add hives data
   updateHiveBeeCount: (count: number) => void;
   flyingBees: any[];
   onBeePress?: (beeId: string) => void;
@@ -34,6 +36,7 @@ export function FarmPager({
   isDaytime,
   pollinationFactor,
   hiveCount,
+  hives,
   updateHiveBeeCount,
   flyingBees,
   onBeePress,
@@ -78,6 +81,7 @@ export function FarmPager({
       isDaytime={isDaytime}
       pollinationFactor={pollinationFactor}
       hiveCount={hiveCount}
+      hives={hives}
       updateHiveBeeCount={updateHiveBeeCount}
       flyingBees={flyingBees}
       onBeePress={onBeePress}

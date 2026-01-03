@@ -60,6 +60,7 @@ export function useHiveState() {
     return () => clearInterval(interval);
   }, []);
 
+
   // Save to storage whenever hives change
   useEffect(() => {
     if (loaded) {
@@ -142,6 +143,25 @@ export function useHiveState() {
     beesToSpawn = Math.min(beesToSpawn, maxSpawn);
     return beesToSpawn;
   };
+
+  // NEW: Listen for pending bee additions from pollination milestones
+  useEffect(() => {
+    const checkForPendingBees = async () => {
+      try {
+        const pendingData = await AsyncStorage.getItem("pending_bee_addition");
+        if (pendingData) {
+          const pending = JSON.parse(pendingData);
+          addBees(pending.count, pending.hiveId);
+          await AsyncStorage.removeItem('pending_bee_addition');
+        }
+      } catch (error: any) {
+        console.error("Error processing pending bee addition: ", error);
+      }
+    };
+
+    const pendingInterval = setInterval(checkForPendingBees, 1000);
+    return () => clearInterval(pendingInterval);
+  }, [addBees]);
 
   return {
     hives,

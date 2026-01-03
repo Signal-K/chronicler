@@ -1,13 +1,13 @@
 // Test file to verify the experience system works correctly
 // Run: npx ts-node --skipProject test-experience.ts
 
-import { 
-  awardHarvestXP, 
-  awardPollinationXP, 
-  awardSaleXP, 
-  getPlayerExperienceInfo,
-  calculateXPForLevel,
-  calculateLevelFromXP
+import {
+    awardHarvestXP,
+    awardPollinationXP,
+    awardSaleXP,
+    calculateLevelFromXP,
+    calculateXPForLevel,
+    getPlayerExperienceInfo
 } from './lib/experienceSystem';
 
 async function testExperienceSystem() {

@@ -8,7 +8,13 @@ export interface HiveResources {
   nectar: number;
   honey: number;
   pollen: number;
-}
+};
+
+export interface PollinationMilestone {
+  score: number;
+  timestamp: number;
+  beesAwarded: number;
+};
 
 export interface HivePopulation {
   workers: number;
@@ -39,6 +45,8 @@ export interface HiveData {
   population?: HivePopulation; // Detailed population breakdown
   status?: 'active' | 'dormant' | 'swarming';
   position?: { q: number; r: number; x?: number; y?: number; z?: number };
+  lastMilestoneCheck?: number;
+  maxCapacity?: number;
 }
 
 // Legacy interface (keeping for compatibility with existing components)
