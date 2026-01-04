@@ -148,17 +148,3 @@ async function saveMilestone(milestone: PollinationMilestone): Promise<void> {
     }
 }
 
-/**
- * Reset milestones (for testing or game reset)
- */
-export async function resetMilestones(): Promise<void> {
-    try {
-        await AsyncStorage.removeItem(MILESTONE_STORAGE_KEY);
-    } catch (error: any) {
-        console.error("Error resetting milestones: ", error);
-    }
-}
-
-export async function getMilestoneHistory(): Promise<PollinationMilestone[]> {
-    return await loadMilestones();
-};

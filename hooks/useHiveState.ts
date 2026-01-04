@@ -69,19 +69,19 @@ export function useHiveState() {
   }, [hives, loaded]);
 
   const addBees = (count: number, hiveId?: string) => {  
-    console.log(`🐝 addBees called with count=${count}, hiveId=${hiveId}`);
+    // addBees called
     if (count <= 0) {
-      console.log('addBees: count <= 0, returning');
+      // count <= 0, returning
       return;
     };
 
     setHives(prev => {
-      console.log('addBees: updating hives', prev);
+      // updating hives
       // Update the first hive if no ID specified, or the specified hive
       const updated = prev.map((hive, index) => {
         if (hiveId ? hive.id === hiveId : index === 0) {
           const newBeeCount = Math.max(0, hive.beeCount + count);
-          console.log(`Updated hive ${hive.id}: ${hive.beeCount} -> ${newBeeCount}`);
+          // Updated hive
           return {
             ...hive,
             beeCount: newBeeCount,
@@ -89,7 +89,7 @@ export function useHiveState() {
         }
         return hive;
       });
-      console.log('Updated hives state:', updated);
+      // Updated hives state
       return updated;
     });
   };
@@ -101,7 +101,7 @@ export function useHiveState() {
       createdAt: Date.now(),
     };
     setHives(prev => [...prev, newHive]);
-    console.log('🏗️ Built new hive:', newHive.id);
+    // Built new hive
     return newHive;
   };
 

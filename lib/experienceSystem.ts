@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const XP_STORAGE_KEY = 'player_experience';
 
-export interface PlayerExperience {
+interface PlayerExperience {
   totalXP: number;
   level: number;
   harvestsCount: number;
@@ -209,37 +209,7 @@ export async function awardPollinationXP(): Promise<XPGainEvent> {
   };
 }
 
-/**
- * Award XP for completing a sale
- * XP varies based on sale complexity: simple (2), medium (3), complex (4)
- */
-export async function awardSaleXP(saleComplexity: 'simple' | 'medium' | 'complex'): Promise<XPGainEvent> {
-  const experience = await loadPlayerExperience();
-  
-  const xpMap = {
-    simple: 2,
-    medium: 3,
-    complex: 4,
-  };
-  
-  const xpAmount = xpMap[saleComplexity];
-  experience.totalXP += xpAmount;
-  experience.salesCompleted += 1;
-  
-  // Update level information
-  experience.level = calculateLevelFromXP(experience.totalXP);
-  experience.lastLevelUpXP = calculateXPForLevel(experience.level);
-  experience.nextLevelXP = calculateXPForLevel(experience.level + 1);
-  
-  await savePlayerExperience(experience);
-  
-  return {
-    type: 'sale',
-    amount: xpAmount,
-    description: `Completed ${saleComplexity} sale`,
-    // saleComplexity removed
-  };
-}
+
 
 /**
  * Get current player experience with level progress
@@ -257,24 +227,3 @@ export async function getPlayerExperienceInfo(): Promise<PlayerExperienceInfo> {
   };
 }
 
-/**
- * Check if player leveled up and return level up info
- */
-export async function checkLevelUp(previousXP: number, currentXP: number): Promise<{
-  leveledUp: boolean;
-  oldLevel: number;
-  newLevel: number;
-} | null> {
-  const oldLevel = calculateLevelFromXP(previousXP);
-  const newLevel = calculateLevelFromXP(currentXP);
-  
-  if (newLevel > oldLevel) {
-    return {
-      leveledUp: true,
-      oldLevel,
-      newLevel,
-    };
-  }
-  
-  return null;
-}

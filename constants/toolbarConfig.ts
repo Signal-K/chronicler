@@ -12,6 +12,8 @@
 
 export type ToolType = 'till' | 'plant' | 'water' | 'shovel' | 'harvest' | 'bottle' | null;
 
+export type FarmRoute = 'home' | 'nests' | 'landscape' | 'expand' | 'godot';
+
 export interface ToolButton {
   id: string;
   tool: ToolType;
@@ -21,106 +23,15 @@ export interface ToolButton {
   requiresCondition?: 'canTill' | 'canPlant' | 'canWater' | 'canShovel' | 'canHarvest';
 }
 
-export interface RouteToolConfig {
-  route: string;
-  tools: ToolButton[];
-  showNavigation?: boolean; // Show left/right navigation arrows
+// Basic function to get tools for any route - returns common tools
+export function getToolsForRoute(route: FarmRoute): ToolButton[] {
+  // Return basic tool set for all routes
+  return [
+    { id: 'till', tool: 'till', label: 'Till', icon: '🚜', backgroundColor: '#8B4513' },
+    { id: 'plant', tool: 'plant', label: 'Plant', icon: '🌱', backgroundColor: '#228B22' },
+    { id: 'water', tool: 'water', label: 'Water', icon: '💧', backgroundColor: '#4169E1' },
+    { id: 'harvest', tool: 'harvest', label: 'Harvest', icon: '🌾', backgroundColor: '#FFD700' }
+  ];
 }
 
-/**
- * Tool Button Configuration for Each Route
- * 
- * Routes:
- * - nests: Hive/bee management screen (no farming tools)
- * - home: Main farm/garden screen (all farming tools)
- * - landscape: Expanded landscape view (all farming tools)
- * - expand: Map expansion/exploration screen (no farming tools)
- * - godot: Godot integration screen (no farming tools)
- */
-export const ROUTE_TOOL_CONFIGS: Record<string, ToolButton[]> = {
-  // Nests/Hives Screen - Bottle Honey button
-  nests: [
-    {
-      id: 'bottle',
-      tool: 'bottle',
-      label: 'BOTTLE HONEY',
-      icon: '🍯',
-      backgroundColor: '#f59e0b',
-    },
-  ],
-
-  // Home/Farm Screen - Full set of farming tools
-  home: [
-    {
-      id: 'till',
-      tool: 'till',
-      label: 'TILL',
-      icon: '⛏️',
-      backgroundColor: '#92400e',
-      requiresCondition: 'canTill',
-    },
-    {
-      id: 'water',
-      tool: 'water',
-      label: 'WATER',
-      icon: '💧',
-      backgroundColor: '#3b82f6',
-      requiresCondition: 'canWater',
-    },
-    {
-      id: 'plant',
-      tool: 'plant',
-      label: 'PLANT',
-      icon: '🌱',
-      backgroundColor: '#22c55e',
-      requiresCondition: 'canPlant',
-    },
-    {
-      id: 'harvest',
-      tool: 'harvest',
-      label: 'HARVEST',
-      icon: '🌾',
-      backgroundColor: '#ca8a04',
-      requiresCondition: 'canHarvest',
-    },
-  ],
-
-  // Landscape Screen - Empty (no tools)
-  landscape: [],
-
-  // Expand Screen - No farming tools (exploration focus)
-  expand: [],
-
-  // Godot Screen - No farming tools
-  godot: [],
-};
-
-/**
- * Get tool button configuration for a specific route
- * @param route - The route name (e.g., 'home', 'nests', 'landscape')
- * @returns Array of tool buttons for that route
- */
-export function getToolsForRoute(route: string): ToolButton[] {
-  return ROUTE_TOOL_CONFIGS[route] || [];
-}
-
-/**
- * Check if a route has farming tools
- * @param route - The route name
- * @returns true if the route has any farming tools
- */
-export function routeHasFarmingTools(route: string): boolean {
-  const tools = getToolsForRoute(route);
-  return tools.length > 0;
-}
-
-/**
- * Check if a specific tool is available for a route
- * @param route - The route name
- * @param toolType - The tool type to check for
- * @returns true if the tool exists for that route
- */
-export function routeHasTool(route: string, toolType: ToolType): boolean {
-  const tools = getToolsForRoute(route);
-  return tools.some(tool => tool.tool === toolType);
-}
+// Route-specific tool configurations removed - unused exports

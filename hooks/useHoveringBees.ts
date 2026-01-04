@@ -23,7 +23,7 @@ export interface HoveringBeeData {
 interface PlotData {
   state: string;
   growthStage: number;
-  cropType?: string;
+  cropType: string | null;
 }
 
 export function useHoveringBees(
@@ -67,7 +67,7 @@ export function useHoveringBees(
   // Generate unique bee identities for each hive (only when hives change)
   useEffect(() => {
     const generateIdentities = () => {
-      console.log('useHoveringBees: Generating identities for hives:', hives.map(h => ({ id: h.id, beeCount: h.beeCount })));
+      // Generating identities for hives
       
       const newIdentities: BeeIdentity[] = [];
       
@@ -98,11 +98,11 @@ export function useHoveringBees(
         }
       });
 
-      console.log('useHoveringBees: Generated identities:', newIdentities);
+      // Generated identities
 
       // Only update if identities actually changed
       if (JSON.stringify(newIdentities) !== JSON.stringify(beeIdentities)) {
-        console.log('useHoveringBees: Updating bee identities');
+        // Updating bee identities
         setBeeIdentities(newIdentities);
       }
     };
@@ -114,10 +114,10 @@ export function useHoveringBees(
 
   // Clear hovering bees when not daytime
   useEffect(() => {
-    console.log('useHoveringBees: Daytime check -', { isDaytime, hivesCount: hives.length, plotsCount: plots.length });
+    // Daytime check
     
     if (!isDaytime) {
-      console.log('useHoveringBees: Not daytime, clearing bees');
+      // Not daytime, clearing bees
       if (spawnIntervalRef.current) {
         clearInterval(spawnIntervalRef.current);
         spawnIntervalRef.current = null;
@@ -134,10 +134,10 @@ export function useHoveringBees(
         plot.growthStage >= 1
       );
 
-    console.log('useHoveringBees: Growing crops found -', growingCrops.length);
+    // Growing crops found
 
     if (growingCrops.length === 0) {
-      console.log('useHoveringBees: No growing crops, clearing bees');
+      // No growing crops, clearing bees
       setHoveringBees([]);
       return;
     }
@@ -152,10 +152,10 @@ export function useHoveringBees(
           .filter(hive => hive.beeCount >= 0) // Changed from > 0 to >= 0 for testing
           .slice(0, 2); // Maximum 2 hives can have hovering bees
         
-        console.log('useHoveringBees: Available hives with bees -', availableHives.map(h => ({ id: h.id, beeCount: h.beeCount })));
+        // Available hives with bees
         
         if (availableHives.length === 0) {
-          console.log('useHoveringBees: No hives with bees available');
+          // No hives with bees available
           return [];
         }
 
@@ -165,7 +165,7 @@ export function useHoveringBees(
           // Get a random identity from this hive
           const hiveIdentities = beeIdentities.filter(identity => identity.hiveId === hive.id);
           
-          console.log('useHoveringBees: Hive identities for', hive.id, ':', hiveIdentities);
+          // Hive identities for hive
           
           if (hiveIdentities.length > 0) {
             const randomIdentity = hiveIdentities[Math.floor(Math.random() * hiveIdentities.length)];

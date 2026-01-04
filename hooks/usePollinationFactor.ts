@@ -70,9 +70,7 @@ export function usePollinationFactor(): PollinationFactorHookReturn {
     try {
       const { awardPollinationXP } = await import("../lib/experienceSystem");
       const xpEvent = await awardPollinationXP();
-      console.log(
-        `🐝 Pollination XP: +${xpEvent.amount} (${xpEvent.description})`
-      );
+      // Pollination XP awarded
 
       // Check for bee hatching AFTER updating score
       const stored = await AsyncStorage.getItem("hives");

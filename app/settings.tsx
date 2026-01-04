@@ -5,13 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-    AccountSection,
-    AppearanceSection,
-    DebugSection,
-    FillHivesSection,
-    GrowthAlgorithmSection,
-    LocalProgressSection,
-    PermissionsSection,
+  AccountSection,
+  AppearanceSection,
+  DayNightOverrideSection,
+  DebugSection,
+  FillHivesSection,
+  GrowthAlgorithmSection,
+  LocalProgressSection,
+  PermissionsSection,
 } from '../components/settings';
 import { setOverride as setThemeOverride } from '../hooks/themeManager';
 import { useColorScheme } from '../hooks/use-color-scheme';
@@ -28,6 +29,7 @@ export default function SettingsScreen() {
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
   const [autoFillHoneyEnabled, setAutoFillHoneyEnabled] = useState<boolean>(true);
   const [plots, setPlots] = useState<any[]>([]);
+  const [forceDaytime, setForceDaytime] = useState<boolean>(false);
   const [localDataSummary, setLocalDataSummary] = useState<{
     totalKeys: number;
     totalDataSize: number;
@@ -54,6 +56,7 @@ export default function SettingsScreen() {
     checkLocationPermission();
     loadPlotStates();
     loadHoneySettings();
+    loadForceDaytimeSettings();
     loadLocalDataSummary();
 
     // load persisted dark mode preference (set runtime override)
@@ -123,6 +126,17 @@ export default function SettingsScreen() {
     }
   };
 
+  const loadForceDaytimeSettings = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('forceDaytime');
+      if (saved !== null) {
+        setForceDaytime(saved === 'true');
+      }
+    } catch {
+      // error loading force daytime settings
+    }
+  };
+
   const handleSignOut = async () => {
     setIsLoading(true);
     const { error } = await supabase.auth.signOut();
@@ -166,6 +180,17 @@ export default function SettingsScreen() {
     }
   };
 
+  const toggleForceDaytime = async () => {
+    const newValue = !forceDaytime;
+    setForceDaytime(newValue);
+    
+    try {
+      await AsyncStorage.setItem('forceDaytime', newValue ? 'true' : 'false');
+    } catch {
+      // error saving force daytime setting
+    }
+  };
+
   return (
     <View style={[styles.container, isDark && styles.darkContainer]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -203,12 +228,6 @@ export default function SettingsScreen() {
           onToggleDarkMode={toggleDarkMode}
         />
 
-          autoFillHoneyEnabled={autoFillHoneyEnabled}
-        {/* Honey auto-fill removed */}
-          plots={plots}
-          isDark={isDark}
-        {/* Honey production section removed */}
-
         <FillHivesSection isDark={isDark} />
 
         <PermissionsSection
@@ -218,6 +237,12 @@ export default function SettingsScreen() {
         />
 
         <GrowthAlgorithmSection isDark={isDark} />
+
+        <DayNightOverrideSection
+          isDark={isDark}
+          forceDaytime={forceDaytime}
+          onToggleForceDaytime={toggleForceDaytime}
+        />
 
         <DebugSection
           plotStates={plotStates}

@@ -1,8 +1,8 @@
-export type CropCategory = 'vegetable' | 'fruit' | 'grain' | 'flower';
-export type HoneyType = 'light' | 'amber' | 'dark' | 'specialty';
-export type HoneyFlavor = 'mild' | 'floral' | 'robust' | 'distinctive' | 'sweet' | 'complex';
+type CropCategory = 'vegetable' | 'fruit' | 'grain' | 'flower';
+type HoneyType = 'light' | 'amber' | 'dark' | 'specialty';
+type HoneyFlavor = 'mild' | 'floral' | 'robust' | 'distinctive' | 'sweet' | 'complex';
 
-export interface NectarProperties {
+interface NectarProperties {
   /** Whether this crop produces nectar that bees can collect */
   producesNectar: boolean;
   /** Amount of nectar produced per flower visit (0-100) */
@@ -81,21 +81,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 35,
-      nectarQuality: 60,
+      nectarAmount: 25, // Tomatoes are not major nectar producers
+      nectarQuality: 55,
       honeyProfile: {
         type: 'light',
         flavor: 'mild',
-        color: '#F5E6A8',
-        description: 'Light, delicate honey with subtle fruity notes from tomato blossoms'
+        color: '#F8F4E6', // Very pale, almost white honey
+        description: 'Rare, mild honey with herbaceous undertones - tomato flowers produce minimal nectar but create a distinctive light honey when available'
       },
       pollen: {
-        amount: 45,
-        quality: 65,
-        color: '#FFE135'
+        amount: 65, // Tomatoes produce more pollen than nectar
+        quality: 70,
+        color: '#FFF200' // Bright yellow tomato pollen
       },
-      beeAttraction: 55,
-      peakNectarHours: [8, 12]
+      beeAttraction: 40, // Lower attraction due to minimal nectar
+      peakNectarHours: [9, 11] // Short window, tomato flowers open briefly
     },
   },
   blueberry: {
@@ -121,21 +121,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 50,
-      nectarQuality: 70,
+      nectarAmount: 85, // Blueberries are excellent nectar producers
+      nectarQuality: 95,
       honeyProfile: {
-        type: 'light',
-        flavor: 'sweet',
-        color: '#D0C6FF',
-        description: 'Delicate, sweet honey with light berry notes from blueberry blossoms'
+        type: 'amber',
+        flavor: 'distinctive',
+        color: '#E8D5B7', // Light amber with reddish tint
+        description: 'Premium amber honey with complex fruity undertones and a hint of tartness - prized by beekeepers for its exceptional flavor profile'
       },
       pollen: {
-        amount: 55,
-        quality: 65,
-        color: '#A3C1E6'
+        amount: 75,
+        quality: 85,
+        color: '#D4AF37' // Golden pollen from blueberry flowers
       },
-      beeAttraction: 65,
-      peakNectarHours: [8, 13]
+      beeAttraction: 90, // Very attractive to bees
+      peakNectarHours: [6, 10] // Early morning peak production
     },
   },
   lavender: {
@@ -161,21 +161,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 90,
-      nectarQuality: 95,
+      nectarAmount: 95, // Lavender is one of the best nectar producers
+      nectarQuality: 98,
       honeyProfile: {
         type: 'specialty',
         flavor: 'floral',
-        color: '#E6D1FF',
-        description: 'Fragrant, floral honey with aromatic notes from lavender fields'
+        color: '#F5F0FF', // Very pale lavender-white
+        description: 'Exquisite monofloral honey with intense floral aroma and therapeutic properties - considered among the finest honeys with notes of fresh herbs and flowers'
       },
       pollen: {
-        amount: 85,
-        quality: 90,
-        color: '#CBB5FF'
+        amount: 80,
+        quality: 95,
+        color: '#C8A2C8' // Light purple lavender pollen
       },
-      beeAttraction: 98,
-      peakNectarHours: [6, 12]
+      beeAttraction: 100, // Maximum attraction - lavender is a bee magnet
+      peakNectarHours: [5, 11] // Long production window, peak in early morning
     },
   },
   sunflower: {
@@ -201,21 +201,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 95,
-      nectarQuality: 90,
+      nectarAmount: 90, // Sunflowers are major nectar producers
+      nectarQuality: 85,
       honeyProfile: {
         type: 'amber',
-        flavor: 'distinctive',
-        color: '#FFB300',
-        description: 'Golden amber honey with a rich, distinctive flavor and bright yellow color from sunflower nectar'
+        flavor: 'robust',
+        color: '#DAA520', // Golden amber color
+        description: 'Full-bodied amber honey with a rich, nutty flavor and bright golden color - sunflower honey crystallizes quickly and has a distinctive granular texture'
       },
       pollen: {
-        amount: 95,
-        quality: 90,
-        color: '#FFD700'
+        amount: 100, // Sunflowers produce massive amounts of pollen
+        quality: 80,
+        color: '#FFD700' // Bright golden sunflower pollen
       },
-      beeAttraction: 100,
-      peakNectarHours: [7, 15]
+      beeAttraction: 95, // Very high attraction
+      peakNectarHours: [7, 14] // Long production window following the sun
     },
   },
 };
@@ -248,59 +248,11 @@ function randomBetween(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/**
- * Calculate harvest rewards for a crop
- */
-export function calculateHarvestRewards(cropId: string): {
-  crops: number;
-  seeds: number;
-} {
-  const config = getCropConfig(cropId);
-  if (!config) {
-    return { crops: 0, seeds: 0 };
-  }
 
-  const crops = randomBetween(config.harvestYield.crop.min, config.harvestYield.crop.max);
-  const seeds = config.harvestYield.seeds 
-    ? randomBetween(config.harvestYield.seeds.min, config.harvestYield.seeds.max)
-    : 0;
 
-  return { crops, seeds };
-}
 
-/**
- * Get all crops that produce nectar (attractive to bees)
- */
-export function getNectarProducingCrops(): CropConfig[] {
-  return Object.values(CROP_CONFIGS).filter(crop => crop.nectar.producesNectar);
-}
 
-/**
- * Calculate nectar production for a crop at a specific time
- */
-export function calculateNectarProduction(cropId: string, currentHour: number): number {
-  const config = getCropConfig(cropId);
-  if (!config || !config.nectar.producesNectar) {
-    return 0;
-  }
 
-  const [peakStart, peakEnd] = config.nectar.peakNectarHours;
-  let timeMultiplier = 1;
-
-  // Calculate time-based nectar production multiplier
-  if (currentHour >= peakStart && currentHour <= peakEnd) {
-    timeMultiplier = 1.5; // Peak production
-  } else {
-    // Gradual falloff from peak hours
-    const distanceFromPeak = Math.min(
-      Math.abs(currentHour - peakStart),
-      Math.abs(currentHour - peakEnd)
-    );
-    timeMultiplier = Math.max(0.3, 1 - (distanceFromPeak * 0.1));
-  }
-
-  return config.nectar.nectarAmount * timeMultiplier;
-}
 
 /**
  * Get honey blend information from multiple crop sources

@@ -2,13 +2,8 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
-// Honey production removed
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
-import { HiveInfoModal } from '../hives/HiveInfoModal';
-import { HiveVisual } from '../hives/HiveVisual';
-import { ExperienceBar } from '../ui/ExperienceBar';
-import { ExperienceBreakdownModal } from '../ui/ExperienceBreakdownModal';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -65,14 +60,9 @@ export function NestsContent({
             ) : experience ? (
               <>
                 <Text style={styles.levelNumber}>Level {experience.level}</Text>
-                <ExperienceBar
-                  level={experience.level}
-                  currentXP={experience.xpInCurrentLevel}
-                  nextLevelXP={experience.xpNeededForNext}
-                  progress={experience.progress}
-                  compact={true}
-                  showDetails={false}
-                />
+                <View style={styles.experienceBar}>
+                  <View style={[styles.experienceProgress, { width: `${(experience.progress || 0) * 100}%` }]} />
+                </View>
                 <Text style={styles.smallStat}>
                   {experience.totalXP} Total XP
                 </Text>
@@ -102,8 +92,6 @@ export function NestsContent({
             </Text>
           </View>
         </View>
-
-        {/* Bottling Card removed - use toolbar button instead */}
       </View>
 
       {/* Hives List */}
@@ -123,11 +111,17 @@ export function NestsContent({
                 </View>
               )}
             </View>
-            <HiveVisual
-              hiveId={currentHive.id}
-              maxNectar={maxNectar}
-              beeCount={currentHive.beeCount}
-            />
+            
+            {/* Simplified hive visual since complex components were deleted */}
+            <View style={styles.hiveVisual}>
+              <View style={styles.hiveStats}>
+                <Text style={styles.beeCount}>🐝 {currentHive.beeCount}/100</Text>
+                <View style={styles.beeBar}>
+                  <View style={[styles.beeBarFill, { width: `${(currentHive.beeCount / 100) * 100}%` }]} />
+                </View>
+                <Text style={styles.nectarLevel}>🍯 {hiveNectarLevels[currentHive.id] || 0}/{maxNectar}</Text>
+              </View>
+            </View>
           </TouchableOpacity>
         ))}
 
@@ -152,50 +146,6 @@ export function NestsContent({
 
       {/* Bottom padding for scrolling past bottom bar */}
       <View style={{ height: 100 }} />
-
-      {/* Hive Info Modal */}
-      {selectedHive && (() => {
-        // Build a minimal HiveState from the existing HiveData for display purposes
-        const hiveState: any = { // HiveState type removed
-          id: selectedHive.id,
-          currentBatch: null,
-          completedBatches: [],
-          totalHoneyStored: 0, // Honey removed
-          lastPollinationTime: new Date(),
-          dailyNectarCollection: {},
-        };
-
-        const summary = null; // getHiveProductionSummary removed
-
-        return (
-          <HiveInfoModal
-            hive={hiveState}
-            summary={{
-              currentProduction: 'None',
-              todaysCollection: '0ml',
-              totalHoney: 0,
-              recentSources: [],
-              qualityRating: 'N/A'
-            }}
-            onClose={() => setSelectedHive(null)}
-          />
-        );
-      })()}
-
-      {/* Experience Breakdown Modal */}
-      {experience && (
-        <ExperienceBreakdownModal
-          visible={xpModalVisible}
-          onClose={() => setXPModalVisible(false)}
-          breakdown={{
-            totalXP: experience.totalXP,
-            harvestsCount: experience.harvestsCount,
-            uniqueHarvests: experience.uniqueHarvests,
-            pollinationEvents: experience.pollinationEvents,
-            salesCompleted: experience.salesCompleted,
-          }}
-        />
-      )}
     </ScrollView>
   );
 }
@@ -242,6 +192,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#92400e',
   },
+  experienceContent: {
+    alignItems: 'center',
+    gap: 4,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  levelNumber: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  experienceBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  experienceProgress: {
+    height: '100%',
+    backgroundColor: '#10b981',
+  },
   pollinationContent: {
     alignItems: 'center',
     gap: 4,
@@ -269,34 +242,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#78350f',
     fontWeight: '600',
-  },
-  bottlingContent: {
-    gap: 6,
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  bottlingStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-  },
-  compactBottleButton: {
-    backgroundColor: '#f59e0b',
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#d97706',
-    marginTop: 4,
-  },
-  disabledButton: {
-    backgroundColor: '#d1d5db',
-    borderColor: '#9ca3af',
-  },
-  compactButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 12,
   },
   hivesList: {
     gap: 16,
@@ -338,6 +283,34 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
+  hiveVisual: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  hiveStats: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  beeCount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  beeBar: {
+    width: 200,
+    height: 8,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  beeBarFill: {
+    height: '100%',
+    backgroundColor: '#fbbf24',
+  },
+  nectarLevel: {
+    fontSize: 14,
+    color: '#b45309',
+  },
   buildCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 16,
@@ -366,18 +339,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#b45309',
     fontWeight: '600',
-  },
-  experienceContent: {
-    alignItems: 'center',
-    gap: 4,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  levelNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#92400e',
-    marginBottom: 4,
   },
   loadingText: {
     fontSize: 12,

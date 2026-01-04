@@ -5,7 +5,11 @@ import Animated, {
   useAnimatedStyle,
   useScrollOffset,
 } from 'react-native-reanimated';
-import type { ParallaxProps } from '../types/ui';
+
+type ParallaxProps = {
+  headerImage: import('react').ReactElement;
+  headerBackgroundColor: { dark: string; light: string };
+};
 
 import { ThemedView } from '../components/themed-view';
 import { useColorScheme } from '../hooks/use-color-scheme';

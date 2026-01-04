@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getToolsForRoute, type ToolType } from '../../constants/toolbarConfig';
-
-export type FarmRoute = 'nests' | 'home' | 'landscape' | 'expand' | 'godot';
+import { getToolsForRoute, type ToolType, type FarmRoute } from '../../constants/toolbarConfig';
 
 type ToolbarProps = {
   selectedTool: ToolType;

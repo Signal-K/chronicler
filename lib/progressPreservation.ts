@@ -19,12 +19,12 @@ const LOCAL_DATA_KEYS = [
   // Add any other keys as needed
 ] as const;
 
-export type LocalDataBackup = Record<string, string | null>;
+type LocalDataBackup = Record<string, string | null>;
 
 /**
- * Create a backup of all local progress data
+ * Create a backup of all local progress data (internal function)
  */
-export async function backupLocalData(): Promise<LocalDataBackup> {
+async function backupLocalData(): Promise<LocalDataBackup> {
   console.log('💾 Creating local data backup...');
   
   try {
@@ -49,9 +49,9 @@ export async function backupLocalData(): Promise<LocalDataBackup> {
 }
 
 /**
- * Restore local progress from backup
+ * Restore local progress from backup (internal function)
  */
-export async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
+async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
   console.log('📥 Restoring local data from backup...');
   
   try {
@@ -75,6 +75,10 @@ export async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
     throw new Error('Failed to restore data from backup');
   }
 }
+
+
+
+
 
 /**
  * Enhanced login that preserves local progress

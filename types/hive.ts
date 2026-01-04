@@ -47,7 +47,7 @@ export interface HiveData {
 }
 
 // Legacy interface (keeping for compatibility with existing components)
-export interface Hive {
+interface Hive {
   id: string;
   beeCount: number;
   health: number;

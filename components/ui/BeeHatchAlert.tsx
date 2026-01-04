@@ -5,7 +5,7 @@ interface BeeHatchAlertProps {
   visible: boolean;
   message: string;
   onClose: () => void;
-}
+};
 
 export function BeeHatchAlert({ visible, message, onClose }: BeeHatchAlertProps) {
   const scaleValue = React.useRef(new Animated.Value(0.8)).current;

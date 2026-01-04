@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// HoveringBeeData type removed
+import type { HoveringBeeData } from '../../hooks/useHoveringBees';
 
 interface HoveringBeeWithTagProps {
-  bee: any; // HoveringBeeData type removed
+  bee: HoveringBeeData;
   onDespawn?: (beeId: string) => void;
-  onBeePress?: (bee: any) => void;
+  onBeePress?: (bee: HoveringBeeData) => void;
   showClassificationArrow?: boolean;
 }
 
