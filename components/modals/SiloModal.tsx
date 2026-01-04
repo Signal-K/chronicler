@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Almanac } from '../../app/screens/almanac';
+// Almanac removed
 import { Shop } from '../../app/screens/shop';
 import type { InventoryData } from '../../hooks/useGameState';
 import { Inventory } from '../inventory/inventory';
@@ -13,7 +13,7 @@ interface SiloModalProps {
   onSellCrop?: (cropType: string, count: number, coinsEarned: number, emoji: string) => void;
 }
 
-type TabType = 'inventory' | 'almanac' | 'shop';
+type TabType = 'inventory' | 'shop';
 
 export function SiloModal({
   visible,
@@ -46,15 +46,6 @@ export function SiloModal({
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'almanac' && styles.activeTab]}
-                onPress={() => setActiveTab('almanac')}
-              >
-                <Text style={[styles.tabText, activeTab === 'almanac' && styles.activeTabText]}>
-                  📖 Almanac
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
                 style={[styles.tab, activeTab === 'shop' && styles.activeTab]}
                 onPress={() => setActiveTab('shop')}
               >
@@ -76,14 +67,6 @@ export function SiloModal({
                 inventory={inventory}
                 setInventory={setInventory}
                 onSellCrop={onSellCrop}
-                onClose={onClose}
-                isExpanded={false}
-                onToggleExpand={() => {}}
-              />
-            )}
-            
-            {activeTab === 'almanac' && (
-              <Almanac
                 onClose={onClose}
                 isExpanded={false}
                 onToggleExpand={() => {}}

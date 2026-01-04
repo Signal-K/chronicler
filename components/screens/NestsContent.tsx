@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
-import { getHiveProductionSummary, type HiveState } from '../../lib/honeyProduction';
+// Honey production removed
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { HiveInfoModal } from '../hives/HiveInfoModal';
@@ -125,7 +125,6 @@ export function NestsContent({
             </View>
             <HiveVisual
               hiveId={currentHive.id}
-              nectarLevel={hiveNectarLevels[currentHive.id] || 0}
               maxNectar={maxNectar}
               beeCount={currentHive.beeCount}
             />
@@ -157,21 +156,27 @@ export function NestsContent({
       {/* Hive Info Modal */}
       {selectedHive && (() => {
         // Build a minimal HiveState from the existing HiveData for display purposes
-        const hiveState: HiveState = {
+        const hiveState: any = { // HiveState type removed
           id: selectedHive.id,
           currentBatch: null,
           completedBatches: [],
-          totalHoneyStored: selectedHive.resources?.honey || selectedHive.nectarLevel || 0,
+          totalHoneyStored: 0, // Honey removed
           lastPollinationTime: new Date(),
           dailyNectarCollection: {},
         };
 
-        const summary = getHiveProductionSummary(hiveState);
+        const summary = null; // getHiveProductionSummary removed
 
         return (
           <HiveInfoModal
             hive={hiveState}
-            summary={summary}
+            summary={{
+              currentProduction: 'None',
+              todaysCollection: '0ml',
+              totalHoney: 0,
+              recentSources: [],
+              qualityRating: 'N/A'
+            }}
             onClose={() => setSelectedHive(null)}
           />
         );

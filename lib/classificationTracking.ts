@@ -71,7 +71,7 @@ export async function recordClassification(hiveId: string, classificationType: s
         // Save updated data
         await saveDailyClassificationData(data);
         
-        // Also save to user's classification history (for almanac)
+        // Also save to user's classification history
         await saveClassificationToHistory(hiveId, classificationType);
         
         return true;
@@ -82,7 +82,7 @@ export async function recordClassification(hiveId: string, classificationType: s
 }
 
 /**
- * Save classification to user's history for almanac tracking
+ * Save classification to user's history
  */
 async function saveClassificationToHistory(hiveId: string, classificationType: string): Promise<void> {
     try {
@@ -116,7 +116,7 @@ async function saveClassificationToHistory(hiveId: string, classificationType: s
 }
 
 /**
- * Get classification history for almanac
+ * Get classification history
  */
 export async function getClassificationHistory(): Promise<{
     id: string;

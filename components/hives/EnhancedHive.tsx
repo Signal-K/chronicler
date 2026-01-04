@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Polygon, Rect, Stop } from 'react-native-svg';
-import { useHoneyProduction } from '../../hooks/useHoneyProduction';
 import { HiveInfoModal } from './HiveInfoModal';
 
 interface EnhancedHiveProps {
@@ -23,14 +22,9 @@ interface EnhancedHiveProps {
 
 export function EnhancedHive({ hive, activeCrops, isSelected = false, onPress }: EnhancedHiveProps) {
   const [showModal, setShowModal] = useState(false);
+  // Honey production removed
   
-  const { getHiveInfo } = useHoneyProduction({
-    hives: [{ id: hive.id, position: hive.position }],
-    activeCrops,
-    autoFillEnabled: true
-  });
-
-  const hiveInfo = getHiveInfo(hive.id);
+  const hiveInfo = null; // getHiveInfo(hive.id);
   
   const handlePress = () => {
     if (onPress) {
@@ -46,16 +40,19 @@ export function EnhancedHive({ hive, activeCrops, isSelected = false, onPress }:
   };
 
   const getProductionStatus = () => {
-    if (!hiveInfo?.hive.currentBatch) {
+    // Honey production removed
+    if (true) {
       return { status: 'Idle', color: '#8D6E63' };
     }
     
-    const batch = hiveInfo.hive.currentBatch;
-    if (batch.isComplete) {
+    // const batch = hiveInfo.hive.currentBatch;
+    // Batch logic removed
+    if (false) {
       return { status: 'Ready!', color: '#4CAF50' };
     }
     
-    if (batch.amount > 50) {
+    // Batch amount check removed
+    if (false) {
       return { status: 'Active', color: '#FF8F00' };
     }
     
@@ -98,8 +95,8 @@ export function EnhancedHive({ hive, activeCrops, isSelected = false, onPress }:
             />
 
             {/* Honey production indicator */}
-            {hiveInfo?.hive.currentBatch && hiveInfo.hive.currentBatch.amount > 0 && (
-              <Circle 
+            {/* Honey production display removed */}
+            <Circle 
                 cx="160" 
                 cy="40" 
                 r="8" 
@@ -107,7 +104,6 @@ export function EnhancedHive({ hive, activeCrops, isSelected = false, onPress }:
                 stroke="#FFF"
                 strokeWidth="2"
               />
-            )}
 
             {/* Decorative honey frames */}
             <G opacity="0.6">
@@ -135,8 +131,18 @@ export function EnhancedHive({ hive, activeCrops, isSelected = false, onPress }:
 
       {showModal && hiveInfo && (
         <HiveInfoModal
-          hive={hiveInfo.hive}
-          summary={hiveInfo.summary}
+          hive={{
+            id: hive.id,
+            beeCount: hive.beeCount,
+            completedBatches: []
+          }}
+          summary={{
+            currentProduction: 'None',
+            todaysCollection: '0ml', 
+            totalHoney: 0,
+            recentSources: [],
+            qualityRating: 'N/A'
+          }}
           onClose={() => setShowModal(false)}
         />
       )}

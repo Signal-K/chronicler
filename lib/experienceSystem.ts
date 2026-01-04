@@ -25,7 +25,7 @@ export interface XPGainEvent {
   amount: number;
   description: string;
   cropType?: string; // For harvest events
-  orderComplexity?: 'simple' | 'medium' | 'complex'; // For sale events
+  // orderComplexity removed
 }
 
 /**
@@ -210,10 +210,10 @@ export async function awardPollinationXP(): Promise<XPGainEvent> {
 }
 
 /**
- * Award XP for completing a sale/order
- * XP varies based on order complexity: simple (2), medium (3), complex (4)
+ * Award XP for completing a sale
+ * XP varies based on sale complexity: simple (2), medium (3), complex (4)
  */
-export async function awardSaleXP(orderComplexity: 'simple' | 'medium' | 'complex'): Promise<XPGainEvent> {
+export async function awardSaleXP(saleComplexity: 'simple' | 'medium' | 'complex'): Promise<XPGainEvent> {
   const experience = await loadPlayerExperience();
   
   const xpMap = {
@@ -222,7 +222,7 @@ export async function awardSaleXP(orderComplexity: 'simple' | 'medium' | 'comple
     complex: 4,
   };
   
-  const xpAmount = xpMap[orderComplexity];
+  const xpAmount = xpMap[saleComplexity];
   experience.totalXP += xpAmount;
   experience.salesCompleted += 1;
   
@@ -236,8 +236,8 @@ export async function awardSaleXP(orderComplexity: 'simple' | 'medium' | 'comple
   return {
     type: 'sale',
     amount: xpAmount,
-    description: `Completed ${orderComplexity} order`,
-    orderComplexity,
+    description: `Completed ${saleComplexity} sale`,
+    // saleComplexity removed
   };
 }
 

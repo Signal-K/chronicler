@@ -133,7 +133,6 @@ export default function ExpandScreen() {
       />
       
       <GardenBottomBar 
-        onOpenAlmanac={() => {}}
         onOpenInventory={() => {}}
         onOpenShop={() => {}}
         onOpenSettings={() => {}}

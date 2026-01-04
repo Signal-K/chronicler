@@ -5,14 +5,13 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  AccountSection,
-  AppearanceSection,
-  DebugSection,
-  FillHivesSection,
-  GrowthAlgorithmSection,
-  HoneyProductionSection,
-  LocalProgressSection,
-  PermissionsSection,
+    AccountSection,
+    AppearanceSection,
+    DebugSection,
+    FillHivesSection,
+    GrowthAlgorithmSection,
+    LocalProgressSection,
+    PermissionsSection,
 } from '../components/settings';
 import { setOverride as setThemeOverride } from '../hooks/themeManager';
 import { useColorScheme } from '../hooks/use-color-scheme';
@@ -204,12 +203,11 @@ export default function SettingsScreen() {
           onToggleDarkMode={toggleDarkMode}
         />
 
-        <HoneyProductionSection
           autoFillHoneyEnabled={autoFillHoneyEnabled}
-          onToggleAutoFillHoney={toggleAutoFillHoney}
+        {/* Honey auto-fill removed */}
           plots={plots}
           isDark={isDark}
-        />
+        {/* Honey production section removed */}
 
         <FillHivesSection isDark={isDark} />
 

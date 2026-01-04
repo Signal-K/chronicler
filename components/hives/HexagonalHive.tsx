@@ -212,41 +212,7 @@ export function HexagonalHive({ hive, size = 80, onPress }: HexagonalHiveProps) 
           />
         )}
 
-        {/* Honey drip effects (when honey high) */}
-        {(hive.resources?.honey || 0) > 70 && (
-          <>
-            <Circle
-              cx={centerX - hexSize * 0.35}
-              cy={centerY + hexSize * 0.75}
-              r={hexSize * 0.1}
-              fill="#f59e0b"
-              opacity="0.8"
-            />
-            <Path
-              d={`M ${centerX - hexSize * 0.35} ${centerY + hexSize * 0.6}
-                  L ${centerX - hexSize * 0.35} ${centerY + hexSize * 0.75}`}
-              stroke="#f59e0b"
-              strokeWidth="4"
-              opacity="0.7"
-              strokeLinecap="round"
-            />
-            <Circle
-              cx={centerX + hexSize * 0.35}
-              cy={centerY + hexSize * 0.8}
-              r={hexSize * 0.08}
-              fill="#f59e0b"
-              opacity="0.8"
-            />
-            <Path
-              d={`M ${centerX + hexSize * 0.35} ${centerY + hexSize * 0.65}
-                  L ${centerX + hexSize * 0.35} ${centerY + hexSize * 0.8}`}
-              stroke="#f59e0b"
-              strokeWidth="3"
-              opacity="0.7"
-              strokeLinecap="round"
-            />
-          </>
-        )}
+        {/* Honey drip effects removed */}
 
         {/* Health indicator - subtle inner glow only */}
         <Polygon

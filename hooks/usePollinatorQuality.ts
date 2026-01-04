@@ -17,7 +17,7 @@ export function usePollinatorQuality({
   hives,
   weather,
   season = 'spring',
-  airborneNectar = 50,
+  
 }: UsePollinatorQualityProps): PollinatorQuality {
   
   const quality = useMemo(() => {
@@ -26,11 +26,10 @@ export function usePollinatorQuality({
     // 1. Weather conditions (temperature, rain, wind)
     // 2. Total bee population across all hives
     // 3. Average bee health across hives
-    // 4. Available nectar/pollen resources
     // 5. Seasonal multipliers
     
     console.log('TODO: Calculate pollinator quality');
-    console.log('Factors to consider:', { hives: hives.length, weather, season, airborneNectar });
+    console.log('Factors to consider:', { hives: hives.length, weather, season });
     
     // Skeleton implementation with placeholder values
     
@@ -43,8 +42,7 @@ export function usePollinatorQuality({
     // Health factor (0-100)
     const healthFactor = calculateHealthFactor(hives);
     
-    // Resource factor (0-100) - combination of hive resources and airborne nectar
-    const resourceFactor = calculateResourceFactor(hives, airborneNectar);
+    const resourceFactor = calculateResourceFactor(hives, 50);
     
     // Seasonality factor (0-100)
     const seasonalityFactor = calculateSeasonalityFactor(season);
@@ -64,7 +62,7 @@ export function usePollinatorQuality({
       health: healthFactor, // Bee health factor
       activity: (weatherFactor + seasonalityFactor + resourceFactor) / 3, // Activity based on weather, season, and resources
     };
-  }, [hives, weather, season, airborneNectar]);
+  }, [hives, weather, season]);
   
   return quality;
 }
@@ -196,22 +194,17 @@ function calculateResourceFactor(hives: HiveData[], airborneNectar: number): num
   if (hives.length === 0) return airborneNectar;
   
   const avgPollen = hives.reduce((sum, h) => sum + (h.resources?.pollen || 0), 0) / hives.length;
-  const avgNectar = hives.reduce((sum, h) => sum + (h.resources?.nectar || 0), 0) / hives.length;
-  const avgHoney = hives.reduce((sum, h) => sum + (h.resources?.honey || 0), 0) / hives.length;
   
-  // Stored resources score (pollen and nectar are most important for active foraging)
-  const storedScore = (avgPollen * 0.5 + avgNectar * 0.5);
+  const storedScore = (avgPollen * 0.5); // Nectar removed
   
   // Honey indicates colony health but less important for pollination activity
-  const honeyBonus = avgHoney > 60 ? 10 : avgHoney > 30 ? 5 : 0;
   
-  // Airborne nectar from flowering plants (environmental)
   // This is more important than stored resources for current pollination activity
   const environmentScore = airborneNectar;
   
   // Weighted combination: environment matters more for current pollination
-  const combined = (storedScore * 0.3) + (environmentScore * 0.6) + honeyBonus;
   
+  const combined = storedScore + 0 + 0; // airborneScore and honeyBonus removed
   return Math.round(Math.max(0, Math.min(100, combined)));
 }
 

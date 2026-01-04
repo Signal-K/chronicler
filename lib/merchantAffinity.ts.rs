@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Merchant } from '../types/orders';
+// Orders type removed
 
 const MERCHANT_AFFINITY_KEY = 'merchant_affinity';
 
@@ -91,8 +91,8 @@ export async function saveMerchantAffinity(affinity: Record<string, number>): Pr
 }
 
 /**
- * Increase affinity with a merchant when completing an order
- * Affinity increases by 2-5 points per order depending on complexity
+ * Increase affinity with a merchant when completing a sale
+ * Affinity increases by 2-5 points per sale depending on complexity
  */
 export async function increaseAffinity(merchantId: string, points: number = 3): Promise<void> {
   const affinity = await loadMerchantAffinity();
@@ -122,7 +122,7 @@ export async function getMerchant(merchantId: string): Promise<Merchant | null> 
 }
 
 /**
- * Select appropriate merchant for an order based on crop types
+ * Select appropriate merchant for a sale based on crop types
  * Merchants with matching specialties are preferred
  */
 export function selectMerchantForOrder(cropTypes: string[]): Merchant {

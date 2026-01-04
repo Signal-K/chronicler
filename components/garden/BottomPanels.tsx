@@ -1,15 +1,13 @@
 import React from 'react';
-import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
-import { Almanac } from '../../app/screens/almanac';
-import { Settings } from '../../app/settings';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Shop } from '../../app/screens/shop';
+// Settings removed
 import type { InventoryData } from '../../hooks/useGameState';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { Inventory } from '../inventory/inventory';
 
 interface BottomPanelsProps {
   isAnyPanelOpen: boolean;
-  showAlmanac: boolean;
   showInventory: boolean;
   showShop: boolean;
   showSettings: boolean;
@@ -27,7 +25,7 @@ interface BottomPanelsProps {
 
 export function BottomPanels({
   isAnyPanelOpen,
-  showAlmanac,
+  // showAlmanac removed
   showInventory,
   showShop,
   showSettings,
@@ -56,10 +54,6 @@ export function BottomPanels({
       />
       
       <Animated.View style={[styles.bottomPanel, { height: panelHeight }]}>
-        {showAlmanac && (
-          <Almanac onClose={closePanel} isExpanded={isExpanded} onToggleExpand={toggleExpand} />
-        )}
-        
         {showInventory && (
           <Inventory 
             inventory={inventory} 
@@ -82,18 +76,9 @@ export function BottomPanels({
         )}
         
         {showSettings && (
-          <Settings 
-            onClose={closePanel} 
-            isExpanded={isExpanded} 
-            onToggleExpand={toggleExpand} 
-            location={null} 
-            setLocation={() => {}} 
-            setRealWeather={() => {}} 
-            setNextRainTime={() => {}}
-            onResetGame={onResetGame}
-            pollinationFactor={pollinationFactor}
-            onFillHives={onFillHives}
-          />
+          <View style={styles.panel}>
+            <Text>Settings panel removed</Text>
+          </View>
         )}
       </Animated.View>
     </>
@@ -125,5 +110,10 @@ const styles = StyleSheet.create({
     elevation: 20,
     zIndex: 200,
     overflow: 'hidden',
+  },
+  panel: {
+    padding: 20,
+    backgroundColor: '#fef3c7',
+    borderRadius: 16,
   },
 });

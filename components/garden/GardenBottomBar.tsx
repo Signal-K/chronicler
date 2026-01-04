@@ -3,14 +3,12 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type NavigationBarProps = {
-  onOpenAlmanac: () => void;
   onOpenInventory: () => void;
   onOpenShop: () => void;
   onOpenSettings: () => void;
 };
 
 export function GardenBottomBar({
-  onOpenAlmanac,
   onOpenInventory,
   onOpenShop,
   onOpenSettings,
@@ -38,17 +36,6 @@ export function GardenBottomBar({
           >
             <LinearGradient colors={['#b45309', '#92400e']} style={styles.navButton}>
               <Text style={styles.navIcon}>📦</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          {/* Almanac Icon */}
-          <TouchableOpacity
-            onPress={onOpenAlmanac}
-            activeOpacity={0.8}
-            style={styles.navButtonWrapper}
-          >
-            <LinearGradient colors={['#d97706', '#b45309']} style={styles.navButton}>
-              <Text style={styles.navIcon}>📖</Text>
             </LinearGradient>
           </TouchableOpacity>
 

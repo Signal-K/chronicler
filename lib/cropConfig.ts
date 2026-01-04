@@ -81,21 +81,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 15, // Very low - tomatoes are primarily self-pollinating
-      nectarQuality: 40,
+      nectarAmount: 35,
+      nectarQuality: 60,
       honeyProfile: {
         type: 'light',
         flavor: 'mild',
-        color: '#F8F0D0',
-        description: 'Rare, very light honey with subtle green, vegetal notes - tomato plants provide minimal nectar'
+        color: '#F5E6A8',
+        description: 'Light, delicate honey with subtle fruity notes from tomato blossoms'
       },
       pollen: {
-        amount: 25, // Low pollen production
-        quality: 45,
-        color: '#FFF2AA'
+        amount: 45,
+        quality: 65,
+        color: '#FFE135'
       },
-      beeAttraction: 25, // Low attraction - bees rarely visit tomato flowers
-      peakNectarHours: [9, 11] // Short window, early morning
+      beeAttraction: 55,
+      peakNectarHours: [8, 12]
     },
   },
   blueberry: {
@@ -121,21 +121,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 75, // Blueberries are excellent nectar sources
-      nectarQuality: 85,
+      nectarAmount: 50,
+      nectarQuality: 70,
       honeyProfile: {
         type: 'light',
         flavor: 'sweet',
-        color: '#E8E0A8', // Light amber with slight berry tint
-        description: 'Premium light honey with delicate berry undertones and buttery texture from blueberry blossoms'
+        color: '#D0C6FF',
+        description: 'Delicate, sweet honey with light berry notes from blueberry blossoms'
       },
       pollen: {
-        amount: 70,
-        quality: 80,
-        color: '#E6D5FF' // Blueberry pollen has a slight purple tint
+        amount: 55,
+        quality: 65,
+        color: '#A3C1E6'
       },
-      beeAttraction: 90, // Blueberries are very attractive to bees
-      peakNectarHours: [6, 12] // Early morning peak production
+      beeAttraction: 65,
+      peakNectarHours: [8, 13]
     },
   },
   lavender: {
@@ -161,21 +161,21 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     ],
     nectar: {
       producesNectar: true,
-      nectarAmount: 85,
-      nectarQuality: 98,
+      nectarAmount: 90,
+      nectarQuality: 95,
       honeyProfile: {
         type: 'specialty',
         flavor: 'floral',
-        color: '#F5F0D8', // Very light, almost white with lavender hints
-        description: 'Exquisite monofloral honey with intense lavender aroma, delicate floral taste, and therapeutic properties'
+        color: '#E6D1FF',
+        description: 'Fragrant, floral honey with aromatic notes from lavender fields'
       },
       pollen: {
-        amount: 80,
-        quality: 95,
-        color: '#D8D0FF' // Light purple pollen
+        amount: 85,
+        quality: 90,
+        color: '#CBB5FF'
       },
-      beeAttraction: 100, // Maximum attraction - lavender is beloved by bees
-      peakNectarHours: [8, 16] // Long nectar production window
+      beeAttraction: 98,
+      peakNectarHours: [6, 12]
     },
   },
   sunflower: {
@@ -202,20 +202,20 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
     nectar: {
       producesNectar: true,
       nectarAmount: 95,
-      nectarQuality: 88,
+      nectarQuality: 90,
       honeyProfile: {
         type: 'amber',
-        flavor: 'robust',
-        color: '#FFD700', // Bright golden yellow
-        description: 'Bold golden honey with rich, nutty flavor and quick crystallization - prized for its distinctive sunflower taste'
+        flavor: 'distinctive',
+        color: '#FFB300',
+        description: 'Golden amber honey with a rich, distinctive flavor and bright yellow color from sunflower nectar'
       },
       pollen: {
-        amount: 100, // Sunflowers produce massive amounts of pollen
-        quality: 85,
-        color: '#FFA500' // Orange-yellow sunflower pollen
+        amount: 95,
+        quality: 90,
+        color: '#FFD700'
       },
-      beeAttraction: 100, // Maximum attraction - sunflowers are bee magnets
-      peakNectarHours: [8, 14] // Peak during sunny morning hours
+      beeAttraction: 100,
+      peakNectarHours: [7, 15]
     },
   },
 };

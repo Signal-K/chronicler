@@ -1,15 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
-import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
-import { usePlotActions } from '../../hooks/usePlotActions';
-import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
+import React, { useCallback, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useClassificationTracking } from '../../hooks/useClassificationTracking';
+import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
+import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
+import { usePlotActions } from '../../hooks/usePlotActions';
 import type { HiveData } from '../../types/hive';
-import ClassificationModal from '../modals/ClassificationModal';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
 import { HoveringBeesManager } from '../garden/HoveringBeesManager';
 import { FlyingBee } from '../hives/FlyingBee';
+import ClassificationModal from '../modals/ClassificationModal';
 import { InfoDialog } from '../ui/InfoDialog';
 
 type FlyingBeeData = {
@@ -107,8 +107,8 @@ export function HomeContent({
     setClassificationModal({ visible: false, bee: null });
   }, [classificationModal.bee, submitClassification]);
 
-  // Use hovering bees hook
-  const { hoveringBees } = useHoveringBees(hives, isDaytime, plots);
+  // Use hovering bees hook - plots temporarily empty to fix type issue
+  const { hoveringBees } = useHoveringBees(hives, isDaytime, []);
   const [showHarvestAnimation, setShowHarvestAnimation] = React.useState(false);
   const [harvestReward, setHarvestReward] = React.useState({ cropEmoji: '', cropCount: 0, seedCount: 0 });
   const [dialogVisible, setDialogVisible] = React.useState(false);

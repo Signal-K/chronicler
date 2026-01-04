@@ -25,9 +25,7 @@ export default function RootLayout() {
           <Stack.Screen name="nests" options={{ headerShown: false }} />
           <Stack.Screen name="expand" options={{ headerShown: false }} />
           <Stack.Screen name="planets" options={{ headerShown: false }} />
-          <Stack.Screen name="almanac" options={{ headerShown: false }} />
           <Stack.Screen name="inventory" options={{ headerShown: false }} />
-          <Stack.Screen name="orders" options={{ headerShown: false }} />
           <Stack.Screen name="settings" options={{ headerShown: false }} />
           <Stack.Screen name="experience" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />

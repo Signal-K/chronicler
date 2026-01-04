@@ -1,10 +1,10 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { getCropConfig } from '../../lib/cropConfig';
-import { HiveState } from '../../lib/honeyProduction';
+// Honey production removed
 
 interface HiveInfoModalProps {
-  hive: HiveState;
+  hive: any; // HiveState removed
   summary: {
     currentProduction: string;
     todaysCollection: string;
@@ -82,7 +82,7 @@ export function HiveInfoModal({ hive, summary, onClose }: HiveInfoModalProps) {
                 <View style={styles.sourceInfo}>
                   <Text style={styles.sourceName}>{config.name}</Text>
                   <Text style={styles.sourceDescription}>
-                    {config.nectar.honeyProfile.description}
+                    {/* Nectar description removed */}
                   </Text>
                   {nectarAmount > 0 && (
                     <Text style={styles.nectarAmount}>
@@ -90,7 +90,7 @@ export function HiveInfoModal({ hive, summary, onClose }: HiveInfoModalProps) {
                     </Text>
                   )}
                 </View>
-                <View style={[styles.honeyDot, { backgroundColor: config.nectar.honeyProfile.color }]} />
+                <View style={[styles.honeyDot, { backgroundColor: '#F5E6A8' }]} />
               </View>
             );
           })}
@@ -109,23 +109,12 @@ export function HiveInfoModal({ hive, summary, onClose }: HiveInfoModalProps) {
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Honey Batches</Text>
-        {recentBatches.map(batch => (
-          <View key={batch.id} style={styles.completedBatch}>
-            <View style={[styles.honeyDot, { backgroundColor: batch.color }]} />
-            <View style={styles.batchDetails}>
-              <Text style={styles.batchName}>{batch.description}</Text>
-              <Text style={styles.batchStats}>
-                {Math.round(batch.amount)}ml • Quality: {Math.round(batch.quality)}%
-              </Text>
-            </View>
-          </View>
-        ))}
+        {/* recentBatches removed */}
+        <Text style={styles.emptyText}>No active honey production</Text>
         
-        {hive.completedBatches.length > 3 && (
-          <Text style={styles.moreText}>
-            +{hive.completedBatches.length - 3} more batches stored
-          </Text>
-        )}
+        {/* Removed completed batches display */}
+        
+        {/* Batch count display removed */}
       </View>
     );
   };

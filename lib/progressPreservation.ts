@@ -10,10 +10,10 @@ const LOCAL_DATA_KEYS = [
   'player_experience', // New XP system
   'user_stats',
   'merchant_affinity',
-  'active_orders',
+  // 'active_orders' removed
   'pollination_factor',
   'user_experience', // Legacy system (to be migrated)
-  'last_order_generation',
+  // 'last_order_generation' removed
   'honeyFastForwardRequest',
   'honeyFastForwardTrigger',
   // Add any other keys as needed

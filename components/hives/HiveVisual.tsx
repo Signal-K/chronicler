@@ -4,18 +4,17 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Path, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 interface HiveVisualProps {
-  nectarLevel: number; // 0-100
   maxNectar: number;
   beeCount: number;
   hiveId: string;
 }
 
-export function HiveVisual({ nectarLevel, maxNectar, beeCount, hiveId }: HiveVisualProps) {
+export function HiveVisual({ maxNectar, beeCount, hiveId }: HiveVisualProps) {
   // Calculate nectar percentage for drip visualization
-  const nectarPercentage = (nectarLevel / maxNectar) * 100;
+  // Nectar display removed
   
   // Determine how many drips to show based on nectar level
-  const dripCount = Math.floor(nectarPercentage / 25); // 0-4 drips
+  const dripCount = 0; // Nectar display removed
   
   return (
     <View style={styles.container}>
@@ -100,7 +99,7 @@ export function HiveVisual({ nectarLevel, maxNectar, beeCount, hiveId }: HiveVis
             style={styles.honeyBottleIcon}
             resizeMode="contain"
           />
-          <Text style={styles.statusText}>{Math.floor(nectarPercentage)}%</Text>
+          <Text style={styles.statusText}>--</Text>
         </View>
       </View>
 
@@ -111,10 +110,10 @@ export function HiveVisual({ nectarLevel, maxNectar, beeCount, hiveId }: HiveVis
             colors={['#FFD700', '#FFA500']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[styles.nectarBarFill, { width: `${nectarPercentage}%` }]}
+            style={[styles.nectarBarFill, { width: '0%' }]}
           />
         </View>
-        <Text style={styles.nectarLabel}>Nectar: {nectarLevel}/{maxNectar}</Text>
+        {/* Nectar display removed */}
       </View>
     </View>
   );
