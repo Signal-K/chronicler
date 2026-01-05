@@ -1,15 +1,16 @@
-import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
-import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
-import { usePlotActions } from '../../hooks/usePlotActions';
-import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
+import React, { useCallback, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAuth } from '../../contexts/auth';
 import { useClassificationTracking } from '../../hooks/useClassificationTracking';
+import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
+import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
+import { usePlotActions } from '../../hooks/usePlotActions';
 import type { HiveData } from '../../types/hive';
-import ClassificationModal from '../modals/ClassificationModal';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
 import { HoveringBeesManager } from '../garden/HoveringBeesManager';
 import { FlyingBee } from '../hives/FlyingBee';
+import ClassificationModal from '../modals/ClassificationModal';
 import { InfoDialog } from '../ui/InfoDialog';
 
 type FlyingBeeData = {
@@ -63,6 +64,9 @@ export function HomeContent({
   totalPlots,
   baseIndex = 0,
 }: HomeContentProps) {
+  // Get current user session for classification
+  const { session } = useAuth();
+
   // Classification modal state
   const [classificationModal, setClassificationModal] = useState<{
     visible: boolean;
@@ -73,39 +77,44 @@ export function HomeContent({
   });
 
   // Classification tracking hook
-  const { canClassifyHiveSync, submitClassification } = useClassificationTracking(hives);
+  const { canClassifyBeeSync, submitClassification, remainingClassifications, todayCount, maxClassifications } = useClassificationTracking(hiveCount);
 
   // Bee press handler for classification
   const handleBeePress = useCallback((bee: HoveringBeeData) => {
+    console.log('🐝 Bee pressed, checking classification availability...');
+    console.log('📊 Today count:', todayCount, 'Max:', maxClassifications, 'Can classify:', canClassifyBeeSync());
+    
+    if (!canClassifyBeeSync()) {
+      console.log('❌ Cannot make more classifications today');
+      return;
+    }
+    
     setClassificationModal({
       visible: true,
       bee,
     });
-  }, []);
+  }, [canClassifyBeeSync, todayCount, maxClassifications]);
 
   // Handle classification submission
   const handleClassification = useCallback(async (classificationType: string) => {
     if (!classificationModal.bee) return;
     
-    const success = await submitClassification(
-      classificationModal.bee.identity.hiveId,
-      classificationType
-    );
+    const success = await submitClassification(classificationType);
     
     if (success) {
       Alert.alert(
         'Classification Recorded! ✓',
-        `Thank you! You've classified bee ${classificationModal.bee.identity.name} as a ${classificationType}.`
+        `Thank you! You've classified bee ${classificationModal.bee.identity.name} as a ${classificationType}. (+10 XP)\n\nClassifications today: ${todayCount + 1}/${maxClassifications}`
       );
     } else {
       Alert.alert(
-        'Classification Failed',
-        'You may have already classified a bee from this hive today.'
+        'Daily Limit Reached',
+        `You've reached your daily classification limit of ${maxClassifications}. Come back tomorrow!`
       );
     }
     
     setClassificationModal({ visible: false, bee: null });
-  }, [classificationModal.bee, submitClassification]);
+  }, [classificationModal.bee, submitClassification, todayCount, maxClassifications]);
 
   // Use hovering bees hook
   const { hoveringBees } = useHoveringBees(hives, isDaytime, plots);
@@ -167,7 +176,8 @@ export function HomeContent({
       <HoveringBeesManager 
         bees={hoveringBees} 
         onBeePress={handleBeePress}
-        canClassifyBee={canClassifyHiveSync}
+        canClassifyBee={() => canClassifyBeeSync()}
+        canMakeClassifications={canClassifyBeeSync()}
       />
 
       {/* Flying Bees - classification system */}
@@ -206,6 +216,7 @@ export function HomeContent({
         onClose={() => setClassificationModal({ visible: false, bee: null })}
         onClassify={handleClassification}
         beeIdentifier={classificationModal.bee?.identity.name}
+        userId={session?.user?.id}
       />
     </>
   );

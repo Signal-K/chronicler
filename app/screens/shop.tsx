@@ -1,5 +1,5 @@
 
-import { useRouter } from "expo-router";
+
 import React from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BlueberrySeedIcon, CoinIcon, GlassBottleIcon, LavenderSeedIcon, SunflowerSeedIcon, TomatoSeedIcon } from "../../components/ui/ShopIcons";
@@ -23,7 +23,6 @@ const shopItems = [
 ]
 
 export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExpand }: ShopProps) {
-  const router = useRouter()
   const bg = useThemeColor({}, 'background');
   const headerBg = useThemeColor({ light: '#FDE68A', dark: '#1a1a1a' }, 'background');
   const headerBorder = useThemeColor({ light: '#92400E', dark: '#2b2b2b' }, 'icon');
@@ -32,7 +31,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
   const cardBorder = useThemeColor({ light: '#F59E0B', dark: '#2b2b2b' }, 'icon');
   const itemText = useThemeColor({}, 'text');
   const priceBg = useThemeColor({ light: '#FEF3C7', dark: '#0f1720' }, 'background');
-  const primaryBtnBg = useThemeColor({ light: '#92400E', dark: '#7c341f' }, 'icon');
   
   const handlePurchase = (item: (typeof shopItems)[0]) => {
     if (inventory.coins >= item.price) {
@@ -57,27 +55,7 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
     }
   }
 
-  // Sell generic items (bottles, bottled_nectar, etc.)
-  const ITEM_SELL_PRICES: Record<string, number> = {
-    glass_bottle: 3,
-    bottled_nectar: 25,
-    bottled_honey: 40,
-  };
 
-  const handleSellItem = (itemType: string) => {
-    const count = ((inventory as any).items || {})[itemType] || 0;
-    if (count > 0) {
-      const price = ITEM_SELL_PRICES[itemType] || 5;
-      setInventory((prev: any) => ({
-        ...prev,
-        coins: prev.coins + price,
-        items: {
-          ...(prev.items || {}),
-          [itemType]: Math.max(0, (prev.items || {})[itemType] - 1),
-        },
-      }));
-    }
-  };
 
   const content = (
     <View style={[styles.container, isExpanded && styles.expandedContainer, { backgroundColor: bg }] }>
@@ -141,30 +119,9 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
           })}
         </View>
 
-        {/* Sell miscellaneous items */}
-        {inventory.items && Object.keys(inventory.items).length > 0 && (
-          <View style={{ marginTop: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: itemText, marginBottom: 8 }}>Sell Items</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {Object.entries(inventory.items).map(([key, val]) => (
-                <TouchableOpacity key={key} onPress={() => handleSellItem(key)} disabled={(val as number) <= 0} style={{ padding: 8, backgroundColor: cardBg, borderRadius: 8, borderWidth: 2, borderColor: cardBorder, marginRight: 8, marginBottom: 8 }}>
-                  <Text style={{ fontWeight: '700', color: itemText }}>{key.replace(/_/g, ' ')} x{val}</Text>
-                  <Text style={{ color: itemText }}>Sell for {ITEM_SELL_PRICES[key] || 5} coins</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        )}
 
-        {/* View Orders Button */}
-        <TouchableOpacity 
-          style={[styles.viewOrdersButton, { backgroundColor: primaryBtnBg, borderColor: cardBorder }]}
-          onPress={() => router.push('/orders' as any)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.viewOrdersIcon}>📦</Text>
-          <Text style={[styles.viewOrdersButtonText, { color: priceBg }]}>View Orders</Text>
-        </TouchableOpacity>
+
+
       </ScrollView>
     </View>
   )
@@ -335,32 +292,5 @@ const styles = StyleSheet.create({
   lockedText: {
     fontSize: 12,
   },
-  viewOrdersButton: {
-    flexDirection: "row",
-    backgroundColor: "#92400E",
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
-    marginBottom: 20,
-    borderWidth: 3,
-    borderColor: "#78350F",
-    shadowColor: "#92400E",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-    gap: 12,
-  },
-  viewOrdersIcon: {
-    fontSize: 24,
-  },
-  viewOrdersButtonText: {
-    color: "#FEF3C7",
-    fontWeight: "800",
-    fontSize: 18,
-    letterSpacing: 0.5,
-  },
+
 })

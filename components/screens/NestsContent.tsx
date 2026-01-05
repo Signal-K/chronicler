@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { InventoryData } from '../../hooks/useGameState';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import type { HiveData } from '../../types/hive';
@@ -115,7 +115,21 @@ export function NestsContent({
             {/* Simplified hive visual since complex components were deleted */}
             <View style={styles.hiveVisual}>
               <View style={styles.hiveStats}>
-                <Text style={styles.beeCount}>🐝 {currentHive.beeCount}/100</Text>
+                <View style={styles.beeCountRow}>
+                  <Image 
+                    source={require('../../assets/Sprites/Bee.png')}
+                    style={styles.beeSpriteSmall}
+                    resizeMode="contain"
+                  />
+                <View style={styles.beeCountRow}>
+                  <Image 
+                    source={require('../../assets/Sprites/Bee.png')}
+                    style={styles.beeSpriteSmall}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.beeCount}> {currentHive.beeCount}/100</Text>
+                </View>
+                </View>
                 <View style={styles.beeBar}>
                   <View style={[styles.beeBarFill, { width: `${(currentHive.beeCount / 100) * 100}%` }]} />
                 </View>
@@ -295,6 +309,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#92400e',
+  },
+  beeCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  beeSpriteSmall: {
+    width: 32,
+    height: 32,
   },
   beeBar: {
     width: 200,

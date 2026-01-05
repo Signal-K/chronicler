@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface DailyClassificationData {
   date: string; // YYYY-MM-DD format
-  classificationsByHive: { [hiveId: string]: number };
-  maxClassificationsPerHive: number;
+  totalCount: number; // Total classifications made today
+  maxDailyClassifications: number; // Based on min(hive_count, 2)
 };
 
 const CLASSIFICATION_STORAGE_KEY = 'daily_classifications';
@@ -18,7 +18,7 @@ export function getTodayDateString(): string {
     String(today.getDate()).padStart(2, '0');
 };
 
-export async function getDailyClassificationData(): Promise<DailyClassificationData> {
+export async function getDailyClassificationData(hiveCount: number = 1): Promise<DailyClassificationData> {
     try {
         const stored = await AsyncStorage.getItem(CLASSIFICATION_STORAGE_KEY);
         const data: DailyClassificationData = stored ? JSON.parse(stored) : null;
@@ -27,18 +27,20 @@ export async function getDailyClassificationData(): Promise<DailyClassificationD
         if (!data || data.date !== today) {
             return {
                 date: today,
-                classificationsByHive: {},
-                maxClassificationsPerHive: 1,
+                totalCount: 0,
+                maxDailyClassifications: Math.min(hiveCount, 2),
             };
         };
 
+        // Update max classifications based on current hive count
+        data.maxDailyClassifications = Math.min(hiveCount, 2);
         return data;
     } catch (error: any) {
         console.error("Error: loading daily classification data: ", error);
         return {
             date: getTodayDateString(),
-            classificationsByHive: {},
-            maxClassificationsPerHive: 1,
+            totalCount: 0,
+            maxDailyClassifications: Math.min(hiveCount, 2),
         };
     };
 };
@@ -51,29 +53,29 @@ export async function saveDailyClassificationData(data: DailyClassificationData)
     };
 };
 
-export async function canClassifyHive(hiveId: string): Promise<boolean> {
-    const data = await getDailyClassificationData();
-    const currentCount = data.classificationsByHive[hiveId] || 0;
-    return currentCount < data.maxClassificationsPerHive;
+export async function canMakeClassification(hiveCount: number): Promise<boolean> {
+    const data = await getDailyClassificationData(hiveCount);
+    return data.totalCount < data.maxDailyClassifications;
 };
 
-export async function recordClassification(hiveId: string, classificationType: string): Promise<boolean> {
+export async function recordClassification(hiveCount: number, classificationType: string): Promise<boolean> {
     try {
-        const data = await getDailyClassificationData();
-        const currentCount = data.classificationsByHive[hiveId] || 0;
-        if (currentCount >= data.maxClassificationsPerHive) {
+        const data = await getDailyClassificationData(hiveCount);
+        if (data.totalCount >= data.maxDailyClassifications) {
+            console.log(`📊 Daily classification limit reached: ${data.totalCount}/${data.maxDailyClassifications}`);
             return false; // Already reached daily limit
         }
 
-        // Increment classification count
-        data.classificationsByHive[hiveId] = currentCount + 1;
+        // Increment total classification count
+        data.totalCount += 1;
         
         // Save updated data
         await saveDailyClassificationData(data);
         
         // Also save to user's classification history (for almanac)
-        await saveClassificationToHistory(hiveId, classificationType);
+        await saveClassificationToHistory(classificationType);
         
+        console.log(`📊 Classification recorded: ${data.totalCount}/${data.maxDailyClassifications} for today`);
         return true;
     } catch (error) {
         console.error('Error recording classification:', error);
@@ -84,21 +86,19 @@ export async function recordClassification(hiveId: string, classificationType: s
 /**
  * Save classification to user's history for almanac tracking
  */
-async function saveClassificationToHistory(hiveId: string, classificationType: string): Promise<void> {
+async function saveClassificationToHistory(classificationType: string): Promise<void> {
     try {
         const HISTORY_KEY = 'user_classifications_history';
         const stored = await AsyncStorage.getItem(HISTORY_KEY);
         const history: {
             id: string;
-            hiveId: string;
             classificationType: string;
             timestamp: number;
             date: string;
         }[] = stored ? JSON.parse(stored) : [];
         
         history.push({
-            id: `${hiveId}_${Date.now()}`,
-            hiveId,
+            id: `classification_${Date.now()}`,
             classificationType,
             timestamp: Date.now(),
             date: getTodayDateString(),
@@ -120,7 +120,6 @@ async function saveClassificationToHistory(hiveId: string, classificationType: s
  */
 export async function getClassificationHistory(): Promise<{
     id: string;
-    hiveId: string;
     classificationType: string;
     timestamp: number;
     date: string;

@@ -1,9 +1,9 @@
-import { checkForBeeHatching } from "../lib/beeHatching";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
+import { checkForBeeHatching } from "../lib/beeHatching";
 import type {
-  PollinationFactorData,
-  PollinationFactorHookReturn,
+    PollinationFactorData,
+    PollinationFactorHookReturn,
 } from "../types/pollinationFactor";
 
 const DEFAULT_THRESHOLD = 10;

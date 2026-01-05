@@ -49,8 +49,6 @@ export interface CropConfig {
       max: number;
     };
   };
-  /** Sell price per unit */
-  sellPrice: number;
   /** Growth stage images - require() of image files for each growth stage */
   growthImages: any[]; // [seed/sprout, young, mature, ready]
   /** Nectar and honey production properties */
@@ -71,7 +69,6 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       crop: { min: 1, max: 1 },
       seeds: { min: 1, max: 3 },
     },
-    sellPrice: 15,
     growthImages: [
       require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
       require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
@@ -111,7 +108,6 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       crop: { min: 1, max: 3 },
       seeds: { min: 0, max: 2 },
     },
-    sellPrice: 14,
     growthImages: [
       require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
       require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
@@ -151,7 +147,6 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       crop: { min: 1, max: 1 },
       seeds: { min: 1, max: 2 },
     },
-    sellPrice: 18,
     growthImages: [
       require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
       require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),
@@ -191,7 +186,6 @@ export const CROP_CONFIGS: Record<string, CropConfig> = {
       crop: { min: 1, max: 1 },
       seeds: { min: 2, max: 3 },
     },
-    sellPrice: 20,
     growthImages: [
       require('../assets/Sprites/Crops/Wheat/1---Wheat-Seed.png'),
       require('../assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png'),

@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   recordClassification, 
   getDailyClassificationData,
+  canMakeClassification,
   DailyClassificationData 
 } from '../lib/classificationTracking';
 
-export function useClassificationTracking(hives: { id: string }[]) {
+export function useClassificationTracking(hiveCount: number) {
   const [dailyData, setDailyData] = useState<DailyClassificationData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -14,7 +15,7 @@ export function useClassificationTracking(hives: { id: string }[]) {
     const loadData = async () => {
       setLoading(true);
       try {
-        const data = await getDailyClassificationData();
+        const data = await getDailyClassificationData(hiveCount);
         setDailyData(data);
       } catch (error) {
         console.error('Error loading classification data:', error);
@@ -24,27 +25,30 @@ export function useClassificationTracking(hives: { id: string }[]) {
     };
 
     loadData();
-  }, []);
+  }, [hiveCount]);
 
-  // Check if a specific hive can be classified
-  const canClassifyBee = useCallback(async (hiveId: string): Promise<boolean> => {
+  // Check if user can make more classifications today
+  const canClassifyBee = useCallback(async (): Promise<boolean> => {
     if (!dailyData || loading) return false;
-    
-    const currentCount = dailyData.classificationsByHive[hiveId] || 0;
-    return currentCount < dailyData.maxClassificationsPerHive;
+    return await canMakeClassification(hiveCount);
+  }, [dailyData, loading, hiveCount]);
+
+  // Synchronous version for immediate UI checks
+  const canClassifyBeeSync = useCallback((): boolean => {
+    if (!dailyData || loading) return false;
+    return dailyData.totalCount < dailyData.maxDailyClassifications;
   }, [dailyData, loading]);
 
   // Record a new classification
   const submitClassification = useCallback(async (
-    hiveId: string, 
     classificationType: string
   ): Promise<boolean> => {
     try {
-      const success = await recordClassification(hiveId, classificationType);
+      const success = await recordClassification(hiveCount, classificationType);
       
       if (success) {
         // Refresh daily data
-        const updatedData = await getDailyClassificationData();
+        const updatedData = await getDailyClassificationData(hiveCount);
         setDailyData(updatedData);
       }
       
@@ -53,20 +57,17 @@ export function useClassificationTracking(hives: { id: string }[]) {
       console.error('Error submitting classification:', error);
       return false;
     }
-  }, []);
-
-  // Get synchronous check for classification availability (for UI)
-  const canClassifyHiveSync = useCallback((hiveId: string): boolean => {
-    if (!dailyData) return false;
-    const currentCount = dailyData.classificationsByHive[hiveId] || 0;
-    return currentCount < dailyData.maxClassificationsPerHive;
-  }, [dailyData]);
+  }, [hiveCount]);
 
   return {
     dailyData,
     loading,
     canClassifyBee,
-    canClassifyHiveSync,
+    canClassifyBeeSync,
     submitClassification,
+    // Helper functions
+    remainingClassifications: dailyData ? dailyData.maxDailyClassifications - dailyData.totalCount : 0,
+    maxClassifications: dailyData?.maxDailyClassifications || 0,
+    todayCount: dailyData?.totalCount || 0,
   };
-}
+};

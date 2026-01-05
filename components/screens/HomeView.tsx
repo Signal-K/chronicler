@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useDayNightCycle } from '../../hooks/useDayNightCycle';
 import { useGameState } from '../../hooks/useGameState';
@@ -284,7 +284,7 @@ export function HomeView() {
           panelHeight={panelHeight} 
           inventory={inventory} 
           setInventory={setInventory} 
-          onSellCrop={() => {}} 
+
           closePanel={closePanel} 
           onResetGame={resetGame} 
           isExpanded={isExpanded} 

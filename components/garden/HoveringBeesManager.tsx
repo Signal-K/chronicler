@@ -8,13 +8,15 @@ interface HoveringBeesManagerProps {
   onDespawn?: (beeId: string) => void;
   onBeePress?: (bee: HoveringBeeData) => void;
   canClassifyBee?: (hiveId: string) => boolean;
+  canMakeClassifications?: boolean; // New prop for overall classification availability
 }
 
 export function HoveringBeesManager({ 
   bees, 
   onDespawn, 
   onBeePress, 
-  canClassifyBee 
+  canClassifyBee,
+  canMakeClassifications = true 
 }: HoveringBeesManagerProps) {
   if (bees.length === 0) {
     return null;
@@ -29,6 +31,7 @@ export function HoveringBeesManager({
           onDespawn={onDespawn}
           onBeePress={onBeePress}
           showClassificationArrow={canClassifyBee?.(bee.identity.hiveId) ?? false}
+          canMakeClassifications={canMakeClassifications}
         />
       ))}
     </View>

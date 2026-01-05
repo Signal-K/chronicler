@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Animated, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface BeeHatchAlertProps {
   visible: boolean;
@@ -64,8 +64,14 @@ export function BeeHatchAlert({ visible, message, onClose }: BeeHatchAlertProps)
             },
           ]}
         >
-          {/* Animated bee emoji */}
-          <Animated.Text style={styles.beeEmoji}>🐝</Animated.Text>
+          {/* Animated bee sprite */}
+          <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+            <Image 
+              source={require('../../assets/Sprites/Bee.png')}
+              style={styles.beeSprite}
+              resizeMode="contain"
+            />
+          </Animated.View>
           
           {/* Title */}
           <Text style={styles.title}>New Bee Hatched!</Text>
@@ -106,12 +112,10 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#FFB300',
   },
-  beeEmoji: {
-    fontSize: 72,
+  beeSprite: {
+    width: 120,
+    height: 120,
     marginBottom: 16,
-    textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
   },
   title: {
     fontSize: 24,

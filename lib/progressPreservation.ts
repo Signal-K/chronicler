@@ -9,7 +9,7 @@ const LOCAL_DATA_KEYS = [
   'hive_nectar_levels',
   'player_experience', // New XP system
   'user_stats',
-  'merchant_affinity',
+
   // 'active_orders' removed
   'pollination_factor',
   'user_experience', // Legacy system (to be migrated)

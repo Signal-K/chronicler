@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { HoveringBeeData } from '../../hooks/useHoveringBees';
 
 interface HoveringBeeWithTagProps {
@@ -7,23 +7,19 @@ interface HoveringBeeWithTagProps {
   onDespawn?: (beeId: string) => void;
   onBeePress?: (bee: HoveringBeeData) => void;
   showClassificationArrow?: boolean;
+  canMakeClassifications?: boolean; // New prop to control behavior
 }
 
 export function HoveringBeeWithTag({ 
   bee, 
   onDespawn, 
   onBeePress, 
-  showClassificationArrow = false 
+  showClassificationArrow = false,
+  canMakeClassifications = true 
 }: HoveringBeeWithTagProps) {
   const translateX = useRef(new Animated.Value(bee.currentX)).current;
   const translateY = useRef(new Animated.Value(bee.currentY)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
-
-  const rotateInterpolate = rotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
-  });
 
   // Calculate time bee has been hovering
   const getHoveringTime = React.useCallback(() => {
@@ -57,17 +53,13 @@ export function HoveringBeeWithTag({
 
     // Hovering animation - gentle movement around the target crop
     const createHoverAnimation = () => {
-      const hoverRadius = 40; // Stay within 40px of starting position
+      const hoverRadius = 30; // Stay within 30px of starting position
       const randomAngle = Math.random() * 2 * Math.PI;
       const randomDistance = Math.random() * hoverRadius;
       
       const randomX = bee.currentX + Math.cos(randomAngle) * randomDistance;
       const randomY = bee.currentY + Math.sin(randomAngle) * randomDistance;
-      const duration = 3000 + Math.random() * 2000; // 3-5 seconds
-      
-      // Determine rotation based on direction
-      const currentX = (translateX as any)._value || bee.currentX;
-      const direction = randomX > currentX ? 0 : 1; // 0 = right, 1 = left
+      const duration = 5000 + Math.random() * 3000; // 5-8 seconds (slower)
 
       return Animated.parallel([
         Animated.timing(translateX, {
@@ -80,18 +72,13 @@ export function HoveringBeeWithTag({
           duration,
           useNativeDriver: true,
         }),
-        Animated.timing(rotate, {
-          toValue: direction,
-          duration: 800,
-          useNativeDriver: true,
-        }),
       ]);
     };
 
     const startHovering = () => {
       createHoverAnimation().start(() => {
         // Continue hovering if component is still mounted
-        setTimeout(startHovering, 500 + Math.random() * 1000);
+        setTimeout(startHovering, 1000 + Math.random() * 2000); // Slower intervals
       });
     };
 
@@ -111,7 +98,7 @@ export function HoveringBeeWithTag({
     return () => {
       clearTimeout(despawnTimeout);
     };
-  }, [bee, translateX, translateY, opacity, rotate, onDespawn]);
+  }, [bee, translateX, translateY, opacity, onDespawn]);
 
   return (
     <Animated.View
@@ -122,7 +109,6 @@ export function HoveringBeeWithTag({
           transform: [
             { translateX },
             { translateY },
-            { rotateY: rotateInterpolate },
           ],
         },
       ]}
@@ -137,11 +123,16 @@ export function HoveringBeeWithTag({
       {/* Clickable bee */}
       <TouchableOpacity 
         style={styles.beeContainer}
-        onPress={() => onBeePress?.(bee)}
-        activeOpacity={0.7}
+        onPress={() => canMakeClassifications ? onBeePress?.(bee) : undefined}
+        activeOpacity={canMakeClassifications ? 0.7 : 1}
+        disabled={!canMakeClassifications}
       >
-        {/* Bee emoji */}
-        <Text style={styles.beeEmoji}>🐝</Text>
+        {/* Bee sprite */}
+        <Image 
+          source={require('../../assets/Sprites/Bee.png')}
+          style={styles.beeSprite}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
       
       {/* Info tag below bee */}
@@ -178,11 +169,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'transparent',
   },
-  beeEmoji: {
-    fontSize: 28,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+  beeSprite: {
+    width: 64,
+    height: 64,
   },
   infoTag: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',

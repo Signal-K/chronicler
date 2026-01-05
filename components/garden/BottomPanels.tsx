@@ -14,7 +14,6 @@ interface BottomPanelsProps {
   panelHeight: Animated.Value;
   inventory: InventoryData;
   setInventory: (inventory: InventoryData) => void;
-  onSellCrop: (cropType: string, count: number, coinsEarned: number, emoji: string) => void;
   closePanel: () => void;
   onResetGame: () => void;
   isExpanded: boolean;
@@ -32,7 +31,6 @@ export function BottomPanels({
   panelHeight,
   inventory,
   setInventory,
-  onSellCrop,
   closePanel,
   onResetGame,
   isExpanded,
@@ -58,7 +56,7 @@ export function BottomPanels({
           <Inventory 
             inventory={inventory} 
             setInventory={setInventory}
-            onSellCrop={onSellCrop}
+
             onClose={closePanel} 
             isExpanded={isExpanded} 
             onToggleExpand={toggleExpand} 

@@ -10,7 +10,6 @@ interface SiloModalProps {
   onClose: () => void;
   inventory: InventoryData;
   setInventory: (inventory: InventoryData) => void;
-  onSellCrop?: (cropType: string, count: number, coinsEarned: number, emoji: string) => void;
 }
 
 type TabType = 'inventory' | 'shop';
@@ -20,7 +19,6 @@ export function SiloModal({
   onClose,
   inventory,
   setInventory,
-  onSellCrop = () => {},
 }: SiloModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('inventory');
 
@@ -66,7 +64,7 @@ export function SiloModal({
               <Inventory
                 inventory={inventory}
                 setInventory={setInventory}
-                onSellCrop={onSellCrop}
+
                 onClose={onClose}
                 isExpanded={false}
                 onToggleExpand={() => {}}
