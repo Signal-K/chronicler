@@ -1,17 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import type { HiveData } from '../types/hive';
+import type { BottleHoneyResult, HiveData } from '../types/hive';
+import { useHoneyProduction } from './useHoneyProduction';
 
 const STORAGE_KEY = 'hives';
 const HIVE_COST = 100; // Cost in coins to build a new hive
 const REFRESH_SIGNAL_KEY = 'hivesRefreshSignal';
 
 export function useHiveState() {
+  const honeyProduction = useHoneyProduction();
+  
   // Users start with exactly one beehive with no bees
   const [hives, setHives] = useState<HiveData[]>([{
     id: 'default-hive',
     beeCount: 0,
     createdAt: Date.now(),
+    level: 1,
   }]);
   const [loaded, setLoaded] = useState(false);
 
@@ -22,8 +26,12 @@ export function useHiveState() {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
-          setHives(parsed);
-          console.log('📂 Loaded hives from storage:', parsed);
+          // Initialize honey production for loaded hives
+          const hivesWithHoney = parsed.map((hive: HiveData) => 
+            honeyProduction.initializeHoneyProduction(hive)
+          );
+          setHives(hivesWithHoney);
+          console.log('📂 Loaded hives from storage:', hivesWithHoney);
         }
       } catch (error) {
         console.error('Error loading hives:', error);
@@ -44,8 +52,12 @@ export function useHiveState() {
           const stored = await AsyncStorage.getItem(STORAGE_KEY);
           if (stored) {
             const parsed = JSON.parse(stored);
-            setHives(parsed);
-            console.log('📂 Reloaded hives from storage after refresh signal:', parsed);
+            // Initialize honey production for reloaded hives
+            const hivesWithHoney = parsed.map((hive: HiveData) => 
+              honeyProduction.initializeHoneyProduction(hive)
+            );
+            setHives(hivesWithHoney);
+            console.log('📂 Reloaded hives from storage after refresh signal:', hivesWithHoney);
           }
           // Clear the signal after processing
           await AsyncStorage.removeItem(REFRESH_SIGNAL_KEY);
@@ -69,19 +81,19 @@ export function useHiveState() {
   }, [hives, loaded]);
 
   const addBees = (count: number, hiveId?: string) => {  
-    // addBees called
+    console.log(`🐝 addBees called: count=${count}, hiveId=${hiveId}`);
     if (count <= 0) {
-      // count <= 0, returning
+      console.log(`🐝 Invalid count ${count}, returning`);
       return;
     };
 
     setHives(prev => {
-      // updating hives
+      console.log(`🐝 Current hives:`, prev.map(h => `${h.id}:${h.beeCount}`));
       // Update the first hive if no ID specified, or the specified hive
       const updated = prev.map((hive, index) => {
         if (hiveId ? hive.id === hiveId : index === 0) {
           const newBeeCount = Math.max(0, hive.beeCount + count);
-          // Updated hive
+          console.log(`🐝 Updating hive ${hive.id}: ${hive.beeCount} + ${count} = ${newBeeCount}`);
           return {
             ...hive,
             beeCount: newBeeCount,
@@ -89,7 +101,7 @@ export function useHiveState() {
         }
         return hive;
       });
-      // Updated hives state
+      console.log(`🐝 Updated hives:`, updated.map(h => `${h.id}:${h.beeCount}`));
       return updated;
     });
   };
@@ -151,8 +163,10 @@ export function useHiveState() {
         const pendingData = await AsyncStorage.getItem("pending_bee_addition");
         if (pendingData) {
           const pending = JSON.parse(pendingData);
+          console.log('🐝 Processing pending bee addition:', pending);
           addBees(pending.count, pending.hiveId);
           await AsyncStorage.removeItem('pending_bee_addition');
+          console.log('🐝 Pending bee addition processed and removed');
         }
       } catch (error: any) {
         console.error("Error processing pending bee addition: ", error);
@@ -162,6 +176,72 @@ export function useHiveState() {
     const pendingInterval = setInterval(checkForPendingBees, 1000);
     return () => clearInterval(pendingInterval);
   }, [addBees]);
+
+  // Add harvest to hive for honey production
+  const addHarvestToHive = (cropId: string, amount: number = 1, hiveId?: string) => {
+    setHives(prev => {
+      return prev.map((hive, index) => {
+        if (hiveId ? hive.id === hiveId : index === 0) {
+          return honeyProduction.addHarvest(hive, cropId, amount);
+        }
+        return hive;
+      });
+    });
+  };
+
+  // Update honey production for all hives
+  const updateAllHoneyProduction = () => {
+    setHives(prev => prev.map(hive => honeyProduction.updateHoneyProduction(hive)));
+  };
+
+  // Bottle honey from a hive
+  const bottleHoneyFromHive = (hiveId?: string): BottleHoneyResult => {
+    let result: BottleHoneyResult = { updatedHive: hives[0], bottlesCollected: 0, honeyType: null };
+    
+    setHives(prev => {
+      return prev.map((hive, index) => {
+        if (hiveId ? hive.id === hiveId : index === 0) {
+          const bottlingResult = honeyProduction.bottleHoney(hive);
+          result = bottlingResult;
+          return bottlingResult.updatedHive;
+        }
+        return hive;
+      });
+    });
+    
+    return result;
+  };
+
+  // Regular honey production update
+  useEffect(() => {
+    let mainInterval: ReturnType<typeof setInterval>;
+    let forceInterval: ReturnType<typeof setInterval>;
+    
+    // Main update interval (1 minute for normal mode)
+    mainInterval = setInterval(updateAllHoneyProduction, 60000);
+    
+    // Additional frequent updates for force daytime mode (every 5 seconds)
+    const checkForceMode = async () => {
+      try {
+        const forceDaytimeSetting = await AsyncStorage.getItem('forceDaytime');
+        if (forceDaytimeSetting === 'true') {
+          updateAllHoneyProduction();
+        }
+      } catch (error) {
+        console.error('Error checking force daytime mode:', error);
+      }
+    };
+    
+    forceInterval = setInterval(checkForceMode, 5000);
+    
+    // Initial update
+    updateAllHoneyProduction();
+    
+    return () => {
+      clearInterval(mainInterval);
+      clearInterval(forceInterval);
+    };
+  }, []);
 
   return {
     hives,
@@ -173,5 +253,10 @@ export function useHiveState() {
     getTotalBeeCount,
     calculateBeeSpawn,
     hiveCost: HIVE_COST,
+    // Honey production methods
+    addHarvestToHive,
+    updateAllHoneyProduction,
+    bottleHoneyFromHive,
+    honeyProduction,
   };
 }

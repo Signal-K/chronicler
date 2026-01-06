@@ -23,7 +23,7 @@ export function FillHivesSection({ isDark }: FillHivesSectionProps) {
         console.log('🐝 Parsed pollination factor:', pollinationFactor);
         console.log('🐝 Parsed hives:', hives);
         
-        const HIVE_CAPACITY = 100;
+        const HIVE_CAPACITY = 10;
         const totalCapacity = hives.length * HIVE_CAPACITY;
         const currentTotal = hives.reduce((sum: number, h: any) => sum + h.beeCount, 0);
         const remainingCapacity = totalCapacity - currentTotal;

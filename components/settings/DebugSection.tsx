@@ -4,10 +4,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface DebugSectionProps {
   plotStates: {[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}};
   onRefresh: () => void;
+  onClearHoney: () => void;
   isDark: boolean;
 }
 
-export function DebugSection({ plotStates, onRefresh, isDark }: DebugSectionProps) {
+export function DebugSection({ plotStates, onRefresh, onClearHoney, isDark }: DebugSectionProps) {
   const formatTimeRemaining = (wateredAt: number) => {
     const now = Date.now();
     const elapsed = now - wateredAt;
@@ -27,13 +28,21 @@ export function DebugSection({ plotStates, onRefresh, isDark }: DebugSectionProp
   return (
     <View style={[styles.section, isDark && styles.darkSection]}>
       <View style={styles.debugHeader}>
-        <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🐛 Plot Debug Info</Text>
-        <TouchableOpacity 
-          style={[styles.refreshButton, isDark && styles.darkRefreshButton]}
-          onPress={onRefresh}
-        >
-          <Text style={[styles.refreshText, isDark && styles.darkText]}>🔄 Refresh</Text>
-        </TouchableOpacity>
+        <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🐛 Debug Tools</Text>
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity 
+            style={[styles.refreshButton, isDark && styles.darkRefreshButton]}
+            onPress={onRefresh}
+          >
+            <Text style={[styles.refreshText, isDark && styles.darkText]}>🔄 Refresh</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.clearHoneyButton, isDark && styles.darkClearHoneyButton]}
+            onPress={onClearHoney}
+          >
+            <Text style={[styles.clearHoneyText, isDark && styles.darkText]}>🍯 Clear Honey</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
       <View style={styles.debugGrid}>
@@ -87,6 +96,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   refreshButton: {
     backgroundColor: '#4A90E2',
     paddingHorizontal: 12,
@@ -96,7 +109,21 @@ const styles = StyleSheet.create({
   darkRefreshButton: {
     backgroundColor: '#5BA2F2',
   },
+  clearHoneyButton: {
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  darkClearHoneyButton: {
+    backgroundColor: '#FF8E8E',
+  },
   refreshText: {
+    fontSize: 12,
+    color: 'white',
+    fontWeight: '600',
+  },
+  clearHoneyText: {
     fontSize: 12,
     color: 'white',
     fontWeight: '600',

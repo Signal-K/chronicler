@@ -15,6 +15,7 @@ interface UsePlotActionsParams {
   setSelectedAction: React.Dispatch<React.SetStateAction<Tool>>;
   incrementPollinationFactor?: (amount: number) => void;
   onShowDialog?: (title: string, message: string, emoji?: string) => void;
+  addHarvestToHive?: (cropId: string, amount?: number) => void; // New parameter for honey production
 }
 
 export function usePlotActions({
@@ -30,6 +31,7 @@ export function usePlotActions({
   setSelectedAction,
   incrementPollinationFactor,
   onShowDialog,
+  addHarvestToHive,
 }: UsePlotActionsParams) {
   
   const handleTill = (index: number, current: PlotData) => {
@@ -301,6 +303,12 @@ export function usePlotActions({
       console.log('✅ INCREMENT CALLED');
     } else {
       console.log('❌ NO INCREMENT FUNCTION PASSED!');
+    }
+    
+    // Add harvest to hive for honey production
+    if (addHarvestToHive) {
+
+      addHarvestToHive(current.cropType, cropCount);
     }
     
     // Show harvest animation

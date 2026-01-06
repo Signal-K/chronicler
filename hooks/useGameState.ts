@@ -32,7 +32,7 @@ const INITIAL_INVENTORY: InventoryData = {
   water: 100,
   seeds: { tomato: 5, sunflower: 5, blueberry: 5, lavender: 5 },
   harvested: { tomato: 0, sunflower: 0, blueberry: 0, lavender: 0 },
-  items: { glass_bottle: 0 },
+  items: { glass_bottle: 5, honey_bottles: 0 }, // Give players some starting glass bottles
 };
 
 export function useGameState() {

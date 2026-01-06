@@ -21,6 +21,8 @@ import { SiloModal } from '../modals/SiloModal';
 import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
 import { Toast } from '../ui/Toast';
+import { HomeContent } from './HomeContent';
+import { NestsContent } from './NestsContent';
 
 export function HomeView() {
   const { experience } = usePlayerExperience();
@@ -83,7 +85,7 @@ export function HomeView() {
       delete (globalThis as any).showBeeHatchAlert;
     };
   }, [showBeeHatchAlert]);
-  const { hive, hives, addBees, buildNewHive, canBuildNewHive, getAvailableHives, hiveCost } = useHiveState();
+  const { hive, hives, addBees, buildNewHive, canBuildNewHive, getAvailableHives, hiveCost, addHarvestToHive } = useHiveState();
   const { isDaytime } = useDayNightCycle();
 
   const updateHiveBeeCount = useCallback((count: number) => { const currentCount = hive.beeCount; const diff = count - currentCount; if (diff !== 0) setTimeout(() => addBees(diff), 0); }, [hive.beeCount, addBees]);
@@ -98,7 +100,7 @@ export function HomeView() {
     // use the Fill Hives button in Settings which properly tracks elapsed time.
     // This function calculates bees earned from pollination score instantaneously.
     
-    const HIVE_CAPACITY = 100;
+    const HIVE_CAPACITY = 10;
     const totalCapacity = hives.length * HIVE_CAPACITY;
     const currentTotal = hives.reduce((sum, h) => sum + h.beeCount, 0);
     const remainingCapacity = totalCapacity - currentTotal;
@@ -153,7 +155,6 @@ export function HomeView() {
   const renderScreenContent = () => {
     switch (currentScreen) {
       case 'home':
-        const HomeContent = require('./HomeContent').HomeContent;
         // Calculate current page plots (6 per page)
         const PLOTS_PER_PAGE = 6;
         const currentPageIndex = verticalPage === 'main' ? 0 : 1;
@@ -179,10 +180,10 @@ export function HomeView() {
             verticalPage={verticalPage}
             totalPlots={plots.length}
             baseIndex={startIndex}
+            addHarvestToHive={addHarvestToHive}
           />
         );
       case 'nests':
-        const NestsContent = require('./NestsContent').NestsContent;
         return (
           <NestsContent
             pollinationFactor={pollinationFactor}
@@ -193,8 +194,11 @@ export function HomeView() {
             canBuildHive={canBuildNewHive(inventory.coins)}
             hiveCost={hiveCost}
             coinBalance={inventory.coins}
-            hiveNectarLevels={{}}
-            maxNectar={100}
+            hiveNectarLevels={hives.reduce((levels, h) => ({
+              ...levels,
+              [h.id]: h.honey?.honeyBottles || 0
+            }), {} as Record<string, number>)}
+            maxNectar={15}
             inventory={inventory}
             onInventoryUpdate={setInventory}
           />

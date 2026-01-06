@@ -28,7 +28,7 @@ export function DayNightOverrideSection({
             Force Daytime Mode
           </Text>
           <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-            Override real time and always show daytime
+            Override real time, always show daytime, and boost honey production by 10% every 5 seconds
           </Text>
         </View>
         <Switch

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { InventoryData } from '../../hooks/useGameState';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
+import { getCropConfig } from '../../lib/cropConfig';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;
@@ -20,6 +22,66 @@ interface NestsContentProps {
   onInventoryUpdate?: (inventory: InventoryData) => void;
   onNectarUpdate?: (nectarLevels: Record<string, number>) => void;
 }
+
+// Get gradient colors based on crop proportions from hive data
+const getHoneyGradientColors = (hive: HiveData): string[] => {
+  const harvests = hive.honey?.dailyHarvests || [];
+  const today = new Date().toDateString();
+  
+  console.log(`🔍 Hive ${hive.id}: Total harvests: ${harvests.length}`);
+  console.log(`🔍 Today's date: ${today}`);
+  harvests.forEach((harvest, i) => {
+    const harvestDate = new Date(harvest.timestamp).toDateString();
+    console.log(`🔍 Harvest ${i}: ${harvest.cropId}, date: ${harvestDate}, amount: ${harvest.amount}`);
+  });
+  
+  const todaysHarvests = harvests.filter(harvest => 
+    new Date(harvest.timestamp).toDateString() === today && harvest.cropId !== 'virtual_boost'
+  );
+  
+  console.log(`🔍 Today's real harvests: ${todaysHarvests.length}`);
+
+  // If no real harvests but hive has honey bottles (force daytime mode), show golden gradient
+  if (todaysHarvests.length === 0) {
+    const honeyBottles = hive.honey?.honeyBottles || 0;
+    if (honeyBottles > 0) {
+      return ['#fbbf24', '#f59e0b', '#d97706']; // Golden gradient for force daytime mode
+    }
+    return ['#e5e7eb', '#e5e7eb']; // Grey if no harvests and no honey
+  }
+
+  // Count crop proportions
+  const cropCounts: Record<string, number> = {};
+  todaysHarvests.forEach(harvest => {
+    const effectiveAmount = harvest.halved ? harvest.amount * 0.5 : harvest.amount;
+    cropCounts[harvest.cropId] = (cropCounts[harvest.cropId] || 0) + effectiveAmount;
+  });
+
+  // Get colors from crop configs
+  const colors: string[] = [];
+  const sortedCrops = Object.entries(cropCounts)
+    .sort((a, b) => b[1] - a[1]) // Sort by amount
+    .slice(0, 3); // Take top 3 crops
+
+  sortedCrops.forEach(([cropId, _]) => {
+    const config = getCropConfig(cropId);
+    if (config && config.nectar?.honeyProfile?.color) {
+      colors.push(config.nectar.honeyProfile.color);
+    }
+  });
+
+  // Default to golden if no colors found
+  if (colors.length === 0) {
+    return ['#fbbf24', '#f59e0b'];
+  }
+
+  // Ensure at least 2 colors for gradient
+  if (colors.length === 1) {
+    colors.push(colors[0]);
+  }
+
+  return colors;
+};
 
 export function NestsContent({ 
   pollinationFactor, 
@@ -127,11 +189,16 @@ export function NestsContent({
                     style={styles.beeSpriteSmall}
                     resizeMode="contain"
                   />
-                  <Text style={styles.beeCount}> {currentHive.beeCount}/100</Text>
+                  <Text style={styles.beeCount}> {currentHive.beeCount}/10</Text>
                 </View>
                 </View>
-                <View style={styles.beeBar}>
-                  <View style={[styles.beeBarFill, { width: `${(currentHive.beeCount / 100) * 100}%` }]} />
+                <View style={styles.honeyBar}>
+                  <LinearGradient
+                    colors={getHoneyGradientColors(currentHive) as [string, string, ...string[]]}
+                    style={[styles.honeyBarFill, { width: `${((hiveNectarLevels[currentHive.id] || 0) / maxNectar) * 100}%` }]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                  />
                 </View>
                 <Text style={styles.nectarLevel}>🍯 {hiveNectarLevels[currentHive.id] || 0}/{maxNectar}</Text>
               </View>
@@ -319,16 +386,18 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
-  beeBar: {
+  honeyBar: {
     width: 200,
-    height: 8,
+    height: 12,
     backgroundColor: '#e5e7eb',
-    borderRadius: 4,
+    borderRadius: 6,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
   },
-  beeBarFill: {
+  honeyBarFill: {
     height: '100%',
-    backgroundColor: '#fbbf24',
+    borderRadius: 5,
   },
   nectarLevel: {
     fontSize: 14,

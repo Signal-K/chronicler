@@ -5,14 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  AccountSection,
-  AppearanceSection,
-  DayNightOverrideSection,
-  DebugSection,
-  FillHivesSection,
-  GrowthAlgorithmSection,
-  LocalProgressSection,
-  PermissionsSection,
+    AccountSection,
+    AppearanceSection,
+    DayNightOverrideSection,
+    DebugSection,
+    FillHivesSection,
+    GrowthAlgorithmSection,
+    LocalProgressSection,
+    PermissionsSection,
 } from '../components/settings';
 import { setOverride as setThemeOverride } from '../hooks/themeManager';
 import { useColorScheme } from '../hooks/use-color-scheme';
@@ -191,6 +191,48 @@ export default function SettingsScreen() {
     }
   };
 
+  const clearAllHoney = async () => {
+    try {
+      console.log('🧹 Starting honey clear process...');
+      
+      // Get all hives and clear their honey
+      const hivesData = await AsyncStorage.getItem('hives');
+      if (hivesData) {
+        const hives = JSON.parse(hivesData);
+        console.log('🧹 Current hives before clear:', hives.map(h => `${h.id}: ${h.honey?.honeyBottles || 0} bottles`));
+        
+        const clearedHives = hives.map((hive: any) => ({
+          ...hive,
+          honey: {
+            ...hive.honey,
+            honeyBottles: 0,
+            dailyHarvests: [],
+            currentCapacity: 0,
+          }
+        }));
+        await AsyncStorage.setItem('hives', JSON.stringify(clearedHives));
+        console.log('🧹 Hives cleared and saved to storage');
+        
+        // Clear honey bottles from inventory
+        const inventoryData = await AsyncStorage.getItem('inventory');
+        if (inventoryData) {
+          const inventory = JSON.parse(inventoryData);
+          if (inventory.items) {
+            inventory.items.honey_bottles = 0;
+            await AsyncStorage.setItem('inventory', JSON.stringify(inventory));
+          }
+        }
+        
+        // Trigger refresh signal
+        await AsyncStorage.setItem('hivesRefreshSignal', Date.now().toString());
+        
+        console.log('🍯 All honey cleared from hives and inventory');
+      }
+    } catch (error) {
+      console.error('Error clearing honey:', error);
+    }
+  };
+
   return (
     <View style={[styles.container, isDark && styles.darkContainer]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -247,6 +289,7 @@ export default function SettingsScreen() {
         <DebugSection
           plotStates={plotStates}
           onRefresh={loadPlotStates}
+          onClearHoney={clearAllHoney}
           isDark={isDark}
         />
       </ScrollView>

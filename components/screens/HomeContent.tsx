@@ -41,6 +41,7 @@ type HomeContentProps = {
   verticalPage?: 'main' | 'expand';
   totalPlots?: number;
   baseIndex?: number;
+  addHarvestToHive?: (cropId: string, amount?: number) => void;
 };
 
 export function HomeContent({
@@ -63,6 +64,7 @@ export function HomeContent({
   verticalPage = 'main',
   totalPlots,
   baseIndex = 0,
+  addHarvestToHive,
 }: HomeContentProps) {
   // Get current user session for classification
   const { session } = useAuth();
@@ -139,6 +141,7 @@ export function HomeContent({
       setDialogData({ title, message, emoji: emoji || '' });
       setDialogVisible(true);
     },
+    addHarvestToHive,
   });
 
   const farmPages = Math.ceil((totalPlots ?? plots.length) / 6);
