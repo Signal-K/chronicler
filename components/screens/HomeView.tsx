@@ -12,6 +12,7 @@ import { useMapSystem } from '../../hooks/useMapSystem';
 import { usePanelManager } from '../../hooks/usePanelManager';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import { usePollinationFactor } from '../../hooks/usePollinationFactor';
+import { useTutorial } from '../../hooks/useTutorial';
 import { useWaterSystem } from '../../hooks/useWaterSystem';
 // Order generation removed
 import { BottomPanels } from '../garden/BottomPanels';
@@ -21,6 +22,7 @@ import { SiloModal } from '../modals/SiloModal';
 import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
 import { Toast } from '../ui/Toast';
+import { InteractiveTutorial } from '../tutorial';
 import { HomeContent } from './HomeContent';
 import { NestsContent } from './NestsContent';
 
@@ -72,6 +74,17 @@ export function HomeView() {
 
   const { currentWater, maxWater, consumeWater } = useWaterSystem(false);
   const { pollinationFactor, incrementFactor, canSpawnBees } = usePollinationFactor();
+  
+  // Tutorial state for new users
+  const { 
+    shouldShowTutorial, 
+    markTutorialShown, 
+    markTutorialCompleted,
+    currentTool: tutorialCurrentTool,
+    setCurrentTool: setTutorialCurrentTool,
+    lastAction: tutorialLastAction,
+    reportAction: reportTutorialAction,
+  } = useTutorial();
   
   // Callback to show bee hatch alert that can be accessed globally
   const showBeeHatchAlert = useCallback((message: string) => {
@@ -181,6 +194,7 @@ export function HomeView() {
             totalPlots={plots.length}
             baseIndex={startIndex}
             addHarvestToHive={addHarvestToHive}
+            onTutorialAction={reportTutorialAction}
           />
         );
       case 'nests':
@@ -266,7 +280,11 @@ export function HomeView() {
         </View>
         <SimpleToolbar 
           selectedTool={selectedAction} 
-          onToolSelect={(tool) => setSelectedAction(tool)} 
+          onToolSelect={(tool) => {
+            setSelectedAction(tool);
+            // Notify tutorial of tool selection
+            setTutorialCurrentTool(tool);
+          }} 
           onPlantSelect={setSelectedPlant} 
           canTill={plots.some(p => p.state === 'empty')} 
           canPlant={plots.some(p => p.state === 'tilled')} 
@@ -314,6 +332,14 @@ export function HomeView() {
           message={toastMessage} 
           type={toastType} 
           onDismiss={() => setToastVisible(false)} 
+        />
+        {/* New User Interactive Tutorial */}
+        <InteractiveTutorial
+          visible={shouldShowTutorial}
+          onClose={markTutorialShown}
+          onComplete={markTutorialCompleted}
+          currentTool={tutorialCurrentTool}
+          lastAction={tutorialLastAction}
         />
       </View>
     </GestureHandlerRootView>

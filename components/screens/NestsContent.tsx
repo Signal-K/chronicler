@@ -1,11 +1,11 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import type { InventoryData } from '../../hooks/useGameState';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
+import { getCropConfig } from '../../lib/cropConfig';
 import type { HiveData } from '../../types/hive';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
-import { getCropConfig } from '../../lib/cropConfig';
 
 interface NestsContentProps {
   pollinationFactor: PollinationFactorData;

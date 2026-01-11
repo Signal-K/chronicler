@@ -6,4 +6,5 @@ export { FillHivesSection } from './FillHivesSection';
 export { GrowthAlgorithmSection } from './GrowthAlgorithmSection';
 export { LocalProgressSection } from './LocalProgressSection';
 export { PermissionsSection } from './PermissionsSection';
+export { TutorialSection } from './TutorialSection';
 

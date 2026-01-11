@@ -13,13 +13,16 @@ import {
     GrowthAlgorithmSection,
     LocalProgressSection,
     PermissionsSection,
+    TutorialSection,
 } from '../components/settings';
 import { setOverride as setThemeOverride } from '../hooks/themeManager';
 import { useColorScheme } from '../hooks/use-color-scheme';
+import { useTutorial } from '../hooks/useTutorial';
 import { getLocalDataSummary } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
 
 export default function SettingsScreen() {
+  const { resetTutorialState } = useTutorial();
   const [userEmail, setUserEmail] = useState<string>('');
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const scheme = useColorScheme();
@@ -260,6 +263,8 @@ export default function SettingsScreen() {
           isDark={isDark}
         />
 
+        <TutorialSection isDark={isDark} />
+
         <LocalProgressSection
           localDataSummary={localDataSummary}
           isDark={isDark}
@@ -290,6 +295,7 @@ export default function SettingsScreen() {
           plotStates={plotStates}
           onRefresh={loadPlotStates}
           onClearHoney={clearAllHoney}
+          onResetTutorial={resetTutorialState}
           isDark={isDark}
         />
       </ScrollView>

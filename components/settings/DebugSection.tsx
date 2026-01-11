@@ -5,10 +5,11 @@ interface DebugSectionProps {
   plotStates: {[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}};
   onRefresh: () => void;
   onClearHoney: () => void;
+  onResetTutorial?: () => void;
   isDark: boolean;
 }
 
-export function DebugSection({ plotStates, onRefresh, onClearHoney, isDark }: DebugSectionProps) {
+export function DebugSection({ plotStates, onRefresh, onClearHoney, onResetTutorial, isDark }: DebugSectionProps) {
   const formatTimeRemaining = (wateredAt: number) => {
     const now = Date.now();
     const elapsed = now - wateredAt;
@@ -42,6 +43,14 @@ export function DebugSection({ plotStates, onRefresh, onClearHoney, isDark }: De
           >
             <Text style={[styles.clearHoneyText, isDark && styles.darkText]}>🍯 Clear Honey</Text>
           </TouchableOpacity>
+          {onResetTutorial && (
+            <TouchableOpacity 
+              style={[styles.tutorialButton, isDark && styles.darkTutorialButton]}
+              onPress={onResetTutorial}
+            >
+              <Text style={[styles.tutorialText, isDark && styles.darkText]}>📚 Reset Tutorial</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       
@@ -118,12 +127,26 @@ const styles = StyleSheet.create({
   darkClearHoneyButton: {
     backgroundColor: '#FF8E8E',
   },
+  tutorialButton: {
+    backgroundColor: '#9333EA',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  darkTutorialButton: {
+    backgroundColor: '#A855F7',
+  },
   refreshText: {
     fontSize: 12,
     color: 'white',
     fontWeight: '600',
   },
   clearHoneyText: {
+    fontSize: 12,
+    color: 'white',
+    fontWeight: '600',
+  },
+  tutorialText: {
     fontSize: 12,
     color: 'white',
     fontWeight: '600',

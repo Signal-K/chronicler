@@ -5,6 +5,7 @@ import { useClassificationTracking } from '../../hooks/useClassificationTracking
 import type { InventoryData, PlotData, Tool } from '../../hooks/useGameState';
 import { useHoveringBees, type HoveringBeeData } from '../../hooks/useHoveringBees';
 import { usePlotActions } from '../../hooks/usePlotActions';
+import type { TutorialAction } from '../../hooks/useTutorial';
 import type { HiveData } from '../../types/hive';
 import { HarvestAnimation } from '../animations/HarvestAnimation';
 import { GardenGrid } from '../garden/GardenGrid';
@@ -42,6 +43,7 @@ type HomeContentProps = {
   totalPlots?: number;
   baseIndex?: number;
   addHarvestToHive?: (cropId: string, amount?: number) => void;
+  onTutorialAction?: (action: TutorialAction) => void;
 };
 
 export function HomeContent({
@@ -65,6 +67,7 @@ export function HomeContent({
   totalPlots,
   baseIndex = 0,
   addHarvestToHive,
+  onTutorialAction,
 }: HomeContentProps) {
   // Get current user session for classification
   const { session } = useAuth();
@@ -142,6 +145,7 @@ export function HomeContent({
       setDialogVisible(true);
     },
     addHarvestToHive,
+    onTutorialAction,
   });
 
   const farmPages = Math.ceil((totalPlots ?? plots.length) / 6);
