@@ -237,6 +237,34 @@ export async function awardClassificationXP(): Promise<XPGainEvent> {
   };
 }
 
+/**
+ * Award XP for completing a honey order sale
+ * XP varies based on order complexity and honey type
+ */
+export async function awardSaleXP(
+  xpAmount: number,
+  honeyType: string,
+  bottlesCount: number
+): Promise<XPGainEvent> {
+  const experience = await loadPlayerExperience();
+  
+  experience.totalXP += xpAmount;
+  experience.salesCompleted += 1;
+  
+  // Update level information
+  experience.level = calculateLevelFromXP(experience.totalXP);
+  experience.lastLevelUpXP = calculateXPForLevel(experience.level);
+  experience.nextLevelXP = calculateXPForLevel(experience.level + 1);
+  
+  await savePlayerExperience(experience);
+  
+  return {
+    type: 'sale',
+    amount: xpAmount,
+    description: `Sold ${bottlesCount} bottles of ${honeyType} honey!`,
+  };
+}
+
 
 
 /**

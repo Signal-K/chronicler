@@ -286,7 +286,46 @@ export const QUICK_TIPS: TutorialStep[] = [
   {
     id: 'quick-tip-3',
     title: 'Level Up Fast',
-    description: '🌾 Harvest frequently\n🆕 Try new crop types\n🏷️ Classify bees daily\n💰 Complete sales',
+    description: '🌾 Harvest frequently\n🆕 Try new crop types\n🏷️ Classify bees daily\n💰 Complete honey orders',
     icon: '⭐',
+  },
+];
+
+// ==========================================
+// HONEY ORDERS TUTORIAL
+// ==========================================
+export const ORDERS_TUTORIAL: TutorialStep[] = [
+  {
+    id: 'orders-intro',
+    title: 'Daily Honey Orders 📋',
+    description: 'Every day, villagers place orders for specific types of honey!\n\nEach order shows:\n👤 Character requesting honey\n🍯 Honey type needed\n📦 Number of bottles\n🪙 Coin reward\n⭐ XP bonus',
+    icon: '📋',
+    tips: [
+      'Orders refresh daily at midnight',
+      'At least one order matches your likely production',
+      'Check the Orders tab on the Hives screen',
+    ],
+  },
+  {
+    id: 'fulfilling-orders',
+    title: 'Fulfilling Orders',
+    description: 'To fulfill an order:\n\n1️⃣ Have the required honey type bottled\n2️⃣ Have enough glass bottles for packaging\n3️⃣ Tap "Fulfill Order" button\n\nYou\'ll earn coins AND XP for each completed order!',
+    icon: '📦',
+    tips: [
+      'Buy glass bottles from the shop',
+      'Match honey types to orders for best rewards',
+      'Prioritize high-value orders first',
+    ],
+  },
+  {
+    id: 'quota-system',
+    title: 'Daily Quota System',
+    description: 'There\'s a limit on full-price sales per honey type!\n\n✅ First 2 orders of each type: FULL reward\n⚠️ After quota: 50% reduced reward\n\nThis encourages growing diverse crops!',
+    icon: '📊',
+    tips: [
+      'Grow different crops for honey variety',
+      'Specialty honey from lavender is most valuable',
+      'Plan your orders strategically',
+    ],
   },
 ];

@@ -21,6 +21,7 @@ import { useTutorial } from '../hooks/useTutorial';
 import { getLocalDataSummary } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
 
+
 export default function SettingsScreen() {
   const { resetTutorialState } = useTutorial();
   const [userEmail, setUserEmail] = useState<string>('');
@@ -202,7 +203,7 @@ export default function SettingsScreen() {
       const hivesData = await AsyncStorage.getItem('hives');
       if (hivesData) {
         const hives = JSON.parse(hivesData);
-        console.log('🧹 Current hives before clear:', hives.map(h => `${h.id}: ${h.honey?.honeyBottles || 0} bottles`));
+        console.log('🧹 Current hives before clear:', hives.map((h: any) => `${h.id}: ${h.honey?.honeyBottles || 0} bottles`));
         
         const clearedHives = hives.map((hive: any) => ({
           ...hive,
@@ -239,7 +240,6 @@ export default function SettingsScreen() {
   return (
     <View style={[styles.container, isDark && styles.darkContainer]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      
       {/* Header */}
       <View style={[styles.header, isDark && styles.darkHeader]}>
         <TouchableOpacity 
@@ -252,52 +252,82 @@ export default function SettingsScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
+      {/* Prominent Restart Tutorial Button */}
+      <View style={[styles.tutorialBannerCard, isDark && styles.tutorialBannerCardDark]}>
+        <Text style={[styles.tutorialBannerTitle, isDark && styles.tutorialBannerTitleDark]}>Need a refresher?</Text>
+        <Text style={[styles.tutorialBannerText, isDark && styles.tutorialBannerTextDark]}>Restart the full interactive tutorial at any time.</Text>
+        <TouchableOpacity style={styles.tutorialBannerButton} onPress={async () => {
+          await resetTutorialState();
+          router.replace('/home');
+        }}>
+          <Text style={styles.tutorialBannerButtonText}>🔄 Restart Full Tutorial</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Settings Content */}
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        <AccountSection
-          userEmail={userEmail}
-          isGuest={isGuest}
-          isLoading={isLoading}
-          onSignOut={handleSignOut}
-          onConnectAccount={handleConnectAccount}
-          isDark={isDark}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <AccountSection
+            userEmail={userEmail}
+            isGuest={isGuest}
+            isLoading={isLoading}
+            onSignOut={handleSignOut}
+            onConnectAccount={handleConnectAccount}
+            isDark={isDark}
+          />
+        </View>
 
-        <TutorialSection isDark={isDark} />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <TutorialSection isDark={isDark} alwaysShowReset={true} />
+        </View>
 
-        <LocalProgressSection
-          localDataSummary={localDataSummary}
-          isDark={isDark}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <LocalProgressSection
+            localDataSummary={localDataSummary}
+            isDark={isDark}
+          />
+        </View>
 
-        <AppearanceSection
-          isDark={isDark}
-          onToggleDarkMode={toggleDarkMode}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <AppearanceSection
+            isDark={isDark}
+            onToggleDarkMode={toggleDarkMode}
+          />
+        </View>
 
-        <FillHivesSection isDark={isDark} />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <FillHivesSection isDark={isDark} />
+        </View>
 
-        <PermissionsSection
-          locationPermission={locationPermission}
-          onRequestLocationPermission={handleLocationPermission}
-          isDark={isDark}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <PermissionsSection
+            locationPermission={locationPermission}
+            onRequestLocationPermission={handleLocationPermission}
+            isDark={isDark}
+          />
+        </View>
 
-        <GrowthAlgorithmSection isDark={isDark} />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <GrowthAlgorithmSection isDark={isDark} />
+        </View>
 
-        <DayNightOverrideSection
-          isDark={isDark}
-          forceDaytime={forceDaytime}
-          onToggleForceDaytime={toggleForceDaytime}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <DayNightOverrideSection
+            isDark={isDark}
+            forceDaytime={forceDaytime}
+            onToggleForceDaytime={toggleForceDaytime}
+          />
+        </View>
 
-        <DebugSection
-          plotStates={plotStates}
-          onRefresh={loadPlotStates}
-          onClearHoney={clearAllHoney}
-          onResetTutorial={resetTutorialState}
-          isDark={isDark}
-        />
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <DebugSection
+            plotStates={plotStates}
+            onRefresh={loadPlotStates}
+            onClearHoney={clearAllHoney}
+            onResetTutorial={resetTutorialState}
+            isDark={isDark}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -344,6 +374,69 @@ const styles = StyleSheet.create({
   },
   headerSpacer: {
     width: 50,
+  },
+  tutorialBannerCard: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 18,
+    marginHorizontal: 20,
+    marginTop: 18,
+    marginBottom: 8,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#F59E0B',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tutorialBannerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#92400E',
+    marginBottom: 4,
+  },
+  tutorialBannerText: {
+    fontSize: 14,
+    color: '#78350F',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  tutorialBannerButton: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  tutorialBannerButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  tutorialBannerCardDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+  },
+  tutorialBannerTitleDark: {
+    color: '#fbbf24',
+  },
+  tutorialBannerTextDark: {
+    color: '#d1d5db',
+  },
+  sectionCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    marginBottom: 18,
+    padding: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sectionCardDark: {
+    backgroundColor: '#1f2937',
   },
   content: {
     flex: 1,

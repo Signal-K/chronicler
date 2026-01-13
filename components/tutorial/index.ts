@@ -1,4 +1,5 @@
 export { CONTEXTUAL_TIPS, HelpTooltip } from './HelpTooltip';
+export { HIVE_TUTORIAL_STEPS, HiveTutorial } from './HiveTutorial';
 export { InteractiveTutorial, INTERACTIVE_TUTORIAL_STEPS } from './InteractiveTutorial';
 export type { InteractiveTutorialStep, TutorialStepType } from './InteractiveTutorial';
 export { TutorialOverlay } from './TutorialOverlay';
@@ -8,6 +9,7 @@ export {
     COMPLETE_TUTORIAL,
     EXPERIENCE_TUTORIAL,
     HIVES_TUTORIAL,
+    ORDERS_TUTORIAL,
     QUICK_TIPS,
     SETTINGS_TUTORIAL,
     SHOP_TUTORIAL,

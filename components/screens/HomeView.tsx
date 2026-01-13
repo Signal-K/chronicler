@@ -32,6 +32,7 @@ export function HomeView() {
   const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState<'nests' | 'home' | 'landscape' | 'expand' | 'godot'>('home');
   const hasShownFirstBee = useRef(false);
+  const processedTutorialSteps = useRef(new Set<string>());
   const [showSiloModal, setShowSiloModal] = useState(false);
   // showOrdersModal removed
   const [toastVisible, setToastVisible] = useState(false);
@@ -100,6 +101,20 @@ export function HomeView() {
   }, [showBeeHatchAlert]);
   const { hive, hives, addBees, buildNewHive, canBuildNewHive, getAvailableHives, hiveCost, addHarvestToHive } = useHiveState();
   const { isDaytime } = useDayNightCycle();
+
+  // Tutorial helper: Setup hive with bees and add harvests to produce honey
+  const setupTutorialHive = useCallback(() => {
+    if (hives.length > 0) {
+      // Add 5 bees to the hive
+      addBees(5);
+      
+      // Add some harvests to trigger honey production
+      // Adding multiple harvests of different crops
+      addHarvestToHive('sunflower', 0);
+      addHarvestToHive('sunflower', 0);
+      addHarvestToHive('sunflower', 0);
+    }
+  }, [hives, addBees, addHarvestToHive]);
 
   const updateHiveBeeCount = useCallback((count: number) => { const currentCount = hive.beeCount; const diff = count - currentCount; if (diff !== 0) setTimeout(() => addBees(diff), 0); }, [hive.beeCount, addBees]);
   const handleWeatherPress = useCallback(() => { router.push('/settings'); }, [router]);
@@ -292,7 +307,13 @@ export function HomeView() {
           canHarvest={plots.some(p => p.state !== 'empty')} 
           seedInventory={inventory.seeds} 
           currentRoute={currentScreen} 
-          onNavigate={setCurrentScreen} 
+          onNavigate={(route) => {
+            setCurrentScreen(route);
+            // Report tutorial action when navigating to hives
+            if (route === 'nests') {
+              reportTutorialAction('view-hives');
+            }
+          }} 
           verticalPage={verticalPage} 
           onVerticalNavigate={() => setVerticalPage('expand')} 
           onVerticalUpNavigate={() => setVerticalPage('main')} 
@@ -340,6 +361,26 @@ export function HomeView() {
           onComplete={markTutorialCompleted}
           currentTool={tutorialCurrentTool}
           lastAction={tutorialLastAction}
+          onStepChange={(step) => {
+            // Prevent processing the same step multiple times
+            if (processedTutorialSteps.current.has(step.id)) return;
+            processedTutorialSteps.current.add(step.id);
+            
+            // When user reaches honey bottles intro, setup the hive for demonstration
+            if (step.id === 'honey-bottles-intro') {
+              // Give 5 free glass bottles for bottling honey later
+              setInventory(prev => ({
+                ...prev,
+                items: {
+                  ...prev.items,
+                  glassBottles: ((prev.items?.glassBottles as number) || 0) + 5
+                }
+              }));
+              
+              // Setup the hive with bees and harvests so honey can be produced
+              setupTutorialHive();
+            }
+          }}
         />
       </View>
     </GestureHandlerRootView>

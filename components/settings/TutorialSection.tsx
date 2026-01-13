@@ -18,6 +18,9 @@ const TUTORIAL_SEEN_KEY = 'tutorial_sections_seen';
 
 interface TutorialSectionProps {
   isDark?: boolean;
+  alwaysShowReset?: boolean;
+  forceTutorial?: TutorialType | null;
+  onClose?: () => void;
 }
 
 type TutorialType = 
@@ -81,10 +84,16 @@ const TUTORIAL_OPTIONS: TutorialOption[] = [
   },
 ];
 
-export function TutorialSection({ isDark = false }: TutorialSectionProps) {
+const TutorialSection: React.FC<TutorialSectionProps> = ({
+  isDark = false,
+  alwaysShowReset = false,
+  forceTutorial = null,
+  onClose,
+}) => {
   const router = useRouter();
   const [activeTutorial, setActiveTutorial] = useState<TutorialType | null>(null);
   const [completedTutorials, setCompletedTutorials] = useState<string[]>([]);
+  const [showReset, setShowReset] = useState(false);
 
   // Load completed tutorials on mount
   useEffect(() => {
@@ -100,6 +109,13 @@ export function TutorialSection({ isDark = false }: TutorialSectionProps) {
     };
     loadCompletedTutorials();
   }, []);
+
+  // If forceTutorial is set, open that tutorial overlay immediately
+  useEffect(() => {
+    if (forceTutorial) {
+      setActiveTutorial(forceTutorial);
+    }
+  }, [forceTutorial]);
 
   // Mark tutorial as completed
   const markTutorialCompleted = useCallback(async (tutorialId: TutorialType) => {
@@ -159,6 +175,8 @@ export function TutorialSection({ isDark = false }: TutorialSectionProps) {
       await AsyncStorage.removeItem(TUTORIAL_SEEN_KEY);
       await AsyncStorage.removeItem(TUTORIAL_COMPLETED_KEY);
       setCompletedTutorials([]);
+      setShowReset(true);
+      setTimeout(() => setShowReset(false), 2000);
     } catch (error) {
       console.error('Error resetting tutorials:', error);
     }
@@ -210,16 +228,21 @@ export function TutorialSection({ isDark = false }: TutorialSectionProps) {
         })}
       </View>
 
-      {/* Reset tutorials button */}
-      {completedTutorials.length > 0 && (
+      {/* Always show reset button if alwaysShowReset is true, or if any completed */}
+      {(alwaysShowReset || completedTutorials.length > 0) && (
         <TouchableOpacity
           style={[styles.resetButton, { borderColor: cardBorder }]}
           onPress={resetAllTutorials}
         >
-          <Text style={[styles.resetButtonText, { color: subTextColor }]}>
+          <Text style={[styles.resetButtonText, { color: subTextColor }]}> 
             🔄 Reset Tutorial Progress
           </Text>
         </TouchableOpacity>
+      )}
+      {showReset && (
+        <Text style={{ color: '#22C55E', textAlign: 'center', marginTop: 6, fontWeight: 'bold' }}>
+          Tutorial progress reset!
+        </Text>
       )}
 
       {/* Full Help Guide Link */}
@@ -243,13 +266,16 @@ export function TutorialSection({ isDark = false }: TutorialSectionProps) {
         <TutorialOverlay
           visible={true}
           steps={getTutorialSteps(activeTutorial)}
-          onClose={handleTutorialClose}
+          onClose={() => {
+            handleTutorialClose();
+            if (onClose) onClose();
+          }}
           onComplete={handleTutorialComplete}
         />
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -356,3 +382,5 @@ const styles = StyleSheet.create({
 });
 
 export default TutorialSection;
+
+

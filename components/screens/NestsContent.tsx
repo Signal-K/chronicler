@@ -28,18 +28,9 @@ const getHoneyGradientColors = (hive: HiveData): string[] => {
   const harvests = hive.honey?.dailyHarvests || [];
   const today = new Date().toDateString();
   
-  console.log(`🔍 Hive ${hive.id}: Total harvests: ${harvests.length}`);
-  console.log(`🔍 Today's date: ${today}`);
-  harvests.forEach((harvest, i) => {
-    const harvestDate = new Date(harvest.timestamp).toDateString();
-    console.log(`🔍 Harvest ${i}: ${harvest.cropId}, date: ${harvestDate}, amount: ${harvest.amount}`);
-  });
-  
   const todaysHarvests = harvests.filter(harvest => 
     new Date(harvest.timestamp).toDateString() === today && harvest.cropId !== 'virtual_boost'
   );
-  
-  console.log(`🔍 Today's real harvests: ${todaysHarvests.length}`);
 
   // If no real harvests but hive has honey bottles (force daytime mode), show golden gradient
   if (todaysHarvests.length === 0) {

@@ -118,7 +118,7 @@ export const INTERACTIVE_TUTORIAL_STEPS: InteractiveTutorialStep[] = [
     icon: '🌾',
     highlightTarget: 'garden',
     requireAction: 'plant-seed',
-    tooltipPosition: 'center',
+    tooltipPosition: 'bottom',
   },
   {
     id: 'water-tool',
@@ -138,7 +138,7 @@ export const INTERACTIVE_TUTORIAL_STEPS: InteractiveTutorialStep[] = [
     icon: '🌧️',
     highlightTarget: 'garden',
     requireAction: 'water-plant',
-    tooltipPosition: 'center',
+    tooltipPosition: 'bottom',
   },
   {
     id: 'growth-info',
@@ -161,19 +161,37 @@ export const INTERACTIVE_TUTORIAL_STEPS: InteractiveTutorialStep[] = [
   },
   {
     id: 'hives-intro',
-    type: 'info',
+    type: 'navigate',
     title: 'Meet Your Bees! 🐝',
     message: 'Navigate left using the arrow to visit your Bee Hives. Bees help pollinate your garden and produce honey!',
     icon: '🐝',
     highlightTarget: 'nav-left',
     tooltipPosition: 'top',
+    requireAction: 'view-hives',
+  },
+  {
+    id: 'honey-bottles-intro',
+    type: 'info',
+    title: 'Honey Production 🍯',
+    message: 'Your hive is now full of honey! Bees produce honey during active hours (8 AM - 4 PM and 8 PM - 4 AM). The honey type depends on which crops you harvest.',
+    icon: '🍯',
+    tooltipPosition: 'center',
+    tapToContinue: true,
+  },
+  {
+    id: 'orders-intro',
+    type: 'info',
+    title: 'Daily Honey Orders 📋',
+    message: 'Villagers place daily orders for specific honey types! You can see them in the Orders tab. Fulfill orders to earn coins and XP. We\'ve given you 5 free glass bottles to get started!',
+    icon: '📋',
+    tooltipPosition: 'center',
     tapToContinue: true,
   },
   {
     id: 'shop-intro',
     type: 'info',
     title: 'The Shop 🛒',
-    message: 'Tap on your coins 🪙 in the header to open the shop. Buy more seeds, upgrades, and expand your farm!',
+    message: 'Tap on your coins 🪙 in the header to open the shop. Buy more seeds, glass bottles for honey, and upgrades to expand your farm!',
     icon: '🛒',
     highlightTarget: 'coins',
     tooltipPosition: 'bottom',
@@ -270,10 +288,20 @@ export function InteractiveTutorial({
     return () => bounce.stop();
   }, [arrowBounce]);
 
+  const advanceStep = useCallback(() => {
+    if (currentStepIndex < INTERACTIVE_TUTORIAL_STEPS.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
+    } else {
+      // Tutorial complete
+      onComplete();
+      onClose();
+    }
+  }, [currentStepIndex, onComplete, onClose]);
+
   // Watch for tool selection to advance
   useEffect(() => {
     if (!visible || !currentStep?.requireTool) return;
-    
+
     if (currentTool === currentStep.requireTool) {
       // Tool selected, advance to next step
       setTimeout(() => advanceStep(), 300);
@@ -283,7 +311,7 @@ export function InteractiveTutorial({
   // Watch for actions to advance
   useEffect(() => {
     if (!visible || !currentStep?.requireAction) return;
-    
+
     if (lastAction === currentStep.requireAction) {
       setTimeout(() => advanceStep(), 500);
     }
@@ -295,16 +323,6 @@ export function InteractiveTutorial({
       onStepChange?.(currentStep);
     }
   }, [currentStepIndex, visible, currentStep, onStepChange]);
-
-  const advanceStep = useCallback(() => {
-    if (currentStepIndex < INTERACTIVE_TUTORIAL_STEPS.length - 1) {
-      setCurrentStepIndex(prev => prev + 1);
-    } else {
-      // Tutorial complete
-      onComplete();
-      onClose();
-    }
-  }, [currentStepIndex, onComplete, onClose]);
 
   const handleTap = useCallback(() => {
     if (currentStep?.tapToContinue) {
@@ -442,7 +460,7 @@ export function InteractiveTutorial({
           style={StyleSheet.absoluteFill}
           activeOpacity={1} 
           onPress={handleTap}
-          disabled={requiresInteraction}
+          disabled={!!requiresInteraction}
         />
       </View>
 
