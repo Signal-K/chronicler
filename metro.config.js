@@ -65,4 +65,13 @@ config.resolver = {
   },
 };
 
+// Ensure blockList is properly configured
+config.resolver.blockList = config.resolver.blockList || [];
+
+// Add to watchFolders to include the directory containing the problematic file
+config.watchFolders = [
+  ...config.watchFolders,
+  `${__dirname}/__mocks__/react-native-worklets`,
+];
+
 module.exports = config;
