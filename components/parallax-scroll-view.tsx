@@ -1,4 +1,3 @@
-import type { ParallaxProps } from '../types/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
     interpolate,
@@ -6,6 +5,11 @@ import Animated, {
     useAnimatedStyle,
     useScrollOffset,
 } from 'react-native-reanimated';
+
+type ParallaxProps = {
+  headerImage: import('react').ReactElement;
+  headerBackgroundColor: { dark: string; light: string };
+};
 
 import { ThemedView } from '../components/themed-view';
 import { useColorScheme } from '../hooks/use-color-scheme';
@@ -48,7 +52,7 @@ export default function ParallaxScrollView({
       <Animated.View
         style={[
           styles.header,
-          { backgroundColor: headerBackgroundColor[colorScheme] },
+          { backgroundColor: headerBackgroundColor[colorScheme as keyof typeof headerBackgroundColor] },
           headerAnimatedStyle,
         ]}>
         {headerImage}

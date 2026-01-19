@@ -18,6 +18,7 @@ export type InventoryData = {
   seeds: Record<string, number>;
   harvested: Record<string, number>;
   items?: Record<string, number>; // For bottles, tools, etc.
+  bottledHoney?: { id: string; type: string; color: string; amount: number }[];
 };
 
 const INITIAL_PLOTS: PlotData[] = Array(6).fill(null).map(() => ({
@@ -32,7 +33,8 @@ const INITIAL_INVENTORY: InventoryData = {
   water: 100,
   seeds: { tomato: 5, sunflower: 5, blueberry: 5, lavender: 5 },
   harvested: { tomato: 0, sunflower: 0, blueberry: 0, lavender: 0 },
-  items: { glass_bottle: 0, bottled_nectar: 0 },
+  items: { glass_bottle: 10, honey_bottles: 0 }, // Give players some starting glass bottles
+  bottledHoney: [], // Array of bottled honey with types
 };
 
 export function useGameState() {

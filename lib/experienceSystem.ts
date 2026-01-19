@@ -2,13 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const XP_STORAGE_KEY = 'player_experience';
 
-export interface PlayerExperience {
+interface PlayerExperience {
   totalXP: number;
   level: number;
   harvestsCount: number;
   uniqueHarvests: Set<string>; // Track first-time harvests for bonus XP
   pollinationEvents: number;
   salesCompleted: number;
+  classificationsCompleted: number;
   lastLevelUpXP: number; // XP required for current level
   nextLevelXP: number; // XP required for next level
 }
@@ -21,11 +22,11 @@ export interface PlayerExperienceInfo extends Omit<PlayerExperience, 'uniqueHarv
 }
 
 export interface XPGainEvent {
-  type: 'harvest' | 'first_harvest' | 'pollination' | 'sale';
+  type: 'harvest' | 'first_harvest' | 'pollination' | 'sale' | 'classification';
   amount: number;
   description: string;
   cropType?: string; // For harvest events
-  orderComplexity?: 'simple' | 'medium' | 'complex'; // For sale events
+  // orderComplexity removed
 }
 
 /**
@@ -102,6 +103,7 @@ export async function loadPlayerExperience(): Promise<PlayerExperience> {
         uniqueHarvests: new Set(parsed.uniqueHarvests || []),
         pollinationEvents: parsed.pollinationEvents || 0,
         salesCompleted: parsed.salesCompleted || 0,
+        classificationsCompleted: parsed.classificationsCompleted || 0,
         lastLevelUpXP: calculateXPForLevel(level),
         nextLevelXP: calculateXPForLevel(level + 1),
       };
@@ -117,6 +119,7 @@ export async function loadPlayerExperience(): Promise<PlayerExperience> {
     uniqueHarvests: new Set(),
     pollinationEvents: 0,
     salesCompleted: 0,
+    classificationsCompleted: 0,
     lastLevelUpXP: 0,
     nextLevelXP: calculateXPForLevel(2),
   };
@@ -134,6 +137,7 @@ export async function savePlayerExperience(experience: PlayerExperience): Promis
       uniqueHarvests: Array.from(experience.uniqueHarvests),
       pollinationEvents: experience.pollinationEvents,
       salesCompleted: experience.salesCompleted,
+      classificationsCompleted: experience.classificationsCompleted,
       lastLevelUpXP: experience.lastLevelUpXP,
       nextLevelXP: experience.nextLevelXP,
     };
@@ -210,19 +214,40 @@ export async function awardPollinationXP(): Promise<XPGainEvent> {
 }
 
 /**
- * Award XP for completing a sale/order
- * XP varies based on order complexity: simple (2), medium (3), complex (4)
+ * Award XP for bee classification
+ * +10 XP per classification
  */
-export async function awardSaleXP(orderComplexity: 'simple' | 'medium' | 'complex'): Promise<XPGainEvent> {
+export async function awardClassificationXP(): Promise<XPGainEvent> {
   const experience = await loadPlayerExperience();
   
-  const xpMap = {
-    simple: 2,
-    medium: 3,
-    complex: 4,
-  };
+  experience.totalXP += 10;
+  experience.classificationsCompleted += 1;
   
-  const xpAmount = xpMap[orderComplexity];
+  // Update level information
+  experience.level = calculateLevelFromXP(experience.totalXP);
+  experience.lastLevelUpXP = calculateXPForLevel(experience.level);
+  experience.nextLevelXP = calculateXPForLevel(experience.level + 1);
+  
+  await savePlayerExperience(experience);
+  
+  return {
+    type: 'classification',
+    amount: 10,
+    description: 'Bee classification completed!',
+  };
+}
+
+/**
+ * Award XP for completing a honey order sale
+ * XP varies based on order complexity and honey type
+ */
+export async function awardSaleXP(
+  xpAmount: number,
+  honeyType: string,
+  bottlesCount: number
+): Promise<XPGainEvent> {
+  const experience = await loadPlayerExperience();
+  
   experience.totalXP += xpAmount;
   experience.salesCompleted += 1;
   
@@ -236,10 +261,11 @@ export async function awardSaleXP(orderComplexity: 'simple' | 'medium' | 'comple
   return {
     type: 'sale',
     amount: xpAmount,
-    description: `Completed ${orderComplexity} order`,
-    orderComplexity,
+    description: `Sold ${bottlesCount} bottles of ${honeyType} honey!`,
   };
 }
+
+
 
 /**
  * Get current player experience with level progress
@@ -257,24 +283,3 @@ export async function getPlayerExperienceInfo(): Promise<PlayerExperienceInfo> {
   };
 }
 
-/**
- * Check if player leveled up and return level up info
- */
-export async function checkLevelUp(previousXP: number, currentXP: number): Promise<{
-  leveledUp: boolean;
-  oldLevel: number;
-  newLevel: number;
-} | null> {
-  const oldLevel = calculateLevelFromXP(previousXP);
-  const newLevel = calculateLevelFromXP(currentXP);
-  
-  if (newLevel > oldLevel) {
-    return {
-      leveledUp: true,
-      oldLevel,
-      newLevel,
-    };
-  }
-  
-  return null;
-}

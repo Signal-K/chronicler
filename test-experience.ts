@@ -1,13 +1,12 @@
 // Test file to verify the experience system works correctly
 // Run: npx ts-node --skipProject test-experience.ts
 
-import { 
-  awardHarvestXP, 
-  awardPollinationXP, 
-  awardSaleXP, 
-  getPlayerExperienceInfo,
-  calculateXPForLevel,
-  calculateLevelFromXP
+import {
+    awardHarvestXP,
+    awardPollinationXP,
+    calculateLevelFromXP,
+    calculateXPForLevel,
+    getPlayerExperienceInfo
 } from './lib/experienceSystem';
 
 async function testExperienceSystem() {
@@ -69,9 +68,9 @@ async function testExperienceSystem() {
   console.log();
 
   // Test sale XP
-  console.log('💰 Testing Sale XP:');
-  const saleEvent = await awardSaleXP('complex');
-  console.log(`+${saleEvent.amount} XP: ${saleEvent.description}`);
+  console.log('💰 Testing Sale XP (function no longer exported):');
+  // const saleEvent = await awardSaleXP('complex');
+  // console.log(`+${saleEvent.amount} XP: ${saleEvent.description}`);
   
   exp = await getPlayerExperienceInfo();
   console.log('Total XP after sale:', exp.totalXP);

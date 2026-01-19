@@ -3,7 +3,7 @@
 export interface PollinationFactorData {
   factor: number;           // Current pollination factor (starts at 0)
   totalHarvests: number;    // Total harvests performed
-  threshold: number;        // Threshold for bee spawning (default: 5)
+  threshold: number;        // Threshold for bee spawning (default: 10)
 }
 
 export interface PollinationFactorHookReturn {

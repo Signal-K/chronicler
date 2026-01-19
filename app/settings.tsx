@@ -1,16 +1,29 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    AccountSection,
+    AppearanceSection,
+    DayNightOverrideSection,
+    DebugSection,
+    FillHivesSection,
+    GrowthAlgorithmSection,
+    LocalProgressSection,
+    PermissionsSection,
+    TutorialSection,
+} from '../components/settings';
+import { setOverride as setThemeOverride } from '../hooks/themeManager';
+import { useColorScheme } from '../hooks/use-color-scheme';
+import { useTutorial } from '../hooks/useTutorial';
 import { getLocalDataSummary } from '../lib/progressPreservation';
 import { supabase } from '../lib/supabase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setOverride as setThemeOverride } from '../hooks/themeManager';
-import { useThemeColor } from '../hooks/use-theme-color';
-import { useColorScheme } from '../hooks/use-color-scheme';
+
 
 export default function SettingsScreen() {
+  const { resetTutorialState } = useTutorial();
   const [userEmail, setUserEmail] = useState<string>('');
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const scheme = useColorScheme();
@@ -19,12 +32,12 @@ export default function SettingsScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
   const [autoFillHoneyEnabled, setAutoFillHoneyEnabled] = useState<boolean>(true);
-  const [isFastForwarding, setIsFastForwarding] = useState<boolean>(false);
   const [plots, setPlots] = useState<any[]>([]);
+  const [forceDaytime, setForceDaytime] = useState<boolean>(false);
   const [localDataSummary, setLocalDataSummary] = useState<{
     totalKeys: number;
     totalDataSize: number;
-    keyDetails: Array<{ key: string; size: number; hasData: boolean }>;
+    keyDetails: { key: string; size: number; hasData: boolean }[];
   }>({ totalKeys: 0, totalDataSize: 0, keyDetails: [] });
 
   // Load plots data
@@ -35,7 +48,7 @@ export default function SettingsScreen() {
         if (plotsData) {
           setPlots(JSON.parse(plotsData));
         }
-      } catch (error) {
+      } catch {
         // error loading plots
       }
     };
@@ -47,6 +60,7 @@ export default function SettingsScreen() {
     checkLocationPermission();
     loadPlotStates();
     loadHoneySettings();
+    loadForceDaytimeSettings();
     loadLocalDataSummary();
 
     // load persisted dark mode preference (set runtime override)
@@ -74,7 +88,7 @@ export default function SettingsScreen() {
     try {
       const summary = await getLocalDataSummary();
       setLocalDataSummary(summary);
-    } catch (error) {
+    } catch {
       // error loading local data summary
     }
   };
@@ -101,7 +115,7 @@ export default function SettingsScreen() {
       if (saved) {
         setPlotStates(JSON.parse(saved));
       }
-    } catch (error) {
+    } catch {
       // error loading plot states
     }
   };
@@ -111,88 +125,23 @@ export default function SettingsScreen() {
       if (saved !== null) {
         setAutoFillHoneyEnabled(JSON.parse(saved));
       }
-    } catch (error) {
+    } catch {
       // error loading honey settings
     }
   };
 
-  const fastForwardHoneyProduction = async () => {
-    if (!autoFillHoneyEnabled) {
-      alert('Auto-fill honey must be enabled to use fast forward.');
-      return;
-    }
-
-    setIsFastForwarding(true);
-    
+  const loadForceDaytimeSettings = async () => {
     try {
-      // Check if we have any active crops or recently harvested plants
-      const userStatsData = await AsyncStorage.getItem('user_stats');
-      let recentlyHarvestedCount = 0;
-
-      if (userStatsData) {
-        const userStats = JSON.parse(userStatsData);
-        const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
-        recentlyHarvestedCount = userStats.harvestedPlants
-          ?.filter((harvest: any) => harvest.harvestedAt > twentyFourHoursAgo)
-          ?.length || 0;
+      const saved = await AsyncStorage.getItem('forceDaytime');
+      if (saved !== null) {
+        setForceDaytime(saved === 'true');
       }
-
-      // Count active crops from loaded plots
-      const activeCrops = plots.filter(plot => 
-        plot && (plot.state === 'planted' || plot.state === 'growing') && plot.cropType
-      );
-
-      // active crops and recent harvest counts available for fast-forward logic
-
-      if (activeCrops.length === 0 && recentlyHarvestedCount === 0) {
-        alert('No crops found! Plant some flowers or wait for recent harvests to produce honey.');
-        setIsFastForwarding(false);
-        return;
-      }
-
-      // Trigger fast forward through AsyncStorage - the main honey production hook will pick this up
-      const hoursToSimulate = 8;
-      await AsyncStorage.setItem('honeyFastForwardRequest', JSON.stringify({
-        hours: hoursToSimulate,
-        timestamp: Date.now(),
-        activeCropsCount: activeCrops.length,
-        recentHarvestsCount: recentlyHarvestedCount
-      }));
-      
-      // Show progress
-      setTimeout(() => {
-        alert(`✅ Fast forward complete! Your bees collected nectar from ${activeCrops.length} active crops and ${recentlyHarvestedCount} recently harvested plants for ${hoursToSimulate} hours. Check your hives!`);
-        setIsFastForwarding(false);
-        
-        // Trigger a storage update to notify other components
-        AsyncStorage.setItem('honeyFastForwardTrigger', Date.now().toString());
-      }, 2000); // 2 second delay for realism
-      
-    } catch (error) {
-      // error handling for fast forward
-        alert('Failed to fast forward honey production. Please try again.');
-      setIsFastForwarding(false);
+    } catch {
+      // error loading force daytime settings
     }
-  };
-  // Format remaining time for watered plots
-  const formatTimeRemaining = (wateredAt: number) => {
-    const now = Date.now();
-    const elapsed = now - wateredAt;
-    const twentyMinutes = 20 * 60 * 1000; // 20 minutes in milliseconds
-    const remaining = twentyMinutes - elapsed;
-    
-    if (remaining <= 0) {
-      return 'Expired';
-    }
-    
-    const minutes = Math.floor(remaining / (1000 * 60));
-    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-    
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleSignOut = async () => {
-    // Automatically proceed with sign out
     setIsLoading(true);
     const { error } = await supabase.auth.signOut();
     if (!error) {
@@ -209,9 +158,7 @@ export default function SettingsScreen() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       setLocationPermission(status);
-      
-      // location permission updated
-    } catch (error) {
+    } catch {
       // location request error
     }
   };
@@ -220,7 +167,7 @@ export default function SettingsScreen() {
     const newValue = !isDark;
     try {
       await AsyncStorage.setItem('darkMode', newValue ? 'true' : 'false');
-    } catch (e) {
+    } catch {
       // ignore write errors
     }
     setThemeOverride(newValue ? 'dark' : 'light');
@@ -230,42 +177,69 @@ export default function SettingsScreen() {
     const newValue = !autoFillHoneyEnabled;
     setAutoFillHoneyEnabled(newValue);
     
-    // Save to AsyncStorage
     try {
       await AsyncStorage.setItem('autoFillHoneyEnabled', JSON.stringify(newValue));
-    } catch (error) {
+    } catch {
       // error saving honey auto-fill setting
     }
   };
 
-  const getPermissionStatusText = () => {
-    switch (locationPermission) {
-      case 'granted':
-        return 'Granted ✅';
-      case 'denied':
-        return 'Denied ❌';
-      case 'undetermined':
-        return 'Not requested';
-      default:
-        return 'Unknown';
+  const toggleForceDaytime = async () => {
+    const newValue = !forceDaytime;
+    setForceDaytime(newValue);
+    
+    try {
+      await AsyncStorage.setItem('forceDaytime', newValue ? 'true' : 'false');
+    } catch {
+      // error saving force daytime setting
     }
   };
 
-  const getPermissionStatusColor = () => {
-    switch (locationPermission) {
-      case 'granted':
-        return '#4CAF50';
-      case 'denied':
-        return '#F44336';
-      default:
-        return '#FF9800';
+  const clearAllHoney = async () => {
+    try {
+      console.log('🧹 Starting honey clear process...');
+      
+      // Get all hives and clear their honey
+      const hivesData = await AsyncStorage.getItem('hives');
+      if (hivesData) {
+        const hives = JSON.parse(hivesData);
+        console.log('🧹 Current hives before clear:', hives.map((h: any) => `${h.id}: ${h.honey?.honeyBottles || 0} bottles`));
+        
+        const clearedHives = hives.map((hive: any) => ({
+          ...hive,
+          honey: {
+            ...hive.honey,
+            honeyBottles: 0,
+            dailyHarvests: [],
+            currentCapacity: 0,
+          }
+        }));
+        await AsyncStorage.setItem('hives', JSON.stringify(clearedHives));
+        console.log('🧹 Hives cleared and saved to storage');
+        
+        // Clear honey bottles from inventory
+        const inventoryData = await AsyncStorage.getItem('inventory');
+        if (inventoryData) {
+          const inventory = JSON.parse(inventoryData);
+          if (inventory.items) {
+            inventory.items.honey_bottles = 0;
+            await AsyncStorage.setItem('inventory', JSON.stringify(inventory));
+          }
+        }
+        
+        // Trigger refresh signal
+        await AsyncStorage.setItem('hivesRefreshSignal', Date.now().toString());
+        
+        console.log('🍯 All honey cleared from hives and inventory');
+      }
+    } catch (error) {
+      console.error('Error clearing honey:', error);
     }
   };
 
   return (
     <View style={[styles.container, isDark && styles.darkContainer]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      
       {/* Header */}
       <View style={[styles.header, isDark && styles.darkHeader]}>
         <TouchableOpacity 
@@ -278,248 +252,83 @@ export default function SettingsScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Settings Content */}
-      <View style={styles.content}>
-        
-        {/* Account Section */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Account</Text>
-          
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>User</Text>
-              <Text style={[styles.settingValue, isDark && styles.darkText]}>{userEmail}</Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                {isGuest ? 'Guest Account' : 'Full Account'}
-              </Text>
-            </View>
-          </View>
-
-          <TouchableOpacity 
-            style={[
-              styles.actionButton, 
-              isGuest ? styles.connectButton : styles.signOutButton,
-              isLoading && styles.disabledButton
-            ]}
-            onPress={isGuest ? handleConnectAccount : handleSignOut}
-            disabled={isLoading}
-          >
-            <Text style={styles.actionButtonText}>
-              {isLoading ? 'Loading...' : (isGuest ? 'Connect Account' : 'Sign Out')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Local Progress Section */}
-          <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Local Progress</Text>
-          
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Saved Data</Text>
-              <Text style={[styles.settingValue, isDark && styles.darkText]}>
-                {localDataSummary.keyDetails.length} items saved
-              </Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                {Math.round(localDataSummary.totalDataSize / 1024)}KB • Experience, inventory, hives & more
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.progressInfoContainer}>
-            <Text style={[styles.progressInfoText, isDark && styles.darkText]}>
-              💾 Your progress is automatically preserved when you sign in or create an account
-            </Text>
-            <Text style={[styles.progressInfoText, isDark && styles.darkText]}>
-              🔒 All data stays on your device until you choose to sync
-            </Text>
-          </View>
-        </View>
-
-        {/* Appearance Section */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Appearance</Text>
-          
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Dark Mode</Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                Switch between light and dark themes
-              </Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={toggleDarkMode}
-              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({}, 'tint') }}
-              thumbColor={isDark ? useThemeColor({}, 'tint') : useThemeColor({}, 'background')}
-            />
-          </View>
-        </View>
-
-        {/* Honey Production Section */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🍯 Honey Production</Text>
-          
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Auto-Fill Honey</Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                Automatically track honey production based on planted and harvested crops
-              </Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                {autoFillHoneyEnabled 
-                  ? '🐝 Bees will collect nectar from your active crops' 
-                  : '⭕ Manual honey management only'
-                }
-              </Text>
-            </View>
-            <Switch
-              value={autoFillHoneyEnabled}
-              onValueChange={toggleAutoFillHoney}
-              trackColor={{ false: useThemeColor({ light: '#767577', dark: '#444' }, 'icon'), true: useThemeColor({ light: '#FFB300', dark: '#FFB300' }, 'tint') }}
-              thumbColor={autoFillHoneyEnabled ? useThemeColor({ light: '#FF8F00', dark: '#FF8F00' }, 'tint') : useThemeColor({}, 'background')}
-            />
-          </View>
-          
-          {/* Fast Forward Honey Production */}
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Fast Forward Production</Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                Simulate 8 hours of honey production from current/recent crops
-              </Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                {autoFillHoneyEnabled 
-                  ? '🍯 Ready to fast forward honey production' 
-                  : '⚠️ Requires Auto-Fill Honey to be enabled'
-                }
-              </Text>
-            </View>
-            <TouchableOpacity 
-              style={[
-                styles.actionButton,
-                styles.fastForwardButton,
-                (!autoFillHoneyEnabled || isFastForwarding) && styles.disabledButton
-              ]}
-              onPress={fastForwardHoneyProduction}
-              disabled={!autoFillHoneyEnabled || isFastForwarding}
-            >
-              <Text style={[
-                styles.actionButtonText,
-                styles.fastForwardButtonText
-              ]}>
-                {isFastForwarding ? '⏳ Fast Forwarding...' : '⚡ Fast Forward'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Permissions Section */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>Permissions</Text>
-          
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, isDark && styles.darkText]}>Location</Text>
-              <Text style={[styles.settingSubtext, isDark && styles.darkText]}>
-                Required for weather features
-              </Text>
-              <Text style={[styles.permissionStatus, { color: getPermissionStatusColor() }]}>
-                Status: {getPermissionStatusText()}
-              </Text>
-            </View>
-            <TouchableOpacity 
-              style={[styles.permissionButton]}
-              onPress={handleLocationPermission}
-            >
-              <Text style={styles.permissionButtonText}>
-                {locationPermission === 'granted' ? 'Granted' : 'Request'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Growth Algorithm Section */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🌱 Plant Growth Algorithm</Text>
-          
-          <View style={styles.algorithmInfo}>
-            <Text style={[styles.algorithmText, isDark && styles.darkText]}>
-              The growth rate system calculates optimal conditions for your plants based on real-time environmental data:
-            </Text>
-            
-            <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDark && styles.darkText]}>🌡️ Temperature Factor</Text>
-              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
-                • Optimal: 18-25°C (100% efficiency){'\n'}
-                • Good: 10-18°C or 25-30°C (50-100%){'\n'}
-                • Poor: 5-10°C or 30-35°C (10-50%){'\n'}
-                • Critical: Below 5°C or above 35°C (≤20%)
-              </Text>
-            </View>
-            
-            <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDark && styles.darkText]}>💧 Humidity Factor</Text>
-              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
-                • Optimal: 40-70% (100% efficiency){'\n'}
-                • Moderate: 20-40% or 70-85% (50-100%){'\n'}
-                • Poor: Below 20% or above 85% (≤70%)
-              </Text>
-            </View>
-            
-            <View style={styles.factorSection}>
-              <Text style={[styles.factorTitle, isDark && styles.darkText]}>🪐 Planetary Factor</Text>
-              <Text style={[styles.factorDetails, isDark && styles.darkText]}>
-                • Earth: No penalty (100%){'\n'}
-                • Other Planets: 90% growth penalty (10% efficiency){'\n'}
-                • Reflects challenges of off-world cultivation
-              </Text>
-            </View>
-            
-            <View style={styles.formulaSection}>
-              <Text style={[styles.formulaTitle, isDark && styles.darkText]}>📊 Final Calculation</Text>
-              <Text style={[styles.formulaText, isDark && styles.darkText]}>
-                Growth Rate = Base Rate × Temperature Factor × Humidity Factor × Planet Factor
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Debugging Section - Plot States */}
-        <View style={[styles.section, isDark && styles.darkSection]}>
-          <View style={styles.debugHeader}>
-            <Text style={[styles.sectionTitle, isDark && styles.darkText]}>🐛 Plot Debug Info</Text>
-            <TouchableOpacity 
-              style={[styles.refreshButton, isDark && styles.darkRefreshButton]}
-              onPress={loadPlotStates}
-            >
-              <Text style={[styles.refreshText, isDark && styles.darkText]}>🔄 Refresh</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.debugGrid}>
-            {[0, 1, 2, 3, 4, 5].map(plotId => (
-              <View key={plotId} style={[styles.debugPlot, isDark && styles.darkDebugPlot]}>
-                <Text style={[styles.debugPlotTitle, isDark && styles.darkText]}>
-                  Plot {plotId + 1}
-                </Text>
-                <Text style={[styles.debugText, isDark && styles.darkText]}>
-                  💧 Watered: {plotStates[plotId]?.watered ? '✅' : '❌'}
-                </Text>
-                <Text style={[styles.debugText, isDark && styles.darkText]}>
-                  🌱 Planted: {plotStates[plotId]?.planted ? '✅' : '❌'}
-                </Text>
-                {plotStates[plotId]?.watered && plotStates[plotId]?.wateredAt && (
-                  <Text style={[styles.debugText, isDark && styles.darkText]}>
-                    ⏱️ Timer: {formatTimeRemaining(plotStates[plotId].wateredAt!)}
-                  </Text>
-                )}
-              </View>
-            ))}
-          </View>
-        </View>
-
+      {/* Prominent Restart Tutorial Button */}
+      <View style={[styles.tutorialBannerCard, isDark && styles.tutorialBannerCardDark]}>
+        <Text style={[styles.tutorialBannerTitle, isDark && styles.tutorialBannerTitleDark]}>Need a refresher?</Text>
+        <Text style={[styles.tutorialBannerText, isDark && styles.tutorialBannerTextDark]}>Restart the full interactive tutorial at any time.</Text>
+        <TouchableOpacity style={styles.tutorialBannerButton} onPress={async () => {
+          await resetTutorialState();
+          router.replace('/home');
+        }}>
+          <Text style={styles.tutorialBannerButtonText}>🔄 Restart Full Tutorial</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* Settings Content */}
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <AccountSection
+            userEmail={userEmail}
+            isGuest={isGuest}
+            isLoading={isLoading}
+            onSignOut={handleSignOut}
+            onConnectAccount={handleConnectAccount}
+            isDark={isDark}
+          />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <TutorialSection isDark={isDark} alwaysShowReset={true} />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <LocalProgressSection
+            localDataSummary={localDataSummary}
+            isDark={isDark}
+          />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <AppearanceSection
+            isDark={isDark}
+            onToggleDarkMode={toggleDarkMode}
+          />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <FillHivesSection isDark={isDark} />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <PermissionsSection
+            locationPermission={locationPermission}
+            onRequestLocationPermission={handleLocationPermission}
+            isDark={isDark}
+          />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <GrowthAlgorithmSection isDark={isDark} />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <DayNightOverrideSection
+            isDark={isDark}
+            forceDaytime={forceDaytime}
+            onToggleForceDaytime={toggleForceDaytime}
+          />
+        </View>
+
+        <View style={[styles.sectionCard, isDark && styles.sectionCardDark]}>
+          <DebugSection
+            plotStates={plotStates}
+            onRefresh={loadPlotStates}
+            onClearHoney={clearAllHoney}
+            onResetTutorial={resetTutorialState}
+            isDark={isDark}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -566,209 +375,77 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 50,
   },
-  content: {
-    flex: 1,
+  tutorialBannerCard: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 18,
+    marginHorizontal: 20,
+    marginTop: 18,
+    marginBottom: 8,
     padding: 20,
-  },
-  section: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#F59E0B',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
-  darkSection: {
-    backgroundColor: '#2d2d2d',
-  },
-  sectionTitle: {
+  tutorialBannerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    color: '#92400E',
+    marginBottom: 4,
   },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 15,
+  tutorialBannerText: {
+    fontSize: 14,
+    color: '#78350F',
+    marginBottom: 10,
+    textAlign: 'center',
   },
-  settingInfo: {
+  tutorialBannerButton: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  tutorialBannerButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  tutorialBannerCardDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+  },
+  tutorialBannerTitleDark: {
+    color: '#fbbf24',
+  },
+  tutorialBannerTextDark: {
+    color: '#d1d5db',
+  },
+  sectionCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    marginBottom: 18,
+    padding: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sectionCardDark: {
+    backgroundColor: '#1f2937',
+  },
+  content: {
     flex: 1,
-    marginRight: 15,
   },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
-  },
-  settingValue: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 2,
-  },
-  settingSubtext: {
-    fontSize: 12,
-    color: '#999',
-  },
-  permissionStatus: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  actionButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  connectButton: {
-    backgroundColor: '#4CAF50',
-  },
-  signOutButton: {
-    backgroundColor: '#F44336',
-  },
-  disabledButton: {
-    opacity: 0.6,
-  },
-  actionButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  permissionButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-  },
-  permissionButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 32,
   },
   darkText: {
     color: '#fff',
-  },
-  algorithmInfo: {
-    marginTop: 10,
-  },
-  algorithmText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-    marginBottom: 15,
-  },
-  factorSection: {
-    marginBottom: 15,
-  },
-  factorTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 5,
-  },
-  factorDetails: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-    paddingLeft: 10,
-  },
-  formulaSection: {
-    marginTop: 10,
-    padding: 15,
-    backgroundColor: 'rgba(74, 144, 226, 0.1)',
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4A90E2',
-  },
-  formulaTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#4A90E2',
-    marginBottom: 5,
-  },
-  formulaText: {
-    fontSize: 14,
-    color: '#333',
-    fontFamily: 'monospace',
-    lineHeight: 20,
-  },
-  debugGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  debugPlot: {
-    width: '48%',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  darkDebugPlot: {
-    backgroundColor: '#2a2a2a',
-    borderColor: '#444',
-  },
-  debugPlotTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 5,
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 2,
-  },
-  debugHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  refreshButton: {
-    backgroundColor: '#4A90E2',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  darkRefreshButton: {
-    backgroundColor: '#5BA2F2',
-  },
-  refreshText: {
-    fontSize: 12,
-    color: 'white',
-    fontWeight: '600',
-  },
-  fastForwardButton: {
-    backgroundColor: '#FFB300',
-    minWidth: 120,
-  },
-  fastForwardButtonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  progressInfoContainer: {
-    backgroundColor: 'rgba(100, 200, 100, 0.1)',
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(100, 200, 100, 0.3)',
-  },
-  progressInfoText: {
-    fontSize: 13,
-    color: '#4A90E2',
-    marginBottom: 4,
-    lineHeight: 18,
   },
 });

@@ -1,9 +1,9 @@
 
 export type BottledHoney = {
   id: string;
-  type: string; // e.g. "wildflower", "clover", etc.
+  type: string; // e.g. "wildflower", "clover", "light", "amber", "dark", "specialty"
   color: string; // hex color for honey type
-  amount: number; // ml
+  amount: number; // number of bottles
 };
 
 export type InventoryProps = {
@@ -13,17 +13,10 @@ export type InventoryProps = {
     seeds: Record<string, number>;
     harvested: Record<string, number>;
     bottledHoney?: BottledHoney[];
+    items?: Record<string, number>; // For glass bottles, tools, etc.
   };
   setInventory: React.Dispatch<React.SetStateAction<any>>;
   onClose: () => void;
   isExpanded: boolean;
   onToggleExpand: () => void;
-  onSellCrop?: (cropType: string, count: number, coinsEarned: number, emoji: string) => void;
-}
-
-export const CROP_PRICES: Record<string, number> = {
-  tomato: 15,
-  pumpkin: 12,
-  wheat: 8,
-  potato: 10,
 }

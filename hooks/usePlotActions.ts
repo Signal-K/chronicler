@@ -1,6 +1,7 @@
 import type React from 'react';
 import { canPlantCrop, getCropConfig } from '../lib/cropConfig';
 import type { InventoryData, PlotData, Tool } from './useGameState';
+import type { TutorialAction } from './useTutorial';
 
 interface UsePlotActionsParams {
   plots: PlotData[];
@@ -15,6 +16,8 @@ interface UsePlotActionsParams {
   setSelectedAction: React.Dispatch<React.SetStateAction<Tool>>;
   incrementPollinationFactor?: (amount: number) => void;
   onShowDialog?: (title: string, message: string, emoji?: string) => void;
+  addHarvestToHive?: (cropId: string, amount?: number) => void; // New parameter for honey production
+  onTutorialAction?: (action: TutorialAction) => void; // Tutorial action callback
 }
 
 export function usePlotActions({
@@ -30,6 +33,8 @@ export function usePlotActions({
   setSelectedAction,
   incrementPollinationFactor,
   onShowDialog,
+  addHarvestToHive,
+  onTutorialAction,
 }: UsePlotActionsParams) {
   
   const handleTill = (index: number, current: PlotData) => {
@@ -47,6 +52,9 @@ export function usePlotActions({
     };
     setPlots(newPlots);
     console.log(`✅ Tilled: Plot ${index + 1} is now tilled`);
+    
+    // Report tutorial action
+    onTutorialAction?.('till-plot');
     
     // Check if any empty plots remain to till
     const remainingEmptyPlots = newPlots.some(plot => plot.state === 'empty');
@@ -101,6 +109,9 @@ export function usePlotActions({
     setPlots(newPlots);
     setInventory(newInventory);
     console.log(`Planted: ${config.name} planted!`);
+    
+    // Report tutorial action
+    onTutorialAction?.('plant-seed');
     
     // Check if this was the last seed/crop
     const remainingCount = config.plantRequirement.type === 'seed' 
@@ -168,6 +179,9 @@ export function usePlotActions({
     };
 
     setPlots(newPlots);
+    
+    // Report tutorial action
+    onTutorialAction?.('water-plant');
     
     // Check if any plots remain that need watering
     const remainingWaterablePlots = newPlots.some(plot => 
@@ -303,6 +317,12 @@ export function usePlotActions({
       console.log('❌ NO INCREMENT FUNCTION PASSED!');
     }
     
+    // Add harvest to hive for honey production
+    if (addHarvestToHive) {
+
+      addHarvestToHive(current.cropType, cropCount);
+    }
+    
     // Show harvest animation
     setHarvestReward({
       cropEmoji: config.emoji,
@@ -310,6 +330,9 @@ export function usePlotActions({
       seedCount: seedCount,
     });
     setShowHarvestAnimation(true);
+    
+    // Report tutorial action
+    onTutorialAction?.('harvest-crop');
     
     // Clear the plot
     const newPlots = [...plots];

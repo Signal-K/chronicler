@@ -8,10 +8,10 @@ const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (StatusBar.currentHeight || 44
 const DYNAMIC_ISLAND_BUFFER = Platform.OS === 'ios' ? 54 : 0; // Extra space for dynamic island on newer iPhones
 const TOP_SAFE_SPACE = STATUS_BAR_HEIGHT + DYNAMIC_ISLAND_BUFFER;
 
-export type PanelType = 'almanac' | 'inventory' | 'shop' | 'settings' | null;
+export type PanelType = 'inventory' | 'shop' | 'settings' | null;
 
 export function usePanelManager() {
-  const [showAlmanac, setShowAlmanac] = useState(false);
+  // Almanac removed
   const [showInventory, setShowInventory] = useState(false);
   const [showShop, setShowShop] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -26,7 +26,7 @@ export function usePanelManager() {
     if (!panelType) return;
     
     // Close all panels first
-    setShowAlmanac(false);
+    // Almanac removed
     setShowInventory(false);
     setShowShop(false);
     setShowSettings(false);
@@ -34,9 +34,7 @@ export function usePanelManager() {
     // Open the selected panel with animation
     setTimeout(() => {
       switch (panelType) {
-        case 'almanac':
-          setShowAlmanac(true);
-          break;
+        // Almanac case removed
         case 'inventory':
           setShowInventory(true);
           break;
@@ -64,7 +62,7 @@ export function usePanelManager() {
       duration: 250,
       useNativeDriver: false,
     }).start(() => {
-      setShowAlmanac(false);
+      // Almanac removed
       setShowInventory(false);
       setShowShop(false);
       setShowSettings(false);
@@ -84,10 +82,10 @@ export function usePanelManager() {
     }).start();
   };
 
-  const isAnyPanelOpen = showAlmanac || showInventory || showShop || showSettings;
+  const isAnyPanelOpen = showInventory || showShop || showSettings;
 
   return {
-    showAlmanac,
+    // showAlmanac removed
     showInventory,
     showShop,
     showSettings,

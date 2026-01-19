@@ -1,7 +1,11 @@
-import React from 'react';
 import Svg, { Circle, Defs, Ellipse, LinearGradient, Path, Stop } from 'react-native-svg';
 
-import type { PlanetIconProps } from '../types/ui';
+// Local type definition
+type PlanetIconProps = {
+  size?: number;
+  color?: string;
+  style?: any;
+};
 
 export default function PlanetIcon({ size = 28, color = '#4A90E2' }: PlanetIconProps) {
   return (

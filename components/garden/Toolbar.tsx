@@ -1,4 +1,9 @@
-import type { ToolbarProps } from '../../types/ui';
+// Local type definition
+type ToolbarProps = {
+  selectedTool?: string;
+  onSelectTool?: (tool: string | null) => void;
+  style?: any;
+};
 
 export function Toolbar({ selectedTool, onSelectTool }: ToolbarProps) {
   return (
@@ -15,7 +20,7 @@ export function Toolbar({ selectedTool, onSelectTool }: ToolbarProps) {
       boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
     }}>
       <button
-        onClick={() => onSelectTool(selectedTool === 'grass' ? null : 'grass')}
+        onClick={() => onSelectTool?.(selectedTool === 'grass' ? null : 'grass')}
         style={{
           padding: '10px 20px',
           fontSize: '24px',

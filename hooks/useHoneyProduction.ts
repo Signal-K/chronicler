@@ -1,371 +1,334 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
-import { HiveState, completeBatch, createNewHive, getHiveProductionSummary, resetDailyCollection, simulatePollinationCycle } from '../lib/honeyProduction';
+import { calculateHoneyBlend, getCropConfig } from '../lib/cropConfig';
+import type { BottleHoneyResult, HarvestRecord, HiveData, HoneyTypeInfo } from '../types/hive';
 
-export interface UseHoneyProductionProps {
-  hives: { id: string; position: { x: number; y: number } }[];
-  activeCrops: { 
-    cropId: string; 
-    plotId: string; 
-    growthStage: number; 
-    position: { x: number; y: number } 
-  }[];
-  currentTime?: Date;
-  autoFillEnabled?: boolean;
-}
+// Production hours: 08:00-16:00 and 20:00-04:00
+const PRODUCTION_HOURS = [
+  [8, 16],   // 8 AM to 4 PM
+  [20, 4],   // 8 PM to 4 AM next day
+];
 
-export interface HoneyProductionState {
-  hiveStates: { [hiveId: string]: HiveState };
-  lastUpdateTime: Date;
-  dailyHarvestedCrops: { [cropId: string]: number };
-  isPollinationActive: boolean;
-}
+// Force daytime production rate: 10% every 5 seconds
+const FORCE_DAY_PRODUCTION_RATE = 0.1; // 10%
+const FORCE_DAY_INTERVAL = 5000; // 5 seconds
 
-export function useHoneyProduction({
-  hives,
-  activeCrops,
-  currentTime = new Date(),
-  autoFillEnabled = true
-}: UseHoneyProductionProps) {
-  const [productionState, setProductionState] = useState<HoneyProductionState>(() => ({
-    hiveStates: {},
-    lastUpdateTime: new Date(),
-    dailyHarvestedCrops: {},
-    isPollinationActive: false
-  }));
+const HIVE_LEVELS = {
+  1: { maxCapacity: 20, honeyPerFull: 15 },
+  2: { maxCapacity: 30, honeyPerFull: 22 },
+  3: { maxCapacity: 40, honeyPerFull: 30 },
+};
 
-  const [actualAutoFillEnabled, setActualAutoFillEnabled] = useState(autoFillEnabled);
+export function useHoneyProduction() {
+  const [loaded, setLoaded] = useState(false);
+  const [forceDaytime, setForceDaytime] = useState(false);
 
-  // Load auto-fill setting from storage
+  // Load force daytime setting
   useEffect(() => {
-    const loadAutoFillSetting = async () => {
+    const loadForceDaytimeSetting = async () => {
       try {
-        const saved = await AsyncStorage.getItem('autoFillHoneyEnabled');
+        const saved = await AsyncStorage.getItem('forceDaytime');
         if (saved !== null) {
-          setActualAutoFillEnabled(JSON.parse(saved));
+          const newValue = saved === 'true';
+          setForceDaytime(newValue);
         }
       } catch (error) {
-        console.error('Error loading honey auto-fill setting:', error);
+        console.error('Error loading force daytime setting:', error);
       }
     };
-    loadAutoFillSetting();
-  }, []);
-
-  // Fast forward honey production based on current/recent crops
-  const fastForwardProduction = useCallback((hours: number = 8) => {
-    if (!actualAutoFillEnabled || (activeCrops.length === 0 && Object.keys(productionState.dailyHarvestedCrops).length === 0)) {
-      return { success: false, reason: 'No active crops or auto-fill disabled' };
-    }
-
-    setProductionState(prev => {
-      const newHiveStates = { ...prev.hiveStates };
-      let totalNectarCollected = 0;
-      let totalHoneyProduced = 0;
-
-      // Simulate nectar collection for the specified hours
-      Object.keys(newHiveStates).forEach(hiveId => {
-        const hive = newHiveStates[hiveId];
-        
-        // Simulate hourly collection cycles
-        for (let hour = 0; hour < hours; hour++) {
-          // Use current active crops and recently harvested crops
-          const allCropSources = [
-            ...activeCrops,
-            // Add recently harvested crops as if they were still planted
-            ...Object.keys(prev.dailyHarvestedCrops).map(cropId => ({
-              cropId,
-              plotId: `harvested-${cropId}`,
-              growthStage: 4, // Assume mature for harvested crops
-              position: { x: 0, y: 0 }
-            }))
-          ];
-
-          if (allCropSources.length > 0) {
-            // Simulate a condensed pollination cycle
-            const { updatedHives } = simulatePollinationCycle(
-              allCropSources,
-              [hive],
-              8 + (hour % 12), // Simulate daylight hours
-              30 // More bees for faster collection
-            );
-
-            if (updatedHives[0]) {
-              newHiveStates[hiveId] = updatedHives[0];
-              const currentBatch = updatedHives[0].currentBatch;
-              if (currentBatch) {
-                totalNectarCollected += Object.values(currentBatch.sources).reduce((sum, amount) => sum + amount, 0);
-                totalHoneyProduced += currentBatch.amount;
-              }
-            }
+    
+    loadForceDaytimeSetting();
+    
+    // Listen for changes to force daytime setting
+    const checkForceDaytime = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('forceDaytime');
+        if (saved !== null) {
+          const newValue = saved === 'true';
+          if (newValue !== forceDaytime) {
+            setForceDaytime(newValue);
           }
         }
+      } catch (error) {
+        console.error('Error checking force daytime setting:', error);
+      }
+    };
+    
+    const interval = setInterval(checkForceDaytime, 1000);
+    return () => clearInterval(interval);
+  }, [forceDaytime]);
 
-        // Complete batches that are ready
-        if (newHiveStates[hiveId].currentBatch?.isComplete) {
-          newHiveStates[hiveId] = completeBatch(newHiveStates[hiveId]);
-        }
-      });
+  // Initialize honey production for a hive
+  const initializeHoneyProduction = useCallback((hive: HiveData): HiveData => {
+    if (hive.honey) return hive;
+    
+    const level = hive.level || 1;
+    const levelConfig = HIVE_LEVELS[level as keyof typeof HIVE_LEVELS];
+    
+    return {
+      ...hive,
+      level,
+      honey: {
+        currentCapacity: 0,
+        maxCapacity: levelConfig.maxCapacity,
+        dailyHarvests: [],
+        honeyBottles: 0,
+        productionActive: false,
+      },
+    };
+  }, []);
 
-      return {
-        ...prev,
-        hiveStates: newHiveStates,
-        lastUpdateTime: new Date(),
-        isPollinationActive: false // Mark as not currently active since it was simulated
-      };
+  // Check if current time is within production hours or force daytime is active
+  const isProductionTime = useCallback((): boolean => {
+    // Always produce if force daytime is active
+    if (forceDaytime) {
+      return true;
+    }
+    
+    const now = new Date();
+    const hour = now.getHours();
+    
+    return PRODUCTION_HOURS.some(([start, end]) => {
+      if (start <= end) {
+        // Same day range (8-16)
+        return hour >= start && hour <= end;
+      } else {
+        // Cross midnight range (20-4)
+        return hour >= start || hour <= end;
+      }
     });
+  }, [forceDaytime]);
+
+  // Add harvest record to hive
+  const addHarvest = useCallback((hive: HiveData, cropId: string, amount: number = 1): HiveData => {
+    const updatedHive = initializeHoneyProduction(hive);
+    if (!updatedHive.honey) return hive;
+
+    const now = Date.now();
+    const today = new Date().toDateString();
+    
+    // Filter out harvests from previous days
+    const todaysHarvests = updatedHive.honey.dailyHarvests.filter(harvest => 
+      new Date(harvest.timestamp).toDateString() === today
+    );
+
+    // Add new harvest
+    const newHarvest: HarvestRecord = {
+      cropId,
+      timestamp: now,
+      amount,
+      halved: false,
+    };
+
+    const updatedHarvests = [...todaysHarvests, newHarvest];
+    
+    return {
+      ...updatedHive,
+      honey: {
+        ...updatedHive.honey,
+        dailyHarvests: updatedHarvests,
+        productionActive: isProductionTime(),
+      },
+    };
+  }, [initializeHoneyProduction, isProductionTime]);
+
+  // Calculate honey production progress
+  const calculateHoneyProgress = useCallback((hive: HiveData): { 
+    capacity: number; 
+    isFull: boolean; 
+    dominant: string | null;
+    cropProportions: Record<string, number>;
+    effectiveHarvests: number;
+  } => {
+    const initializedHive = initializeHoneyProduction(hive);
+    if (!initializedHive.honey) {
+      return { capacity: 0, isFull: false, dominant: null, cropProportions: {}, effectiveHarvests: 0 };
+    }
+
+    const today = new Date().toDateString();
+    const todaysHarvests = initializedHive.honey.dailyHarvests.filter(harvest => 
+      new Date(harvest.timestamp).toDateString() === today
+    );
+
+    // Count effective harvests (halved ones count as 0.5, virtual boosts count normally)
+    const effectiveHarvests = todaysHarvests.reduce((sum, harvest) => {
+      return sum + (harvest.halved ? harvest.amount * 0.5 : harvest.amount);
+    }, 0);
+
+    // Calculate crop proportions (exclude virtual boosts from display proportions)
+    const cropCounts: Record<string, number> = {};
+    todaysHarvests.forEach(harvest => {
+      // Skip virtual boost harvests for crop proportion calculation
+      if (harvest.cropId === 'virtual_boost') return;
+      
+      const effectiveAmount = harvest.halved ? harvest.amount * 0.5 : harvest.amount;
+      cropCounts[harvest.cropId] = (cropCounts[harvest.cropId] || 0) + effectiveAmount;
+    });
+
+    // Find dominant crop (excluding virtual boosts)
+    let dominant: string | null = null;
+    let maxCount = 0;
+    Object.entries(cropCounts).forEach(([cropId, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        dominant = cropId;
+      }
+    });
+
+    const capacity = Math.min(effectiveHarvests / 18, 1) * 100; // 18 harvests = 100% capacity
+    const isFull = effectiveHarvests >= 18;
 
     return { 
-      success: true, 
-      reason: `Fast forwarded ${hours} hours of honey production`,
-      nectarCollected: 0, // Will be calculated in the state update
-      honeyProduced: 0    // Will be calculated in the state update
+      capacity, 
+      isFull, 
+      dominant, 
+      cropProportions: cropCounts,
+      effectiveHarvests
     };
-  }, [actualAutoFillEnabled, activeCrops, productionState.dailyHarvestedCrops]);
+  }, [initializeHoneyProduction]);
 
-  // Listen for fast forward requests from settings
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    
-    const checkForFastForwardRequest = async () => {
-      try {
-        const requestData = await AsyncStorage.getItem('honeyFastForwardRequest');
-        if (requestData) {
-          const request = JSON.parse(requestData);
-          // Check if this is a new request (not processed yet)
-          if (request.timestamp > productionState.lastUpdateTime.getTime()) {
-            console.log('Processing fast forward request:', request);
-            // Execute fast forward
-            const result = fastForwardProduction(request.hours || 8);
-            console.log('Fast forward result:', result);
-          }
-          // Clear the request after processing
-          await AsyncStorage.removeItem('honeyFastForwardRequest');
-        }
-      } catch (error) {
-        console.error('Error checking fast forward request:', error);
-      }
-    };
+  // Update honey production based on time
+  const updateHoneyProduction = useCallback((hive: HiveData): HiveData => {
+    const initializedHive = initializeHoneyProduction(hive);
+    if (!initializedHive.honey) return hive;
 
-    if (actualAutoFillEnabled) {
-      interval = setInterval(checkForFastForwardRequest, 1000); // Check more frequently
+    // No honey production if there are no bees in the hive
+    if (initializedHive.beeCount === 0) {
+      return {
+        ...initializedHive,
+        honey: {
+          ...initializedHive.honey,
+          honeyBottles: 0,
+          productionActive: false,
+        },
+      };
     }
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [productionState.lastUpdateTime, actualAutoFillEnabled, fastForwardProduction]);
-
-  // Listen for fast forward triggers from settings (legacy)
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
+    const inProductionTime = isProductionTime();
+    let honeyBottles = initializedHive.honey.honeyBottles;
     
-    const checkForFastForwardTrigger = async () => {
-      try {
-        const trigger = await AsyncStorage.getItem('honeyFastForwardTrigger');
-        if (trigger && parseInt(trigger) > productionState.lastUpdateTime.getTime()) {
-          // Execute fast forward
-          const result = fastForwardProduction(8);
-          if (result.success) {
-            console.log('Auto fast forward executed:', result.reason);
-          }
-          // Clear the trigger
-          await AsyncStorage.removeItem('honeyFastForwardTrigger');
-        }
-      } catch (error) {
-        console.error('Error checking fast forward trigger:', error);
-      }
-    };
-
-    if (actualAutoFillEnabled) {
-      interval = setInterval(checkForFastForwardTrigger, 2000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [productionState.lastUpdateTime, actualAutoFillEnabled, fastForwardProduction]);
-
-  // Initialize hives
-  useEffect(() => {
-    setProductionState(prev => {
-      const newHiveStates = { ...prev.hiveStates };
-      let hasChanges = false;
-
-      // Add new hives
-      hives.forEach(hive => {
-        if (!newHiveStates[hive.id]) {
-          newHiveStates[hive.id] = createNewHive(hive.id);
-          hasChanges = true;
-        }
-      });
-
-      // Remove deleted hives
-      Object.keys(newHiveStates).forEach(hiveId => {
-        if (!hives.find(h => h.id === hiveId)) {
-          delete newHiveStates[hiveId];
-          hasChanges = true;
-        }
-      });
-
-      return hasChanges 
-        ? { ...prev, hiveStates: newHiveStates }
-        : prev;
-    });
-  }, [hives]);
-
-  // Pollination simulation - runs every 15 minutes during daylight hours
-  useEffect(() => {
-    const currentHour = currentTime.getHours();
-    const isDaylight = currentHour >= 6 && currentHour <= 18;
-    
-    if (!isDaylight || activeCrops.length === 0 || hives.length === 0 || !actualAutoFillEnabled) {
-      return;
-    }
-
-    const pollinationInterval = setInterval(() => {
-      setProductionState(prev => {
-        const hiveStatesArray = Object.values(prev.hiveStates);
+    // Force daytime mode: Direct honey bottle production based on bee count
+    if (forceDaytime && inProductionTime) {
+      const now = Date.now();
+      const lastUpdate = initializedHive.honey.lastUpdate || now;
+      
+      // Only update if more than 500ms have passed to avoid excessive updates
+      if (now - lastUpdate >= 500) {
+        const timeDiff = now - lastUpdate;
         
-        if (hiveStatesArray.length === 0) return prev;
-
-        const { updatedHives } = simulatePollinationCycle(
-          activeCrops,
-          hiveStatesArray,
-          currentHour,
-          20 // bees per hive
-        );
-
-        const newHiveStates: { [hiveId: string]: HiveState } = {};
-        updatedHives.forEach(hive => {
-          newHiveStates[hive.id] = hive;
-        });
-
-        return {
-          ...prev,
-          hiveStates: newHiveStates,
-          lastUpdateTime: new Date(),
-          isPollinationActive: true
-        };
-      });
-    }, 15 * 60 * 1000); // Every 15 minutes
-
-    return () => clearInterval(pollinationInterval);
-  }, [currentTime, activeCrops, hives, actualAutoFillEnabled]);
-
-  // Reset daily collection at midnight
-  useEffect(() => {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    
-    const msUntilMidnight = tomorrow.getTime() - now.getTime();
-    
-    const resetTimer = setTimeout(() => {
-      setProductionState(prev => {
-        const newHiveStates: { [hiveId: string]: HiveState } = {};
+        // Calculate production rate: 10 bees = 1/15 every 2000ms, scale by bee count
+        const baseProductionTime = 2000; // 2 seconds for full hive (10 bees)
+        const productionTime = (baseProductionTime * 10) / initializedHive.beeCount; // Scale by bee count
+        const honeyPerProduction = 1/15; // 1/15 of a bottle per production cycle
         
-        Object.entries(prev.hiveStates).forEach(([hiveId, hive]) => {
-          newHiveStates[hiveId] = resetDailyCollection(hive);
-        });
-
+        // Calculate how much honey to add based on time passed
+        const productionCycles = timeDiff / productionTime;
+        const honeyToAdd = productionCycles * honeyPerProduction;
+        
+        // Add honey, capping at 15 bottles max
+        const newHoneyBottles = Math.min(15, honeyBottles + honeyToAdd);
+        
         return {
-          ...prev,
-          hiveStates: newHiveStates,
-          dailyHarvestedCrops: {} // Reset daily harvest tracking
+          ...initializedHive,
+          honey: {
+            ...initializedHive.honey,
+            honeyBottles: newHoneyBottles,
+            lastUpdate: now,
+            productionActive: true,
+          },
         };
-      });
-    }, msUntilMidnight);
-
-    return () => clearTimeout(resetTimer);
-  }, [currentTime]);
-
-  // Auto-complete batches when they're ready
-  useEffect(() => {
-    setProductionState(prev => {
-      let hasChanges = false;
-      const newHiveStates: { [hiveId: string]: HiveState } = {};
-
-      Object.entries(prev.hiveStates).forEach(([hiveId, hive]) => {
-        if (hive.currentBatch?.isComplete) {
-          newHiveStates[hiveId] = completeBatch(hive);
-          hasChanges = true;
-        } else {
-          newHiveStates[hiveId] = hive;
-        }
-      });
-
-      return hasChanges 
-        ? { ...prev, hiveStates: newHiveStates }
-        : prev;
-    });
-  }, [productionState.hiveStates]);
-
-  const getHiveInfo = useCallback((hiveId: string) => {
-    const hive = productionState.hiveStates[hiveId];
-    if (!hive) return null;
+      }
+    }
 
     return {
-      hive,
-      summary: getHiveProductionSummary(hive)
+      ...initializedHive,
+      honey: {
+        ...initializedHive.honey,
+        productionActive: inProductionTime,
+        lastUpdate: initializedHive.honey.lastUpdate || Date.now(),
+      },
     };
-  }, [productionState.hiveStates]);
+  }, [initializeHoneyProduction, isProductionTime, forceDaytime]);
 
-  const recordCropHarvest = useCallback((cropId: string, amount: number = 1) => {
-    setProductionState(prev => ({
-      ...prev,
-      dailyHarvestedCrops: {
-        ...prev.dailyHarvestedCrops,
-        [cropId]: (prev.dailyHarvestedCrops[cropId] || 0) + amount
+  // Bottle honey (collect honey and reset production)
+  const bottleHoney = useCallback((hive: HiveData): BottleHoneyResult => {
+    const initializedHive = initializeHoneyProduction(hive);
+    if (!initializedHive.honey) {
+      return { updatedHive: hive, bottlesCollected: 0, honeyType: null };
+    }
+
+    const { dominant, cropProportions } = calculateHoneyProgress(initializedHive);
+    const bottlesCollected = initializedHive.honey.honeyBottles;
+    
+    // Get honey type information
+    let honeyType: HoneyTypeInfo | null = null;
+    if (dominant) {
+      const cropConfig = getCropConfig(dominant);
+      if (cropConfig) {
+        const blendInfo = calculateHoneyBlend(cropProportions);
+        honeyType = {
+          ...blendInfo.dominantHoney,
+          blendDescription: blendInfo.blendDescription,
+          quality: blendInfo.averageQuality,
+        };
       }
+    }
+
+    // Halve all previous harvests and reset bottles
+    const halvedHarvests = initializedHive.honey.dailyHarvests.map(harvest => ({
+      ...harvest,
+      halved: true,
     }));
-  }, []);
 
-  const getAllActiveSources = useCallback(() => {
-    const sources = new Set<string>();
-    
-    // Add currently planted crops
-    activeCrops.forEach(crop => sources.add(crop.cropId));
-    
-    // Add recently harvested crops
-    Object.keys(productionState.dailyHarvestedCrops).forEach(cropId => sources.add(cropId));
-    
-    return Array.from(sources);
-  }, [activeCrops, productionState.dailyHarvestedCrops]);
-
-  const getTotalHoneyProduced = useCallback(() => {
-    return Object.values(productionState.hiveStates).reduce((total, hive) => {
-      return total + hive.totalHoneyStored + (hive.currentBatch?.amount || 0);
-    }, 0);
-  }, [productionState.hiveStates]);
-
-  const getProductionStats = useCallback(() => {
-    const hives = Object.values(productionState.hiveStates);
-    const totalHives = hives.length;
-    const activeHives = hives.filter(h => h.currentBatch && h.currentBatch.amount > 0).length;
-    const completedBatches = hives.reduce((sum, h) => sum + h.completedBatches.length, 0);
-    const activeSources = getAllActiveSources();
-
-    return {
-      totalHives,
-      activeHives,
-      completedBatches,
-      totalHoneyProduced: getTotalHoneyProduced(),
-      activeSources: activeSources.length,
-      sourcesList: activeSources,
-      lastUpdate: productionState.lastUpdateTime,
-      isPollinationActive: productionState.isPollinationActive
+    const updatedHive: HiveData = {
+      ...initializedHive,
+      honey: {
+        ...initializedHive.honey,
+        dailyHarvests: halvedHarvests,
+        honeyBottles: 0,
+        lastBottledAt: Date.now(),
+      },
     };
-  }, [productionState, getAllActiveSources, getTotalHoneyProduced]);
+
+    return { updatedHive, bottlesCollected, honeyType };
+  }, [initializeHoneyProduction, calculateHoneyProgress]);
+
+  // Get honey progress colors for UI gradient
+  const getHoneyProgressColors = useCallback((hive: HiveData): string[] => {
+    const { cropProportions } = calculateHoneyProgress(hive);
+    const colors: string[] = [];
+    
+    // Sort crops by proportion
+    const sortedCrops = Object.entries(cropProportions)
+      .sort((a, b) => b[1] - a[1]);
+    
+    sortedCrops.forEach(([cropId, proportion]) => {
+      const config = getCropConfig(cropId);
+      if (config) {
+        const percentage = proportion / Object.values(cropProportions).reduce((sum, p) => sum + p, 0);
+        // Add color multiple times based on proportion for gradient effect
+        const colorRepeats = Math.max(1, Math.round(percentage * 10));
+        for (let i = 0; i < colorRepeats; i++) {
+          colors.push(config.nectar.honeyProfile.color);
+        }
+      }
+    });
+    
+    // Default to golden honey color if no crops
+    if (colors.length === 0) {
+      colors.push('#F5E6A8');
+    }
+    
+    return colors;
+  }, [calculateHoneyProgress]);
 
   return {
-    productionState,
-    getHiveInfo,
-    recordCropHarvest,
-    getAllActiveSources,
-    getTotalHoneyProduced,
-    getProductionStats,
-    fastForwardProduction,
-    isAutoFillEnabled: actualAutoFillEnabled
+    initializeHoneyProduction,
+    addHarvest,
+    calculateHoneyProgress,
+    updateHoneyProduction,
+    bottleHoney,
+    getHoneyProgressColors,
+    isProductionTime,
   };
 }

@@ -1,5 +1,5 @@
-import type { FarmRoute } from '../components/garden/SimpleToolbar';
 import { useState } from 'react';
+import type { FarmRoute } from '../constants/toolbarConfig';
 
 /**
  * Hook for managing navigation between farms and special screens

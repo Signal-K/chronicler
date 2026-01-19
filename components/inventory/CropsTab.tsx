@@ -1,14 +1,12 @@
 import { CROP_CONFIGS } from '../../lib/cropConfig';
-import { CROP_PRICES } from '../../types/inventory';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface CropsTabProps {
   harvested: Record<string, number>;
-  onSell: (crop: string) => void;
 }
 
-export function CropsTab({ harvested, onSell }: CropsTabProps) {
+export function CropsTab({ harvested }: CropsTabProps) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionTitleRow}>
@@ -17,7 +15,6 @@ export function CropsTab({ harvested, onSell }: CropsTabProps) {
       </View>
       {Object.entries(harvested).map(([crop, count]) => {
         const config = CROP_CONFIGS[crop];
-        const price = config?.sellPrice || CROP_PRICES[crop] || 10;
         
         return (
           <View key={crop} style={styles.cardCrop}>
@@ -25,18 +22,9 @@ export function CropsTab({ harvested, onSell }: CropsTabProps) {
               <Text style={styles.itemEmoji}>{config?.emoji || '🌾'}</Text>
               <View style={{ flex: 1 }}>
                 <Text style={styles.cropName}>{config?.name || crop}</Text>
-                <Text style={styles.cropSell}>Sell for {price} coins</Text>
               </View>
             </View>
             <Text style={styles.cropCount}>{count}</Text>
-            <TouchableOpacity
-              onPress={() => onSell(crop)}
-              disabled={count === 0}
-              style={[styles.sellButton, count === 0 && styles.sellButtonDisabled]}
-            >
-              <Text style={styles.sellButtonEmoji}>💰</Text>
-              <Text style={styles.sellButtonText}>Sell</Text>
-            </TouchableOpacity>
           </View>
         );
       })}
@@ -87,38 +75,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#78350F',
   },
-  cropSell: {
-    fontSize: 11,
-    color: '#92400E',
-    opacity: 0.7,
-  },
   cropCount: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#92400E',
     minWidth: 30,
     textAlign: 'center',
-  },
-  sellButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: '#FBBF24',
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: '#92400E',
-  },
-  sellButtonDisabled: {
-    opacity: 0.5,
-  },
-  sellButtonEmoji: {
-    fontSize: 14,
-  },
-  sellButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#78350F',
   },
 });

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
 export interface DayNightState {
@@ -17,14 +18,20 @@ export function useDayNightCycle(): DayNightState {
     });
 
     useEffect(() => {
-        const checkTime = () => {
+        const checkTime = async () => {
+            // Check if force daytime is enabled
+            const forceDaytimeStr = await AsyncStorage.getItem('forceDaytime');
+            const forceDaytime = forceDaytimeStr === 'true';
+
             const now = new Date();
             const hour = now.getHours();
-            const isDaytime = hour >= 6 && hour < 20;
-            const timeOfDay = getTimeOfDay(hour);
+            
+            // If force daytime is enabled, always set to daytime
+            const isDaytime = forceDaytime ? true : (hour >= 6 && hour < 20);
+            const timeOfDay = forceDaytime ? 'day' : getTimeOfDay(hour);
 
             setDayNightState(prev => {
-                if (prev.hour !== hour) {
+                if (prev.hour !== hour || prev.isDaytime !== isDaytime || prev.timeOfDay !== timeOfDay) {
                     return { isDaytime, timeOfDay, hour };
                 };
 

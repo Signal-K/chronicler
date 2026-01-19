@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface FlyingBeeProps {
   beeId: string;
@@ -11,7 +11,6 @@ interface FlyingBeeProps {
 export function FlyingBee({ beeId, startX, startY, onPress }: FlyingBeeProps) {
   const positionX = useRef(new Animated.Value(startX)).current;
   const positionY = useRef(new Animated.Value(startY)).current;
-  const rotation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -42,7 +41,7 @@ const animateToWaypoint = (index: number) => {
   }
 
   const target = waypoints[index];
-  const duration = 15000 + Math.random() * 10000; 
+  const duration = 20000 + Math.random() * 15000; // Much slower movement 
 
   Animated.parallel([
     Animated.timing(positionX, {
@@ -55,30 +54,13 @@ const animateToWaypoint = (index: number) => {
       duration,
       useNativeDriver: true,
     }),
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(rotation, {
-          toValue: 0.1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotation, {
-          toValue: -0.1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ])
-    ),
   ]).start(() => animateToWaypoint(index + 1));
 };
 
 animateToWaypoint(0);
-  }, [startX, startY, positionX, positionY, rotation]);
+  }, [startX, startY, positionX, positionY]);
 
-  const rotationInterpolate = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+
 
   return (
     <Animated.View
@@ -97,7 +79,11 @@ animateToWaypoint(0);
         style={styles.touchableWrapper}
         activeOpacity={1}
       >
-        <Animated.Text style={[styles.beeEmoji, { transform: [{ rotate: rotationInterpolate }] }]}>🐝</Animated.Text>
+        <Image 
+          source={require('../../assets/Sprites/Bee.png')}
+          style={styles.beeSprite}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -114,7 +100,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  beeEmoji: {
-    fontSize: 52,
+  beeSprite: {
+    width: 104,
+    height: 104,
   },
 });

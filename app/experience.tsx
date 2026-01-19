@@ -22,6 +22,7 @@ export default function ExperienceDetailsScreen() {
   const uniqueHarvests = experience?.uniqueHarvests?.length ?? 0;
   const pollinationEvents = experience?.pollinationEvents ?? 0;
   const salesCompleted = experience?.salesCompleted ?? 0;
+  const classificationsCompleted = experience?.classificationsCompleted ?? 0;
 
   const { plots, setPlots, inventory, setInventory } = useGameState();
   const bg = useThemeColor({}, 'background');
@@ -94,6 +95,7 @@ export default function ExperienceDetailsScreen() {
         <Text style={[styles.breakdownItem, { color: titleColor }]}>Harvests: {harvestsCount}</Text>
         <Text style={[styles.breakdownItem, { color: titleColor }]}>First-Time Harvests: {uniqueHarvests}</Text>
         <Text style={[styles.breakdownItem, { color: titleColor }]}>Pollination Events: {pollinationEvents}</Text>
+        <Text style={[styles.breakdownItem, { color: titleColor }]}>Classifications: {classificationsCompleted}</Text>
         <Text style={[styles.breakdownItem, { color: titleColor }]}>Sales Completed: {salesCompleted}</Text>
       </View>
 

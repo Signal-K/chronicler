@@ -9,22 +9,22 @@ const LOCAL_DATA_KEYS = [
   'hive_nectar_levels',
   'player_experience', // New XP system
   'user_stats',
-  'merchant_affinity',
-  'active_orders',
+
+  // 'active_orders' removed
   'pollination_factor',
   'user_experience', // Legacy system (to be migrated)
-  'last_order_generation',
+  // 'last_order_generation' removed
   'honeyFastForwardRequest',
   'honeyFastForwardTrigger',
   // Add any other keys as needed
 ] as const;
 
-export type LocalDataBackup = Record<string, string | null>;
+type LocalDataBackup = Record<string, string | null>;
 
 /**
- * Create a backup of all local progress data
+ * Create a backup of all local progress data (internal function)
  */
-export async function backupLocalData(): Promise<LocalDataBackup> {
+async function backupLocalData(): Promise<LocalDataBackup> {
   console.log('💾 Creating local data backup...');
   
   try {
@@ -49,9 +49,9 @@ export async function backupLocalData(): Promise<LocalDataBackup> {
 }
 
 /**
- * Restore local progress from backup
+ * Restore local progress from backup (internal function)
  */
-export async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
+async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
   console.log('📥 Restoring local data from backup...');
   
   try {
@@ -75,6 +75,10 @@ export async function restoreLocalData(backup: LocalDataBackup): Promise<void> {
     throw new Error('Failed to restore data from backup');
   }
 }
+
+
+
+
 
 /**
  * Enhanced login that preserves local progress
@@ -227,7 +231,7 @@ export async function upgradeGuestWithProgressPreservation(
 export async function getLocalDataSummary(): Promise<{
   totalKeys: number;
   totalDataSize: number;
-  keyDetails: Array<{ key: string; size: number; hasData: boolean }>;
+  keyDetails: { key: string; size: number; hasData: boolean }[];
 }> {
   try {
     const results = await AsyncStorage.multiGet(LOCAL_DATA_KEYS as readonly string[]);

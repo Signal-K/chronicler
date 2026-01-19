@@ -1,4 +1,9 @@
-import type { ExternalLinkProps } from '../types/ui';
+// Local type definition
+type ExternalLinkProps = {
+  href: string;
+  children: React.ReactNode;
+  style?: any;
+};
 import { Link } from 'expo-router';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 
@@ -7,7 +12,7 @@ export function ExternalLink({ href, ...rest }: ExternalLinkProps) {
     <Link
       target="_blank"
       {...rest}
-      href={href}
+      href={href as any}
       onPress={async (event) => {
         if (process.env.EXPO_OS !== 'web') {
           // Prevent the default behavior of linking to the default browser on native.

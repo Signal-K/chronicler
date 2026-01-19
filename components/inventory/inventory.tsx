@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { CROP_CONFIGS } from "../../lib/cropConfig";
-import { CROP_PRICES, InventoryProps } from "../../types/inventory";
+import { InventoryProps } from "../../types/inventory";
 import { CoinsDisplay } from "./CoinsDisplay";
 import { CropsTab } from "./CropsTab";
+import { HoneyBottle } from "./HoneyBottle";
 import { ExpansionsTab, ToolsTab } from "./InventoryExtras";
 import { InventoryTabs } from "./InventoryTabs";
 import { SeedsTab } from "./SeedsTab";
-import { HoneyBottle } from "./HoneyBottle";
 
 // Placeholder icons for React Native (replace with vector-icons or images as needed)
 type IconProps = {
@@ -19,29 +18,8 @@ const Icon = ({ name, size = 24, color = "#000" }: IconProps) => (
   <Text style={{ fontSize: size, color }}>{name}</Text>
 )
 
-export function Inventory({ inventory, setInventory, onClose, isExpanded, onToggleExpand, onSellCrop }: InventoryProps) {
+export function Inventory({ inventory, setInventory, onClose, isExpanded, onToggleExpand }: InventoryProps) {
   const [activeTab, setActiveTab] = useState<'seeds' | 'crops' | 'tools' | 'expansions'>('seeds');
-
-  const handleSell = (crop: string) => {
-    if (inventory.harvested[crop] > 0) {
-      const price = CROP_PRICES[crop] || 10;
-      const config = CROP_CONFIGS[crop];
-      
-      setInventory((prev: any) => ({
-        ...prev,
-        coins: prev.coins + price,
-        harvested: {
-          ...prev.harvested,
-          [crop]: prev.harvested[crop] - 1,
-        },
-      }));
-      
-      // Trigger sell animation if callback provided
-      if (onSellCrop && config) {
-        onSellCrop(crop, 1, price, config.emoji);
-      }
-    }
-  }
 
 
 
@@ -65,7 +43,7 @@ export function Inventory({ inventory, setInventory, onClose, isExpanded, onTogg
         <InventoryTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'seeds' && <SeedsTab seeds={inventory.seeds} />}
-        {activeTab === 'crops' && <CropsTab harvested={inventory.harvested} onSell={handleSell} />}
+        {activeTab === 'crops' && <CropsTab harvested={inventory.harvested} />}
         {activeTab === 'tools' && <ToolsTab />}
         {activeTab === 'expansions' && <ExpansionsTab />}
 
