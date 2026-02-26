@@ -97,7 +97,7 @@ export default function AuthScreen() {
       // Migrate experience data after successful login
       await migrateExperienceData();
       alert("Welcome back! Your local progress has been preserved.");
-      router.replace('/home');
+      router.replace('/godot');
     }
     
     setIsLoading(false);
@@ -119,7 +119,7 @@ export default function AuthScreen() {
       // Guest account created successfully
       // user id: data.user?.id
       
-      router.replace('/home');
+      router.replace('/godot');
     } catch (error: any) {
       alert(error?.message || 'Failed to create guest account. Please try signing up with an email.');
     } finally {

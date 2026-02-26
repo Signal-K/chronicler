@@ -49,17 +49,22 @@ config.resolver = {
         type: 'sourceFile',
       };
     }
-    
-    // Replace worklets with mock on web
-    if (platform === 'web') {
-      if (moduleName === 'react-native-worklets' || moduleName === 'react-native-worklets-core') {
-        return {
-          filePath: path.resolve(__dirname, '__mocks__/react-native-worklets/index.js'),
-          type: 'sourceFile',
-        };
-      }
+
+    // Replace worklets with a web mock to prevent JSWorklets runtime crashes.
+    if (
+      platform === 'web' &&
+      (
+        moduleName === 'react-native-worklets' ||
+        moduleName === 'react-native-worklets-core' ||
+        moduleName.startsWith('react-native-worklets/') ||
+        moduleName.startsWith('react-native-worklets-core/')
+      )
+    ) {
+      return {
+        filePath: path.resolve(__dirname, '__mocks__/react-native-worklets/index.js'),
+        type: 'sourceFile',
+      };
     }
-    
     // Use default resolver
     return context.resolveRequest(context, moduleName, platform);
   },
@@ -68,9 +73,9 @@ config.resolver = {
 // Ensure blockList is properly configured
 config.resolver.blockList = config.resolver.blockList || [];
 
-// Add to watchFolders to include the directory containing the problematic file
+// Include mocks directory to avoid resolution edge-cases in web bundling.
 config.watchFolders = [
-  ...config.watchFolders,
+  ...(config.watchFolders || []),
   `${__dirname}/__mocks__/react-native-worklets`,
 ];
 

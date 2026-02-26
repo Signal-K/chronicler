@@ -44,6 +44,7 @@ type HomeContentProps = {
   baseIndex?: number;
   addHarvestToHive?: (cropId: string, amount?: number) => void;
   onTutorialAction?: (action: TutorialAction) => void;
+  onClassificationComplete?: () => void;
 };
 
 export function HomeContent({
@@ -68,6 +69,7 @@ export function HomeContent({
   baseIndex = 0,
   addHarvestToHive,
   onTutorialAction,
+  onClassificationComplete,
 }: HomeContentProps) {
   // Get current user session for classification
   const { session } = useAuth();
@@ -107,6 +109,7 @@ export function HomeContent({
     const success = await submitClassification(classificationType);
     
     if (success) {
+      onClassificationComplete?.();
       Alert.alert(
         'Classification Recorded! ✓',
         `Thank you! You've classified bee ${classificationModal.bee.identity.name} as a ${classificationType}. (+10 XP)\n\nClassifications today: ${todayCount + 1}/${maxClassifications}`
@@ -119,7 +122,7 @@ export function HomeContent({
     }
     
     setClassificationModal({ visible: false, bee: null });
-  }, [classificationModal.bee, submitClassification, todayCount, maxClassifications]);
+  }, [classificationModal.bee, submitClassification, todayCount, maxClassifications, onClassificationComplete]);
 
   // Use hovering bees hook
   const { hoveringBees } = useHoveringBees(hives, isDaytime, plots);

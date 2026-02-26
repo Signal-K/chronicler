@@ -9,7 +9,7 @@ export default function InitialRoute() {
   useEffect(() => {
     if (!loading) {
       if (session) {
-        router.replace('/home');
+        router.replace('/godot');
       } else {
         router.replace('/auth');
       }

@@ -1,0 +1,49 @@
+[gd_scene load_steps=9 format=3 uid="uid://dro36j4a4btql"]
+
+[ext_resource type="Script" path="res://scripts/game_root.gd" id="1_root"]
+[ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1_i8h2m"]
+[ext_resource type="PackedScene" path="res://scenes/hives.tscn" id="2_g5x9d"]
+[ext_resource type="PackedScene" path="res://scenes/progress.tscn" id="3_tfr34"]
+[ext_resource type="PackedScene" path="res://scenes/settings.tscn" id="4_ste6m"]
+[ext_resource type="PackedScene" path="res://scenes/expand.tscn" id="5_5rj8k"]
+[ext_resource type="PackedScene" path="res://scenes/planets.tscn" id="6_0lyaj"]
+[ext_resource type="PackedScene" path="res://scenes/inventory.tscn" id="7_nfg2m"]
+
+[node name="GameRoot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_root")
+
+[node name="Tabs" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="Farm" parent="Tabs" instance=ExtResource("1_i8h2m")]
+layout_mode = 2
+
+[node name="Hives" parent="Tabs" instance=ExtResource("2_g5x9d")]
+layout_mode = 2
+
+[node name="Progress" parent="Tabs" instance=ExtResource("3_tfr34")]
+layout_mode = 2
+
+[node name="Settings" parent="Tabs" instance=ExtResource("4_ste6m")]
+layout_mode = 2
+
+[node name="Expand" parent="Tabs" instance=ExtResource("5_5rj8k")]
+layout_mode = 2
+
+[node name="Planets" parent="Tabs" instance=ExtResource("6_0lyaj")]
+layout_mode = 2
+
+[node name="Inventory" parent="Tabs" instance=ExtResource("7_nfg2m")]
+layout_mode = 2

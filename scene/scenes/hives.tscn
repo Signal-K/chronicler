@@ -1,0 +1,251 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/hives_screen.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/hive_card.tscn" id="2"]
+
+[node name="HivesScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "🐝 Bee Hives"
+
+[node name="HiveSummary" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SummaryMargin" type="MarginContainer" parent="Root/HiveSummary"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryBody" type="VBoxContainer" parent="Root/HiveSummary/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TotalHoneyLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Total Honey Bottles: 0"
+
+[node name="BottledInventoryLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Bottled Inventory: 0"
+
+[node name="GlassLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Glass Bottles: 0"
+
+[node name="CoinsLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Coins: 0"
+
+[node name="LevelLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Level: 1"
+
+[node name="StatusLabel" type="Label" parent="Root/HiveSummary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "No bottled honey available."
+
+[node name="OrdersPanel" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="OrdersMargin" type="MarginContainer" parent="Root/OrdersPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="OrdersBody" type="VBoxContainer" parent="Root/OrdersPanel/OrdersMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="OrdersTitle" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody"]
+layout_mode = 2
+text = "Daily Orders"
+
+[node name="OrdersDateLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody"]
+layout_mode = 2
+text = "Date: -"
+
+[node name="OrderRow1" type="HBoxContainer" parent="Root/OrdersPanel/OrdersMargin/OrdersBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Order1DetailLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Order 1: Ship 0 bottled honey"
+
+[node name="Order1RewardLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1"]
+layout_mode = 2
+text = "+0c"
+
+[node name="Order1StatusLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1"]
+layout_mode = 2
+text = "Open"
+
+[node name="Order1Button" type="Button" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1"]
+layout_mode = 2
+text = "Fulfill"
+
+[node name="OrderRow2" type="HBoxContainer" parent="Root/OrdersPanel/OrdersMargin/OrdersBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Order2DetailLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Order 2: Ship 0 bottled honey"
+
+[node name="Order2RewardLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2"]
+layout_mode = 2
+text = "+0c"
+
+[node name="Order2StatusLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2"]
+layout_mode = 2
+text = "Open"
+
+[node name="Order2Button" type="Button" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2"]
+layout_mode = 2
+text = "Fulfill"
+
+[node name="OrderRow3" type="HBoxContainer" parent="Root/OrdersPanel/OrdersMargin/OrdersBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Order3DetailLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Order 3: Ship 0 bottled honey"
+
+[node name="Order3RewardLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3"]
+layout_mode = 2
+text = "+0c"
+
+[node name="Order3StatusLabel" type="Label" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3"]
+layout_mode = 2
+text = "Open"
+
+[node name="Order3Button" type="Button" parent="Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3"]
+layout_mode = 2
+text = "Fulfill"
+
+[node name="HiveList" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="HiveCard1" parent="Root/HiveList" instance=ExtResource("2")]
+layout_mode = 2
+
+[node name="HiveCard2" parent="Root/HiveList" instance=ExtResource("2")]
+layout_mode = 2
+
+[node name="HiveCard3" parent="Root/HiveList" instance=ExtResource("2")]
+layout_mode = 2
+
+[node name="HoneyTickTimer" type="Timer" parent="."]
+autostart = true
+wait_time = 6.0
+
+[node name="TutorialOverlay" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="TutorialBackdrop" type="ColorRect" parent="TutorialOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="TutorialCard" type="PanelContainer" parent="TutorialOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -120.0
+offset_right = 260.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TutorialMargin" type="MarginContainer" parent="TutorialOverlay/TutorialCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="TutorialBody" type="VBoxContainer" parent="TutorialOverlay/TutorialCard/TutorialMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TutorialTitleLabel" type="Label" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody"]
+layout_mode = 2
+text = "Hive Tutorial"
+
+[node name="TutorialMessageLabel" type="Label" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody"]
+layout_mode = 2
+text = "Tutorial message"
+autowrap_mode = 2
+
+[node name="TutorialHintLabel" type="Label" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody"]
+layout_mode = 2
+text = "Hint"
+autowrap_mode = 2
+
+[node name="TutorialButtons" type="HBoxContainer" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="SkipTutorialButton" type="Button" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialButtons"]
+layout_mode = 2
+text = "Skip"
+
+[node name="NextTutorialButton" type="Button" parent="TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialButtons"]
+layout_mode = 2
+text = "Next"
+
+[connection signal="timeout" from="HoneyTickTimer" to="." method="_on_honey_tick"]

@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useDayNightCycle } from '../../hooks/useDayNightCycle';
@@ -12,6 +12,7 @@ import { useMapSystem } from '../../hooks/useMapSystem';
 import { usePanelManager } from '../../hooks/usePanelManager';
 import { usePlayerExperience } from '../../hooks/usePlayerExperience';
 import { usePollinationFactor } from '../../hooks/usePollinationFactor';
+import { isSurveyId, useFeedbackSurveys } from '../../hooks/useFeedbackSurveys';
 import { useTutorial } from '../../hooks/useTutorial';
 import { useWaterSystem } from '../../hooks/useWaterSystem';
 // Order generation removed
@@ -23,6 +24,8 @@ import { InteractiveTutorial } from '../tutorial';
 import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
 import { Toast } from '../ui/Toast';
+import { GodotHostView } from '../godot/GodotHostView';
+import { FeedbackSurveyModal } from '../surveys/FeedbackSurveyModal';
 import { HomeContent } from './HomeContent';
 import { NestsContent } from './NestsContent';
 
@@ -30,6 +33,7 @@ export function HomeView() {
   const { experience } = usePlayerExperience();
   const [verticalPage, setVerticalPage] = useState<'main' | 'expand'>('main');
   const router = useRouter();
+  const params = useLocalSearchParams<{ survey_preview?: string | string[]; survey_comment_prefill?: string | string[] }>();
   const [currentScreen, setCurrentScreen] = useState<'nests' | 'home' | 'landscape' | 'expand' | 'godot'>('home');
   const hasShownFirstBee = useRef(false);
   const processedTutorialSteps = useRef(new Set<string>());
@@ -76,9 +80,19 @@ export function HomeView() {
   const { currentWater, maxWater, consumeWater } = useWaterSystem(false);
   const { pollinationFactor, incrementFactor, canSpawnBees } = usePollinationFactor();
   
+  const forcedSurveyId = useMemo(() => {
+    const raw = Array.isArray(params.survey_preview) ? params.survey_preview[0] : params.survey_preview;
+    return isSurveyId(raw) ? raw : null;
+  }, [params.survey_preview]);
+  const surveyCommentPrefill = useMemo(() => {
+    const raw = Array.isArray(params.survey_comment_prefill) ? params.survey_comment_prefill[0] : params.survey_comment_prefill;
+    return typeof raw === 'string' ? raw : '';
+  }, [params.survey_comment_prefill]);
+
   // Tutorial state for new users
   const { 
     shouldShowTutorial, 
+    hasCompletedTutorial,
     markTutorialShown, 
     markTutorialCompleted,
     currentTool: tutorialCurrentTool,
@@ -86,6 +100,14 @@ export function HomeView() {
     lastAction: tutorialLastAction,
     reportAction: reportTutorialAction,
   } = useTutorial();
+  const { activeSurvey, submitSurvey, dismissSurvey, recordAction: recordSurveyAction } = useFeedbackSurveys(hasCompletedTutorial, {
+    forcedSurveyId,
+    forceInDev: true,
+  });
+  useEffect(() => {
+    if (!tutorialLastAction) return;
+    recordSurveyAction(tutorialLastAction);
+  }, [tutorialLastAction, recordSurveyAction]);
   
   // Callback to show bee hatch alert that can be accessed globally
   const showBeeHatchAlert = useCallback((message: string) => {
@@ -240,6 +262,9 @@ export function HomeView() {
             baseIndex={startIndex}
             addHarvestToHive={addHarvestToHive}
             onTutorialAction={reportTutorialAction}
+            onClassificationComplete={() => {
+              recordSurveyAction('classification-complete');
+            }}
           />
         );
       case 'nests':
@@ -276,6 +301,12 @@ export function HomeView() {
           <View style={styles.expandContainer}>
             <Text style={styles.expandText}>🔍 Expanded Farm</Text>
             <Text style={styles.expandSubtext}>Coming Soon!</Text>
+          </View>
+        );
+      case 'godot':
+        return (
+          <View style={styles.godotContainer}>
+            <GodotHostView packName="BeeGarden" projectPath="/BeeGarden" />
           </View>
         );
       default:
@@ -414,6 +445,13 @@ export function HomeView() {
             }
           }}
         />
+        <FeedbackSurveyModal
+          visible={!!activeSurvey}
+          survey={activeSurvey}
+          initialComment={surveyCommentPrefill}
+          onClose={dismissSurvey}
+          onSubmit={submitSurvey}
+        />
       </View>
     </GestureHandlerRootView>
   );
@@ -465,5 +503,9 @@ const styles = StyleSheet.create({
   expandSubtext: {
     fontSize: 16,
     color: '#666',
+  },
+  godotContainer: {
+    flex: 1,
+    backgroundColor: '#0b1220',
   },
 });

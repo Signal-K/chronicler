@@ -1,0 +1,48 @@
+import React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { ThemedView } from '../components/themed-view';
+import { useColorScheme } from '../hooks/use-color-scheme';
+import { useThemeColor } from '../hooks/use-theme-color';
+
+type ParallaxProps = {
+  headerImage: React.ReactElement;
+  headerBackgroundColor: { dark: string; light: string };
+};
+
+const HEADER_HEIGHT = 250;
+
+export default function ParallaxScrollView({
+  children,
+  headerImage,
+  headerBackgroundColor,
+}: React.PropsWithChildren<ParallaxProps>) {
+  const backgroundColor = useThemeColor({}, 'background');
+  const colorScheme = useColorScheme() ?? 'light';
+
+  return (
+    <ScrollView style={{ backgroundColor, flex: 1 }} scrollEventThrottle={16}>
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: headerBackgroundColor[colorScheme as keyof typeof headerBackgroundColor] },
+        ]}>
+        {headerImage}
+      </View>
+      <ThemedView style={styles.content}>{children}</ThemedView>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    height: HEADER_HEIGHT,
+    overflow: 'hidden',
+  },
+  content: {
+    flex: 1,
+    padding: 32,
+    gap: 16,
+    overflow: 'hidden',
+  },
+});

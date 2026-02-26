@@ -1,0 +1,129 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/progress_screen.gd" id="1"]
+
+[node name="ProgressScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "📈 Progress"
+
+[node name="Overview" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="OverviewMargin" type="MarginContainer" parent="Root/Overview"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="OverviewBody" type="VBoxContainer" parent="Root/Overview/OverviewMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LevelLabel" type="Label" parent="Root/Overview/OverviewMargin/OverviewBody"]
+layout_mode = 2
+text = "Level: 1"
+
+[node name="XPLabel" type="Label" parent="Root/Overview/OverviewMargin/OverviewBody"]
+layout_mode = 2
+text = "XP: 0 / 100 (Total: 0)"
+
+[node name="XPProgressBar" type="ProgressBar" parent="Root/Overview/OverviewMargin/OverviewBody"]
+layout_mode = 2
+max_value = 100.0
+value = 0.0
+
+[node name="Stats" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="StatsMargin" type="MarginContainer" parent="Root/Stats"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="StatsBody" type="VBoxContainer" parent="Root/Stats/StatsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HarvestsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+layout_mode = 2
+text = "Harvests: 0"
+
+[node name="UniqueHarvestsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+layout_mode = 2
+text = "Unique Harvests: 0"
+
+[node name="PollinationLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+layout_mode = 2
+text = "Pollination Events: 0"
+
+[node name="SalesLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+layout_mode = 2
+text = "Sales Completed: 0"
+
+[node name="ClassificationsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+layout_mode = 2
+text = "Classifications: 0"
+
+[node name="Actions" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="ActionsMargin" type="MarginContainer" parent="Root/Actions"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ActionsBody" type="VBoxContainer" parent="Root/Actions/ActionsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ActionButtons" type="HBoxContainer" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AwardPollinationButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Award Pollination XP"
+
+[node name="AwardClassificationButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Award Classification XP"
+
+[node name="StatusLabel" type="Label" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+text = "Use buttons to test progression events."

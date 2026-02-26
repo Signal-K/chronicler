@@ -1,7 +1,16 @@
 module.exports = function(api) {
-  api.cache(true);
+  const isWeb = api.caller((caller) => caller?.platform === 'web');
+  api.cache.using(() => (isWeb ? 'web' : 'native'));
   return {
-    presets: ['babel-preset-expo'],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          // react-native-worklets is installed for native usage; disable its transform on web.
+          worklets: !isWeb,
+        },
+      ],
+    ],
     plugins: [
       [
         'module-resolver',

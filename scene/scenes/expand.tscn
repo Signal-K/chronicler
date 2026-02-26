@@ -1,0 +1,300 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/expand_screen.gd" id="1"]
+
+[node name="ExpandScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "🗺️ Expand Maps"
+
+[node name="Summary" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ActiveMapLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Active Map: Home Farm"
+
+[node name="CoinsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Coins: 0"
+
+[node name="StatusLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Unlock a biome or select an unlocked map."
+
+[node name="MapList" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="MapRow1" type="PanelContainer" parent="Root/MapList"]
+layout_mode = 2
+
+[node name="MapBody" type="VBoxContainer" parent="Root/MapList/MapRow1"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 560.0
+offset_bottom = 78.0
+theme_override_constants/separation = 4
+
+[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow1"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🏡 Home Farm"
+
+[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow1"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 420.0
+offset_bottom = 50.0
+text = "Description"
+
+[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow1"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+horizontal_alignment = 2
+text = "State"
+
+[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow1"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 38.0
+offset_right = 560.0
+offset_bottom = 62.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow1/MapButtons"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="SelectButton" type="Button" parent="Root/MapList/MapRow1/MapButtons"]
+layout_mode = 2
+text = "Select"
+
+[node name="MapRow2" type="PanelContainer" parent="Root/MapList"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow2"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🏜️ Desert Oasis"
+
+[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow2"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 420.0
+offset_bottom = 50.0
+text = "Description"
+
+[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow2"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+horizontal_alignment = 2
+text = "State"
+
+[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow2"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 38.0
+offset_right = 560.0
+offset_bottom = 62.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow2/MapButtons"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="SelectButton" type="Button" parent="Root/MapList/MapRow2/MapButtons"]
+layout_mode = 2
+text = "Select"
+
+[node name="MapRow3" type="PanelContainer" parent="Root/MapList"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow3"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🌿 Misty Swamp"
+
+[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow3"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 420.0
+offset_bottom = 50.0
+text = "Description"
+
+[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow3"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+horizontal_alignment = 2
+text = "State"
+
+[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow3"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 38.0
+offset_right = 560.0
+offset_bottom = 62.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow3/MapButtons"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="SelectButton" type="Button" parent="Root/MapList/MapRow3/MapButtons"]
+layout_mode = 2
+text = "Select"
+
+[node name="MapRow4" type="PanelContainer" parent="Root/MapList"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow4"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🌊 Ocean Platform"
+
+[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow4"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 420.0
+offset_bottom = 50.0
+text = "Description"
+
+[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow4"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+horizontal_alignment = 2
+text = "State"
+
+[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow4"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 38.0
+offset_right = 560.0
+offset_bottom = 62.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow4/MapButtons"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="SelectButton" type="Button" parent="Root/MapList/MapRow4/MapButtons"]
+layout_mode = 2
+text = "Select"
+
+[node name="MapRow5" type="PanelContainer" parent="Root/MapList"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow5"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🌲 Deep Forest"
+
+[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow5"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 420.0
+offset_bottom = 50.0
+text = "Description"
+
+[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow5"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 30.0
+horizontal_alignment = 2
+text = "State"
+
+[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow5"]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 38.0
+offset_right = 560.0
+offset_bottom = 62.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow5/MapButtons"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="SelectButton" type="Button" parent="Root/MapList/MapRow5/MapButtons"]
+layout_mode = 2
+text = "Select"

@@ -1,0 +1,140 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory_screen.gd" id="1"]
+
+[node name="InventoryScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "📦 Inventory"
+
+[node name="Summary" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CoinsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Coins: 0"
+
+[node name="BottlesLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Bottled Honey: 0"
+
+[node name="GlassLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Glass Bottles: 0"
+
+[node name="TotalHarvestLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Total Harvested Crops: 0"
+
+[node name="SeedsPanel" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SeedsMargin" type="MarginContainer" parent="Root/SeedsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SeedsBody" type="VBoxContainer" parent="Root/SeedsPanel/SeedsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SeedsTitle" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+layout_mode = 2
+text = "Seeds"
+
+[node name="TomatoSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+layout_mode = 2
+text = "Tomato Seeds: 0"
+
+[node name="BlueberrySeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+layout_mode = 2
+text = "Blueberry Seeds: 0"
+
+[node name="LavenderSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+layout_mode = 2
+text = "Lavender Seeds: 0"
+
+[node name="SunflowerSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+layout_mode = 2
+text = "Sunflower Seeds: 0"
+
+[node name="CropsPanel" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="CropsMargin" type="MarginContainer" parent="Root/CropsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CropsBody" type="VBoxContainer" parent="Root/CropsPanel/CropsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CropsTitle" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+layout_mode = 2
+text = "Harvested Crops"
+
+[node name="TomatoHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+layout_mode = 2
+text = "Tomatoes Harvested: 0"
+
+[node name="BlueberryHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+layout_mode = 2
+text = "Blueberries Harvested: 0"
+
+[node name="LavenderHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+layout_mode = 2
+text = "Lavender Harvested: 0"
+
+[node name="SunflowerHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+layout_mode = 2
+text = "Sunflowers Harvested: 0"
+
+[node name="RefreshTimer" type="Timer" parent="."]
+autostart = true
+wait_time = 0.5
+
+[connection signal="timeout" from="RefreshTimer" to="." method="_on_refresh_tick"]

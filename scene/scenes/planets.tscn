@@ -1,0 +1,210 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/planets_screen.gd" id="1"]
+
+[node name="PlanetsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "🪐 Planetary Catalog"
+
+[node name="Summary" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="DiscoveredCountLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Discovered Worlds: 0"
+
+[node name="ClassificationsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Classifications: 0"
+
+[node name="LevelLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Level: 1"
+
+[node name="DiscoverButton" type="Button" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Discover New Planet"
+
+[node name="StatusLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Discover planets to expand your catalog."
+
+[node name="PlanetList" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="PlanetRow1" type="PanelContainer" parent="Root/PlanetList"]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "🟢 Earth"
+
+[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 28.0
+text = "Home World"
+
+[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 520.0
+offset_bottom = 50.0
+text = "R 1.0 | G 9.8 | Orb 365d"
+
+[node name="PlanetRow2" type="PanelContainer" parent="Root/PlanetList"]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 520.0
+offset_bottom = 50.0
+text = "-"
+
+[node name="PlanetRow3" type="PanelContainer" parent="Root/PlanetList"]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 520.0
+offset_bottom = 50.0
+text = "-"
+
+[node name="PlanetRow4" type="PanelContainer" parent="Root/PlanetList"]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 520.0
+offset_bottom = 50.0
+text = "-"
+
+[node name="PlanetRow5" type="PanelContainer" parent="Root/PlanetList"]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 260.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 8.0
+offset_right = 520.0
+offset_bottom = 28.0
+text = "-"
+
+[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 520.0
+offset_bottom = 50.0
+text = "-"

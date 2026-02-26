@@ -25,6 +25,10 @@ export interface ToolButton {
 
 // Basic function to get tools for any route - returns common tools
 export function getToolsForRoute(route: FarmRoute): ToolButton[] {
+  if (route === 'godot') {
+    return [];
+  }
+
   // Return basic tool set for all routes
   return [
     { id: 'till', tool: 'till', label: 'Till', icon: '🚜', backgroundColor: '#8B4513' },

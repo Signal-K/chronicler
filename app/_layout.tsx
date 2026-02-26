@@ -25,10 +25,11 @@ export default function RootLayout() {
           <Stack.Screen name="nests" options={{ headerShown: false }} />
           <Stack.Screen name="expand" options={{ headerShown: false }} />
           <Stack.Screen name="planets" options={{ headerShown: false }} />
-          <Stack.Screen name="inventory" options={{ headerShown: false }} />
+          <Stack.Screen name="Inventory" options={{ headerShown: false }} />
           <Stack.Screen name="settings" options={{ headerShown: false }} />
           <Stack.Screen name="experience" options={{ headerShown: false }} />
           <Stack.Screen name="help" options={{ headerShown: false }} />
+          <Stack.Screen name="godot" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           <Stack.Screen name="farm" options={{ headerShown: false }} />
         </Stack>

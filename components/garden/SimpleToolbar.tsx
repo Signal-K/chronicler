@@ -97,6 +97,11 @@ export function SimpleToolbar({
     if (!onNavigate) return;
     if (currentRoute === 'home') {
       onNavigate('nests');
+      return;
+    }
+
+    if (currentRoute === 'godot') {
+      onNavigate('nests');
     }
   };
 
@@ -111,6 +116,11 @@ export function SimpleToolbar({
 
     if (!onNavigate) return;
     if (currentRoute === 'nests') {
+      onNavigate('godot');
+      return;
+    }
+
+    if (currentRoute === 'godot') {
       onNavigate('home');
     }
   };
@@ -165,6 +175,8 @@ export function SimpleToolbar({
               ? 'LANDSCAPE'
               : currentRoute === 'expand'
               ? 'EXPAND'
+              : currentRoute === 'godot'
+              ? 'GODOT'
               : currentRoute === 'home'
               ? `FARM ${verticalPage === 'main' ? 1 : 2}`
               : 'FARM'}
@@ -184,7 +196,7 @@ export function SimpleToolbar({
           style={[styles.navButton, !canGoRight && styles.navButtonDisabled]}
         >
           <Text style={[styles.navButtonText, !canGoRight && styles.navButtonTextDisabled]}>
-            {currentRoute === 'home' ? '▼' : verticalPage !== 'main' ? '▲' : '▶'}
+            {currentRoute === 'home' ? '▼' : currentRoute === 'nests' ? '▶' : currentRoute === 'godot' ? '▶' : verticalPage !== 'main' ? '▲' : '▶'}
           </Text>
         </TouchableOpacity>
       </View>

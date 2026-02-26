@@ -1,0 +1,134 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/settings_screen.gd" id="1"]
+
+[node name="SettingsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.1, 1)
+
+[node name="Root" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root"]
+layout_mode = 2
+text = "⚙️ Settings"
+
+[node name="Summary" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="CoinsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Coins: 0"
+
+[node name="WaterLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Water: 0/0"
+
+[node name="SeedsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Seeds(T/B/L/S): 0 / 0 / 0 / 0"
+
+[node name="GlassLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Glass Bottles: 0"
+
+[node name="TutorialLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Farm Tutorial: active (step 0)"
+
+[node name="HiveTutorialLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Hive Tutorial: active (step 0)"
+
+[node name="Actions" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="ActionsMargin" type="MarginContainer" parent="Root/Actions"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ActionsBody" type="VBoxContainer" parent="Root/Actions/ActionsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ButtonsRow1" type="HBoxContainer" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AddCoinsButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add 100 Coins"
+
+[node name="RefillWaterButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Refill Water"
+
+[node name="ButtonsRow2" type="HBoxContainer" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AddSeedsButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add Seeds"
+
+[node name="AddGlassButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add Glass Bottles"
+
+[node name="ButtonsRow3" type="HBoxContainer" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResetFarmTutorialButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reset Farm Tutorial"
+
+[node name="ResetHiveTutorialButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reset Hive Tutorial"
+
+[node name="StatusLabel" type="Label" parent="Root/Actions/ActionsMargin/ActionsBody"]
+layout_mode = 2
+text = "Run migration utility actions from this screen."

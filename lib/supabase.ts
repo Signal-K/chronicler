@@ -20,32 +20,36 @@ const safeAsyncStorage = {
   },
 };
 
-// Debug logging for environment variables (only in browser)
-// Read env vars into locals for clarity
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// Resolve env values across Expo and Next.js naming conventions.
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV !== 'production';
 
-// Clearer runtime logging to help diagnose missing configuration in dev builds
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('❗ Supabase configuration missing. Make sure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set.');
-  console.error('Current values -> URL:', SUPABASE_URL ? SUPABASE_URL : '<MISSING>', 'Anon Key present?:', !!SUPABASE_ANON_KEY);
+  const err = 'Supabase configuration missing. Set EXPO_PUBLIC_SUPABASE_* or NEXT_PUBLIC_SUPABASE_* env vars.';
+  if (isDev) {
+    console.error(`❗ ${err}`);
+    console.error('Current values -> URL:', SUPABASE_URL || '<MISSING>', 'Anon Key present?:', !!SUPABASE_ANON_KEY);
+  } else {
+    throw new Error(err);
+  }
 } else {
-  // Mask key when logging
-  const maskedKey = SUPABASE_ANON_KEY.substring(0, 8) + '...' + SUPABASE_ANON_KEY.slice(-4);
-  console.log('🔧 Supabase Configuration:');
-  console.log('📍 URL:', SUPABASE_URL);
-  console.log('🔑 Anon Key (masked):', maskedKey);
+  if (isDev) {
+    const maskedKey = `${SUPABASE_ANON_KEY.substring(0, 8)}...${SUPABASE_ANON_KEY.slice(-4)}`;
+    console.log('🔧 Supabase Configuration:');
+    console.log('📍 URL:', SUPABASE_URL);
+    console.log('🔑 Anon Key (masked):', maskedKey);
+  }
 }
 
-export const supabase = createClient(
-  SUPABASE_URL!,
-  SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      storage: safeAsyncStorage,
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false,
-    },
-  }
-);
+const url = SUPABASE_URL || 'https://placeholder.supabase.co';
+const key = SUPABASE_ANON_KEY || 'placeholder-key';
+
+export const supabase = createClient(url, key, {
+  auth: {
+    storage: safeAsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
