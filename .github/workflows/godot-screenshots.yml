@@ -1,0 +1,164 @@
+name: Godot Screenshots
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+env:
+  # Keep in sync with the Godot version used in export_godot.sh and
+  # the local dev binary (/Applications/Godot4.5.app on macOS).
+  GODOT_VERSION: 4.5-stable
+  GODOT_BIN_NAME: Godot_v4.5-stable_linux.x86_64
+
+jobs:
+  screenshots:
+    name: Capture Godot screenshots
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── System deps ───────────────────────────────────────────────────────
+      - name: Install display and OpenGL deps
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            xvfb \
+            libgles2-mesa \
+            libgl1-mesa-dri \
+            mesa-utils \
+            libegl1-mesa
+
+      # ── Godot binary ──────────────────────────────────────────────────────
+      - name: Cache Godot binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: godot-bin/
+          key: godot-${{ env.GODOT_VERSION }}-linux-x86_64
+
+      - name: Download Godot ${{ env.GODOT_VERSION }}
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p godot-bin
+          wget -q \
+            "https://github.com/godotengine/godot/releases/download/${{ env.GODOT_VERSION }}/${{ env.GODOT_BIN_NAME }}.zip" \
+            -O godot.zip
+          unzip -q godot.zip -d godot-bin/
+          chmod +x "godot-bin/${{ env.GODOT_BIN_NAME }}"
+          echo "Godot binary: $(godot-bin/${{ env.GODOT_BIN_NAME }} --version 2>&1 | head -1)"
+
+      # ── Import project ────────────────────────────────────────────────────
+      # Generates the .godot/ import cache so assets load correctly at runtime.
+      - name: Import project assets
+        run: |
+          GODOT="$(pwd)/godot-bin/${{ env.GODOT_BIN_NAME }}"
+          GODOT_USER_DIR=/tmp/godot HOME=/tmp \
+          xvfb-run --auto-servernum \
+            "$GODOT" --headless --path scene --import --quit 2>&1 || true
+          # Run twice – first pass may exit before all imports finish.
+          GODOT_USER_DIR=/tmp/godot HOME=/tmp \
+          xvfb-run --auto-servernum \
+            "$GODOT" --headless --path scene --import --quit 2>&1 || true
+
+      # ── Run smoke test ─────────────────────────────────────────────────────
+      - name: Run smoke test
+        run: |
+          GODOT="$(pwd)/godot-bin/${{ env.GODOT_BIN_NAME }}"
+          GODOT_USER_DIR=/tmp/godot HOME=/tmp \
+          xvfb-run --auto-servernum \
+            "$GODOT" --headless --path scene --script res://tests/smoke_test.gd
+
+      # ── Capture screenshots ────────────────────────────────────────────────
+      - name: Capture screenshots
+        run: |
+          GODOT="$(pwd)/godot-bin/${{ env.GODOT_BIN_NAME }}"
+          mkdir -p screenshots
+          SCREENSHOT_DIR="$(pwd)/screenshots" \
+          GODOT_USER_DIR=/tmp/godot HOME=/tmp \
+          xvfb-run --auto-servernum \
+            --server-args="-screen 0 430x932x24 -ac" \
+            "$GODOT" \
+              --path scene \
+              --rendering-driver opengl3 \
+              --rendering-method gl_compatibility \
+              --display-driver x11 \
+              --script res://tests/capture_screenshots.gd \
+            2>&1 | tee /tmp/godot-screenshot.log
+          echo "--- Files captured ---"
+          ls -lh screenshots/ || echo "(none)"
+
+      # ── Upload artifact ────────────────────────────────────────────────────
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-screenshots-${{ github.sha }}
+          path: screenshots/*.png
+          retention-days: 30
+          if-no-files-found: warn
+
+      # ── Upload Godot log on failure ────────────────────────────────────────
+      - name: Upload capture log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-capture-log-${{ github.sha }}
+          path: /tmp/godot-screenshot.log
+          retention-days: 7
+
+      # ── PR comment ────────────────────────────────────────────────────────
+      # Posts a comment on the PR linking to the screenshots artifact.
+      # Images can't be embedded inline because artifact URLs require auth,
+      # so the comment provides a direct link to the run's artifact page.
+      - name: Comment on PR with screenshot link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const sha = context.sha.slice(0, 7);
+            const tabs = ['farm', 'hives', 'progress', 'settings', 'expand', 'planets', 'inventory'];
+            const tabList = tabs.map(t => `- \`${t}.png\``).join('\n');
+            const body = [
+              '## 📸 Godot Screenshots',
+              '',
+              `Captured from commit \`${sha}\` on branch \`${context.ref.replace('refs/heads/', '')}\`.`,
+              '',
+              '**Tabs captured:**',
+              tabList,
+              '',
+              `[⬇️ Download screenshots artifact](${runUrl})`,
+              '',
+              '_Screenshots are attached as a workflow artifact — click the link above, then scroll to "Artifacts"._',
+            ].join('\n');
+
+            // Find and update an existing bot comment, or create a new one.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(
+              c => c.user.type === 'Bot' && c.body.includes('📸 Godot Screenshots')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
