@@ -18,283 +18,287 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1.0, 0.984, 0.961, 1)
+color = Color(0.529, 0.937, 0.502, 1)
 
 [node name="Root" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 
-[node name="Title" type="Label" parent="Root"]
+[node name="Header" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="HeaderMargin" type="MarginContainer" parent="Root/Header"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="HeaderBody" type="VBoxContainer" parent="Root/Header/HeaderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Title" type="Label" parent="Root/Header/HeaderMargin/HeaderBody"]
 layout_mode = 2
 text = "🗺️ Expand Maps"
 
-[node name="Summary" type="PanelContainer" parent="Root"]
-layout_mode = 2
-
-[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="ActiveMapLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="ActiveMapLabel" type="Label" parent="Root/Header/HeaderMargin/HeaderBody"]
 layout_mode = 2
 text = "Active Map: Home Farm"
 
-[node name="CoinsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="CoinsLabel" type="Label" parent="Root/Header/HeaderMargin/HeaderBody"]
 layout_mode = 2
 text = "Coins: 0"
 
-[node name="StatusLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="StatusLabel" type="Label" parent="Root/Header/HeaderMargin/HeaderBody"]
 layout_mode = 2
+autowrap_mode = 2
 text = "Unlock a biome or select an unlocked map."
 
-[node name="MapList" type="VBoxContainer" parent="Root"]
+[node name="ScrollArea" type="ScrollContainer" parent="Root"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
 
-[node name="MapRow1" type="PanelContainer" parent="Root/MapList"]
+[node name="MapList" type="VBoxContainer" parent="Root/ScrollArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ListMargin" type="MarginContainer" parent="Root/ScrollArea/MapList"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ListBody" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MapRow1" type="PanelContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody"]
 layout_mode = 2
 
-[node name="MapBody" type="VBoxContainer" parent="Root/MapList/MapRow1"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 560.0
-offset_bottom = 78.0
+[node name="MapRow1Margin" type="MarginContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MapRow1Body" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow1"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
+[node name="Row1Top" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body/Row1Top"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "🏡 Home Farm"
 
-[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow1"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 420.0
-offset_bottom = 50.0
+[node name="MapStateLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body/Row1Top"]
+layout_mode = 2
+horizontal_alignment = 2
+text = "ACTIVE"
+
+[node name="MapDescLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body"]
+layout_mode = 2
+autowrap_mode = 2
 text = "Description"
 
-[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow1"]
-layout_mode = 0
-offset_left = 420.0
-offset_top = 10.0
-offset_right = 560.0
-offset_bottom = 30.0
-horizontal_alignment = 2
-text = "State"
-
-[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow1"]
-layout_mode = 0
-offset_left = 380.0
-offset_top = 38.0
-offset_right = 560.0
-offset_bottom = 62.0
+[node name="MapButtons" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body"]
+layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow1/MapButtons"]
+[node name="UnlockButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body/MapButtons"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="SelectButton" type="Button" parent="Root/MapList/MapRow1/MapButtons"]
+[node name="SelectButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow1/MapRow1Margin/MapRow1Body/MapButtons"]
 layout_mode = 2
 text = "Select"
 
-[node name="MapRow2" type="PanelContainer" parent="Root/MapList"]
+[node name="MapRow2" type="PanelContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody"]
 layout_mode = 2
 
-[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow2"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
+[node name="MapRow2Margin" type="MarginContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MapRow2Body" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Row2Top" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body/Row2Top"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "🏜️ Desert Oasis"
 
-[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow2"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 420.0
-offset_bottom = 50.0
+[node name="MapStateLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body/Row2Top"]
+layout_mode = 2
+horizontal_alignment = 2
+text = "Locked"
+
+[node name="MapDescLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body"]
+layout_mode = 2
+autowrap_mode = 2
 text = "Description"
 
-[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow2"]
-layout_mode = 0
-offset_left = 420.0
-offset_top = 10.0
-offset_right = 560.0
-offset_bottom = 30.0
-horizontal_alignment = 2
-text = "State"
-
-[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow2"]
-layout_mode = 0
-offset_left = 380.0
-offset_top = 38.0
-offset_right = 560.0
-offset_bottom = 62.0
+[node name="MapButtons" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body"]
+layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow2/MapButtons"]
+[node name="UnlockButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body/MapButtons"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="SelectButton" type="Button" parent="Root/MapList/MapRow2/MapButtons"]
+[node name="SelectButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow2/MapRow2Margin/MapRow2Body/MapButtons"]
 layout_mode = 2
 text = "Select"
 
-[node name="MapRow3" type="PanelContainer" parent="Root/MapList"]
+[node name="MapRow3" type="PanelContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody"]
 layout_mode = 2
 
-[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow3"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
+[node name="MapRow3Margin" type="MarginContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MapRow3Body" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Row3Top" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body/Row3Top"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "🌿 Misty Swamp"
 
-[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow3"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 420.0
-offset_bottom = 50.0
+[node name="MapStateLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body/Row3Top"]
+layout_mode = 2
+horizontal_alignment = 2
+text = "Locked"
+
+[node name="MapDescLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body"]
+layout_mode = 2
+autowrap_mode = 2
 text = "Description"
 
-[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow3"]
-layout_mode = 0
-offset_left = 420.0
-offset_top = 10.0
-offset_right = 560.0
-offset_bottom = 30.0
-horizontal_alignment = 2
-text = "State"
-
-[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow3"]
-layout_mode = 0
-offset_left = 380.0
-offset_top = 38.0
-offset_right = 560.0
-offset_bottom = 62.0
+[node name="MapButtons" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body"]
+layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow3/MapButtons"]
+[node name="UnlockButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body/MapButtons"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="SelectButton" type="Button" parent="Root/MapList/MapRow3/MapButtons"]
+[node name="SelectButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow3/MapRow3Margin/MapRow3Body/MapButtons"]
 layout_mode = 2
 text = "Select"
 
-[node name="MapRow4" type="PanelContainer" parent="Root/MapList"]
+[node name="MapRow4" type="PanelContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody"]
 layout_mode = 2
 
-[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow4"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
+[node name="MapRow4Margin" type="MarginContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MapRow4Body" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Row4Top" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body/Row4Top"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "🌊 Ocean Platform"
 
-[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow4"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 420.0
-offset_bottom = 50.0
+[node name="MapStateLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body/Row4Top"]
+layout_mode = 2
+horizontal_alignment = 2
+text = "Locked"
+
+[node name="MapDescLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body"]
+layout_mode = 2
+autowrap_mode = 2
 text = "Description"
 
-[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow4"]
-layout_mode = 0
-offset_left = 420.0
-offset_top = 10.0
-offset_right = 560.0
-offset_bottom = 30.0
-horizontal_alignment = 2
-text = "State"
-
-[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow4"]
-layout_mode = 0
-offset_left = 380.0
-offset_top = 38.0
-offset_right = 560.0
-offset_bottom = 62.0
+[node name="MapButtons" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body"]
+layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow4/MapButtons"]
+[node name="UnlockButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body/MapButtons"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="SelectButton" type="Button" parent="Root/MapList/MapRow4/MapButtons"]
+[node name="SelectButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow4/MapRow4Margin/MapRow4Body/MapButtons"]
 layout_mode = 2
 text = "Select"
 
-[node name="MapRow5" type="PanelContainer" parent="Root/MapList"]
+[node name="MapRow5" type="PanelContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody"]
 layout_mode = 2
 
-[node name="MapNameLabel" type="Label" parent="Root/MapList/MapRow5"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
+[node name="MapRow5Margin" type="MarginContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MapRow5Body" type="VBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Row5Top" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body"]
+layout_mode = 2
+
+[node name="MapNameLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body/Row5Top"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "🌲 Deep Forest"
 
-[node name="MapDescLabel" type="Label" parent="Root/MapList/MapRow5"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 420.0
-offset_bottom = 50.0
+[node name="MapStateLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body/Row5Top"]
+layout_mode = 2
+horizontal_alignment = 2
+text = "Locked"
+
+[node name="MapDescLabel" type="Label" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body"]
+layout_mode = 2
+autowrap_mode = 2
 text = "Description"
 
-[node name="MapStateLabel" type="Label" parent="Root/MapList/MapRow5"]
-layout_mode = 0
-offset_left = 420.0
-offset_top = 10.0
-offset_right = 560.0
-offset_bottom = 30.0
-horizontal_alignment = 2
-text = "State"
-
-[node name="MapButtons" type="HBoxContainer" parent="Root/MapList/MapRow5"]
-layout_mode = 0
-offset_left = 380.0
-offset_top = 38.0
-offset_right = 560.0
-offset_bottom = 62.0
+[node name="MapButtons" type="HBoxContainer" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body"]
+layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockButton" type="Button" parent="Root/MapList/MapRow5/MapButtons"]
+[node name="UnlockButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body/MapButtons"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="SelectButton" type="Button" parent="Root/MapList/MapRow5/MapButtons"]
+[node name="SelectButton" type="Button" parent="Root/ScrollArea/MapList/ListMargin/ListBody/MapRow5/MapRow5Margin/MapRow5Body/MapButtons"]
 layout_mode = 2
 text = "Select"

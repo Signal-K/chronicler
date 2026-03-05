@@ -1,30 +1,30 @@
 extends Control
 
 const UIFwk = preload("res://scripts/ui_framework.gd")
-@onready var level_label: Label = $Root/Overview/OverviewMargin/OverviewBody/LevelLabel
-@onready var xp_label: Label = $Root/Overview/OverviewMargin/OverviewBody/XPLabel
-@onready var progress_bar: ProgressBar = $Root/Overview/OverviewMargin/OverviewBody/XPProgressBar
-@onready var harvests_label: Label = $Root/Stats/StatsMargin/StatsBody/HarvestsLabel
-@onready var unique_harvests_label: Label = $Root/Stats/StatsMargin/StatsBody/UniqueHarvestsLabel
-@onready var pollination_label: Label = $Root/Stats/StatsMargin/StatsBody/PollinationLabel
-@onready var sales_label: Label = $Root/Stats/StatsMargin/StatsBody/SalesLabel
-@onready var classifications_label: Label = $Root/Stats/StatsMargin/StatsBody/ClassificationsLabel
-@onready var status_label: Label = $Root/Actions/ActionsMargin/ActionsBody/StatusLabel
+@onready var level_label: Label = $ScrollRoot/Root/Overview/OverviewMargin/OverviewBody/LevelLabel
+@onready var xp_label: Label = $ScrollRoot/Root/Overview/OverviewMargin/OverviewBody/XPLabel
+@onready var progress_bar: ProgressBar = $ScrollRoot/Root/Overview/OverviewMargin/OverviewBody/XPProgressBar
+@onready var harvests_label: Label = $ScrollRoot/Root/Stats/StatsMargin/StatsBody/HarvestsLabel
+@onready var unique_harvests_label: Label = $ScrollRoot/Root/Stats/StatsMargin/StatsBody/UniqueHarvestsLabel
+@onready var pollination_label: Label = $ScrollRoot/Root/Stats/StatsMargin/StatsBody/PollinationLabel
+@onready var sales_label: Label = $ScrollRoot/Root/Stats/StatsMargin/StatsBody/SalesLabel
+@onready var classifications_label: Label = $ScrollRoot/Root/Stats/StatsMargin/StatsBody/ClassificationsLabel
+@onready var status_label: Label = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/StatusLabel
 
-@onready var pollination_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardPollinationButton
-@onready var classification_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardClassificationButton
+@onready var pollination_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardPollinationButton
+@onready var classification_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardClassificationButton
 
-@onready var plot_pages_label: Label = $Root/Upgrades/UpgradesMargin/UpgradesBody/PlotPagesLabel
-@onready var upgrade_status_label: Label = $Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeStatusLabel
+@onready var plot_pages_label: Label = $ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/PlotPagesLabel
+@onready var upgrade_status_label: Label = $ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeStatusLabel
 @onready var upgrade_buttons: Array[Button] = [
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Button,
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Button,
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Button,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Button,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Button,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Button,
 ]
 @onready var upgrade_labels: Array[Label] = [
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Label,
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Label,
-	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Label,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Label,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Label,
+	$ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Label,
 ]
 
 func _ready() -> void:
@@ -39,13 +39,13 @@ func _ready() -> void:
 
 func _apply_ui_theme() -> void:
 	UIFwk.apply_warm_screen_theme(self)
-	UIFwk.style_warm_title($Root/Title, 26)
+	UIFwk.style_warm_title($ScrollRoot/Root/Title, 26)
 	# Section panels
-	UIFwk.style_warm_panel($Root/Overview)
-	UIFwk.style_warm_panel($Root/Stats)
-	UIFwk.style_warm_panel($Root/Actions)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Overview)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Stats)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Actions)
 	# Labels
-	UIFwk.style_warm_section($Root/Overview/OverviewMargin/OverviewBody/LevelLabel)
+	UIFwk.style_warm_section($ScrollRoot/Root/Overview/OverviewMargin/OverviewBody/LevelLabel)
 	UIFwk.style_warm_text(xp_label)
 	UIFwk.style_warm_text(harvests_label)
 	UIFwk.style_warm_text(unique_harvests_label)
@@ -57,8 +57,8 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_button(pollination_button, Color("0f766e"))
 	UIFwk.style_button(classification_button, Color("1d4ed8"))
 	# Upgrades panel
-	UIFwk.style_warm_panel($Root/Upgrades)
-	UIFwk.style_warm_section($Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradesTitle)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Upgrades)
+	UIFwk.style_warm_section($ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradesTitle)
 	UIFwk.style_amber_muted(plot_pages_label)
 	UIFwk.style_amber_muted(upgrade_status_label)
 	for lbl in upgrade_labels:

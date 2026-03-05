@@ -20,15 +20,17 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1.0, 0.984, 0.961, 1)
 
-[node name="Root" type="VBoxContainer" parent="."]
+[node name="ScrollRoot" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Root" type="VBoxContainer" parent="ScrollRoot"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Root"]
@@ -38,106 +40,106 @@ text = "📦 Inventory"
 [node name="Summary" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="SummaryMargin" type="MarginContainer" parent="Root/Summary"]
+[node name="SummaryMargin" type="MarginContainer" parent="ScrollRoot/Root/Summary"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="SummaryBody" type="VBoxContainer" parent="Root/Summary/SummaryMargin"]
+[node name="SummaryBody" type="VBoxContainer" parent="ScrollRoot/Root/Summary/SummaryMargin"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="CoinsLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="CoinsLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Coins: 0"
 
-[node name="BottlesLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="BottlesLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Bottled Honey: 0"
 
-[node name="GlassLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="GlassLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Glass Bottles: 0"
 
-[node name="WaterLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="WaterLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Water: 0/100"
 
-[node name="PlotPagesLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="PlotPagesLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Farm Pages: 1 (6 plots)"
 
-[node name="TotalHarvestLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+[node name="TotalHarvestLabel" type="Label" parent="ScrollRoot/Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Total Harvested Crops: 0"
 
 [node name="SeedsPanel" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="SeedsMargin" type="MarginContainer" parent="Root/SeedsPanel"]
+[node name="SeedsMargin" type="MarginContainer" parent="ScrollRoot/Root/SeedsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="SeedsBody" type="VBoxContainer" parent="Root/SeedsPanel/SeedsMargin"]
+[node name="SeedsBody" type="VBoxContainer" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="SeedsTitle" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+[node name="SeedsTitle" type="Label" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody"]
 layout_mode = 2
 text = "Seeds"
 
-[node name="TomatoSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+[node name="TomatoSeedLabel" type="Label" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody"]
 layout_mode = 2
 text = "Tomato Seeds: 0"
 
-[node name="BlueberrySeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+[node name="BlueberrySeedLabel" type="Label" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody"]
 layout_mode = 2
 text = "Blueberry Seeds: 0"
 
-[node name="LavenderSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+[node name="LavenderSeedLabel" type="Label" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody"]
 layout_mode = 2
 text = "Lavender Seeds: 0"
 
-[node name="SunflowerSeedLabel" type="Label" parent="Root/SeedsPanel/SeedsMargin/SeedsBody"]
+[node name="SunflowerSeedLabel" type="Label" parent="ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody"]
 layout_mode = 2
 text = "Sunflower Seeds: 0"
 
 [node name="CropsPanel" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="CropsMargin" type="MarginContainer" parent="Root/CropsPanel"]
+[node name="CropsMargin" type="MarginContainer" parent="ScrollRoot/Root/CropsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="CropsBody" type="VBoxContainer" parent="Root/CropsPanel/CropsMargin"]
+[node name="CropsBody" type="VBoxContainer" parent="ScrollRoot/Root/CropsPanel/CropsMargin"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="CropsTitle" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+[node name="CropsTitle" type="Label" parent="ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody"]
 layout_mode = 2
 text = "Harvested Crops"
 
-[node name="TomatoHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+[node name="TomatoHarvestLabel" type="Label" parent="ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody"]
 layout_mode = 2
 text = "Tomatoes Harvested: 0"
 
-[node name="BlueberryHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+[node name="BlueberryHarvestLabel" type="Label" parent="ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody"]
 layout_mode = 2
 text = "Blueberries Harvested: 0"
 
-[node name="LavenderHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+[node name="LavenderHarvestLabel" type="Label" parent="ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody"]
 layout_mode = 2
 text = "Lavender Harvested: 0"
 
-[node name="SunflowerHarvestLabel" type="Label" parent="Root/CropsPanel/CropsMargin/CropsBody"]
+[node name="SunflowerHarvestLabel" type="Label" parent="ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody"]
 layout_mode = 2
 text = "Sunflowers Harvested: 0"
 

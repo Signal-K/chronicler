@@ -150,14 +150,8 @@ text = "Date: -"
 layout_mode = 2
 
 [node name="OrderRow1Inner" type="HBoxContainer" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1"]
-layout_mode = 0
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = -10.0
-offset_bottom = -8.0
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Order1DetailLabel" type="Label" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/OrderRow1Inner"]
@@ -181,14 +175,8 @@ text = "Fulfill"
 layout_mode = 2
 
 [node name="OrderRow2Inner" type="HBoxContainer" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2"]
-layout_mode = 0
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = -10.0
-offset_bottom = -8.0
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Order2DetailLabel" type="Label" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/OrderRow2Inner"]
@@ -212,14 +200,8 @@ text = "Fulfill"
 layout_mode = 2
 
 [node name="OrderRow3Inner" type="HBoxContainer" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3"]
-layout_mode = 0
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = -10.0
-offset_bottom = -8.0
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="Order3DetailLabel" type="Label" parent="Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/OrderRow3Inner"]

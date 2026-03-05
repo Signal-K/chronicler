@@ -20,15 +20,17 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1.0, 0.984, 0.961, 1)
 
-[node name="Root" type="VBoxContainer" parent="."]
+[node name="ScrollRoot" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Root" type="VBoxContainer" parent="ScrollRoot"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="Root"]
@@ -38,26 +40,26 @@ text = "📈 Progress"
 [node name="Overview" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="OverviewMargin" type="MarginContainer" parent="Root/Overview"]
+[node name="OverviewMargin" type="MarginContainer" parent="ScrollRoot/Root/Overview"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="OverviewBody" type="VBoxContainer" parent="Root/Overview/OverviewMargin"]
+[node name="OverviewBody" type="VBoxContainer" parent="ScrollRoot/Root/Overview/OverviewMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="LevelLabel" type="Label" parent="Root/Overview/OverviewMargin/OverviewBody"]
+[node name="LevelLabel" type="Label" parent="ScrollRoot/Root/Overview/OverviewMargin/OverviewBody"]
 layout_mode = 2
 text = "Level: 1"
 
-[node name="XPLabel" type="Label" parent="Root/Overview/OverviewMargin/OverviewBody"]
+[node name="XPLabel" type="Label" parent="ScrollRoot/Root/Overview/OverviewMargin/OverviewBody"]
 layout_mode = 2
 text = "XP: 0 / 100 (Total: 0)"
 
-[node name="XPProgressBar" type="ProgressBar" parent="Root/Overview/OverviewMargin/OverviewBody"]
+[node name="XPProgressBar" type="ProgressBar" parent="ScrollRoot/Root/Overview/OverviewMargin/OverviewBody"]
 layout_mode = 2
 max_value = 100.0
 value = 0.0
@@ -65,130 +67,130 @@ value = 0.0
 [node name="Stats" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="StatsMargin" type="MarginContainer" parent="Root/Stats"]
+[node name="StatsMargin" type="MarginContainer" parent="ScrollRoot/Root/Stats"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="StatsBody" type="VBoxContainer" parent="Root/Stats/StatsMargin"]
+[node name="StatsBody" type="VBoxContainer" parent="ScrollRoot/Root/Stats/StatsMargin"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="HarvestsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+[node name="HarvestsLabel" type="Label" parent="ScrollRoot/Root/Stats/StatsMargin/StatsBody"]
 layout_mode = 2
 text = "Harvests: 0"
 
-[node name="UniqueHarvestsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+[node name="UniqueHarvestsLabel" type="Label" parent="ScrollRoot/Root/Stats/StatsMargin/StatsBody"]
 layout_mode = 2
 text = "Unique Harvests: 0"
 
-[node name="PollinationLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+[node name="PollinationLabel" type="Label" parent="ScrollRoot/Root/Stats/StatsMargin/StatsBody"]
 layout_mode = 2
 text = "Pollination Events: 0"
 
-[node name="SalesLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+[node name="SalesLabel" type="Label" parent="ScrollRoot/Root/Stats/StatsMargin/StatsBody"]
 layout_mode = 2
 text = "Sales Completed: 0"
 
-[node name="ClassificationsLabel" type="Label" parent="Root/Stats/StatsMargin/StatsBody"]
+[node name="ClassificationsLabel" type="Label" parent="ScrollRoot/Root/Stats/StatsMargin/StatsBody"]
 layout_mode = 2
 text = "Classifications: 0"
 
 [node name="Actions" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="ActionsMargin" type="MarginContainer" parent="Root/Actions"]
+[node name="ActionsMargin" type="MarginContainer" parent="ScrollRoot/Root/Actions"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="ActionsBody" type="VBoxContainer" parent="Root/Actions/ActionsMargin"]
+[node name="ActionsBody" type="VBoxContainer" parent="ScrollRoot/Root/Actions/ActionsMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ActionButtons" type="HBoxContainer" parent="Root/Actions/ActionsMargin/ActionsBody"]
+[node name="ActionButtons" type="HBoxContainer" parent="ScrollRoot/Root/Actions/ActionsMargin/ActionsBody"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AwardPollinationButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
+[node name="AwardPollinationButton" type="Button" parent="ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Award Pollination XP"
 
-[node name="AwardClassificationButton" type="Button" parent="Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
+[node name="AwardClassificationButton" type="Button" parent="ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ActionButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Award Classification XP"
 
-[node name="StatusLabel" type="Label" parent="Root/Actions/ActionsMargin/ActionsBody"]
+[node name="StatusLabel" type="Label" parent="ScrollRoot/Root/Actions/ActionsMargin/ActionsBody"]
 layout_mode = 2
 text = "Use buttons to test progression events."
 
 [node name="Upgrades" type="PanelContainer" parent="Root"]
 layout_mode = 2
 
-[node name="UpgradesMargin" type="MarginContainer" parent="Root/Upgrades"]
+[node name="UpgradesMargin" type="MarginContainer" parent="ScrollRoot/Root/Upgrades"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="UpgradesBody" type="VBoxContainer" parent="Root/Upgrades/UpgradesMargin"]
+[node name="UpgradesBody" type="VBoxContainer" parent="ScrollRoot/Root/Upgrades/UpgradesMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="UpgradesTitle" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="UpgradesTitle" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 text = "🌱 Farm Expansions"
 
-[node name="PlotPagesLabel" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="PlotPagesLabel" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 text = "Plot pages: 1 / 4 (6 plots each)"
 
-[node name="UpgradeRow1" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="UpgradeRow1" type="HBoxContainer" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Upgrade1Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
+[node name="Upgrade1Label" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Page 2 — Lv.2 · 50c"
 
-[node name="Upgrade1Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
+[node name="Upgrade1Button" type="Button" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="UpgradeRow2" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="UpgradeRow2" type="HBoxContainer" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Upgrade2Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
+[node name="Upgrade2Label" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Page 3 — Lv.5 · 150c"
 
-[node name="Upgrade2Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
+[node name="Upgrade2Button" type="Button" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="UpgradeRow3" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="UpgradeRow3" type="HBoxContainer" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Upgrade3Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
+[node name="Upgrade3Label" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Page 4 — Lv.10 · 300c"
 
-[node name="Upgrade3Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
+[node name="Upgrade3Button" type="Button" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
 layout_mode = 2
 text = "Unlock"
 
-[node name="UpgradeStatusLabel" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+[node name="UpgradeStatusLabel" type="Label" parent="ScrollRoot/Root/Upgrades/UpgradesMargin/UpgradesBody"]
 layout_mode = 2
 text = ""

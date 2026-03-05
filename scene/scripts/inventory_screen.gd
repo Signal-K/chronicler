@@ -1,22 +1,22 @@
 extends Control
 
 const UIFwk = preload("res://scripts/ui_framework.gd")
-@onready var coins_label: Label = $Root/Summary/SummaryMargin/SummaryBody/CoinsLabel
-@onready var bottles_label: Label = $Root/Summary/SummaryMargin/SummaryBody/BottlesLabel
-@onready var glass_label: Label = $Root/Summary/SummaryMargin/SummaryBody/GlassLabel
-@onready var water_label: Label = $Root/Summary/SummaryMargin/SummaryBody/WaterLabel
-@onready var plot_pages_label: Label = $Root/Summary/SummaryMargin/SummaryBody/PlotPagesLabel
-@onready var total_harvest_label: Label = $Root/Summary/SummaryMargin/SummaryBody/TotalHarvestLabel
+@onready var coins_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/CoinsLabel
+@onready var bottles_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/BottlesLabel
+@onready var glass_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/GlassLabel
+@onready var water_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/WaterLabel
+@onready var plot_pages_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/PlotPagesLabel
+@onready var total_harvest_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/TotalHarvestLabel
 
-@onready var tomato_seed_label: Label = $Root/SeedsPanel/SeedsMargin/SeedsBody/TomatoSeedLabel
-@onready var blueberry_seed_label: Label = $Root/SeedsPanel/SeedsMargin/SeedsBody/BlueberrySeedLabel
-@onready var lavender_seed_label: Label = $Root/SeedsPanel/SeedsMargin/SeedsBody/LavenderSeedLabel
-@onready var sunflower_seed_label: Label = $Root/SeedsPanel/SeedsMargin/SeedsBody/SunflowerSeedLabel
+@onready var tomato_seed_label: Label = $ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody/TomatoSeedLabel
+@onready var blueberry_seed_label: Label = $ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody/BlueberrySeedLabel
+@onready var lavender_seed_label: Label = $ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody/LavenderSeedLabel
+@onready var sunflower_seed_label: Label = $ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody/SunflowerSeedLabel
 
-@onready var tomato_harvest_label: Label = $Root/CropsPanel/CropsMargin/CropsBody/TomatoHarvestLabel
-@onready var blueberry_harvest_label: Label = $Root/CropsPanel/CropsMargin/CropsBody/BlueberryHarvestLabel
-@onready var lavender_harvest_label: Label = $Root/CropsPanel/CropsMargin/CropsBody/LavenderHarvestLabel
-@onready var sunflower_harvest_label: Label = $Root/CropsPanel/CropsMargin/CropsBody/SunflowerHarvestLabel
+@onready var tomato_harvest_label: Label = $ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody/TomatoHarvestLabel
+@onready var blueberry_harvest_label: Label = $ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody/BlueberryHarvestLabel
+@onready var lavender_harvest_label: Label = $ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody/LavenderHarvestLabel
+@onready var sunflower_harvest_label: Label = $ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody/SunflowerHarvestLabel
 
 func _ready() -> void:
 	_apply_ui_theme()
@@ -25,10 +25,10 @@ func _ready() -> void:
 
 func _apply_ui_theme() -> void:
 	UIFwk.apply_warm_screen_theme(self)
-	UIFwk.style_warm_title($Root/Title, 26)
-	UIFwk.style_warm_panel($Root/Summary)
-	UIFwk.style_warm_panel($Root/SeedsPanel)
-	UIFwk.style_warm_panel($Root/CropsPanel)
+	UIFwk.style_warm_title($ScrollRoot/Root/Title, 26)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Summary)
+	UIFwk.style_warm_panel($ScrollRoot/Root/SeedsPanel)
+	UIFwk.style_warm_panel($ScrollRoot/Root/CropsPanel)
 	# Summary labels
 	UIFwk.style_amber_text(coins_label)
 	UIFwk.style_warm_text(bottles_label)
@@ -37,9 +37,9 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_accent_blue(water_label)
 	UIFwk.style_amber_muted(plot_pages_label)
 	# Seeds section header
-	UIFwk.style_warm_section($Root/SeedsPanel/SeedsMargin/SeedsBody/SeedsTitle)
+	UIFwk.style_warm_section($ScrollRoot/Root/SeedsPanel/SeedsMargin/SeedsBody/SeedsTitle)
 	# Crops section header
-	UIFwk.style_warm_section($Root/CropsPanel/CropsMargin/CropsBody/CropsTitle)
+	UIFwk.style_warm_section($ScrollRoot/Root/CropsPanel/CropsMargin/CropsBody/CropsTitle)
 
 
 func _refresh_ui() -> void:

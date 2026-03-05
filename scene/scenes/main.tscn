@@ -19,101 +19,113 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.29, 0.87, 0.50, 1)
+color = Color(0.529, 0.937, 0.502, 1)
 
 [node name="RootLayout" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 0
 
 [node name="TopBar" type="PanelContainer" parent="RootLayout"]
 layout_mode = 2
 
 [node name="TopBarMargin" type="MarginContainer" parent="RootLayout/TopBar"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="TopBarRow" type="HBoxContainer" parent="RootLayout/TopBar/TopBarMargin"]
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "🌾 Bee Garden"
 
+[node name="ResourcesRow" type="HBoxContainer" parent="RootLayout/TopBar/TopBarMargin/TopBarRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LevelLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow"]
+layout_mode = 2
+text = "Lv.1"
+
+[node name="CoinsLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow"]
+layout_mode = 2
+text = "🪙0"
+
+[node name="WaterLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow"]
+layout_mode = 2
+text = "💧0/0"
+
 [node name="StatusLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow"]
 layout_mode = 2
-text = "Tool: Till"
+text = ""
+visible = false
 
-[node name="ResourcesColumn" type="HBoxContainer" parent="RootLayout/TopBar/TopBarMargin/TopBarRow"]
+[node name="MapLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow"]
 layout_mode = 2
-theme_override_constants/separation = 10
+text = ""
+visible = false
 
-[node name="LevelLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn"]
+[node name="SeedsLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow"]
 layout_mode = 2
-text = "Level: 1"
+text = "🌱0"
 
-[node name="MapLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn"]
-layout_mode = 2
-text = "Map: Home Farm"
-
-[node name="CoinsLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn"]
-layout_mode = 2
-text = "Coins: 0"
-
-[node name="WaterLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn"]
-layout_mode = 2
-text = "Water: 0/0"
-
-[node name="SeedsLabel" type="Label" parent="RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn"]
-layout_mode = 2
-text = "Tomato seeds: 0"
-
-[node name="GardenPanel" type="PanelContainer" parent="RootLayout"]
+[node name="GardenArea" type="Control" parent="RootLayout"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="GardenMargin" type="MarginContainer" parent="RootLayout/GardenPanel"]
+[node name="GardenPanel" type="PanelContainer" parent="RootLayout/GardenArea"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -163.0
+offset_top = -163.0
+offset_right = 163.0
+offset_bottom = 163.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GardenMargin" type="MarginContainer" parent="RootLayout/GardenArea/GardenPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="Grid" type="GridContainer" parent="RootLayout/GardenPanel/GardenMargin"]
+[node name="Grid" type="GridContainer" parent="RootLayout/GardenArea/GardenPanel/GardenMargin"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 12
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
 columns = 3
 
-[node name="Plot1" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot1" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Plot2" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot2" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Plot3" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot3" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Plot4" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot4" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Plot5" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot5" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Plot6" parent="RootLayout/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
+[node name="Plot6" parent="RootLayout/GardenArea/GardenPanel/GardenMargin/Grid" instance=ExtResource("2")]
 layout_mode = 2
 
 [node name="ToolbarPanel" type="PanelContainer" parent="RootLayout"]
@@ -121,57 +133,53 @@ layout_mode = 2
 
 [node name="ToolbarMargin" type="MarginContainer" parent="RootLayout/ToolbarPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="ToolbarContent" type="VBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin"]
 layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="ToolsLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
-layout_mode = 2
-text = "Actions"
+theme_override_constants/separation = 6
 
 [node name="ToolButtons" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="TillButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_pressed = true
-text = "Till"
+text = "⛏️ Till"
 
 [node name="PlantButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "Plant"
+text = "🌱 Plant"
 
 [node name="WaterButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "Water"
+text = "💧 Water"
 
 [node name="HarvestButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "Harvest"
+text = "🌾 Harvest"
 
-[node name="CropRow" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
+[node name="SecondRow" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CropLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow"]
+[node name="CropLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow"]
 layout_mode = 2
-text = "Crop"
+text = "Crop:"
 
-[node name="CropSelector" type="OptionButton" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow"]
+[node name="CropSelector" type="OptionButton" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 4
@@ -181,51 +189,40 @@ popup/item_1/text = "Blueberry"
 popup/item_2/text = "Lavender"
 popup/item_3/text = "Sunflower"
 
-[node name="ShopSection" type="VBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
+[node name="HintLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = ""
+horizontal_alignment = 2
+
+[node name="ShopRow" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ShopLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection"]
-layout_mode = 2
-text = "Shop"
-
-[node name="ShopRow1" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="BuyTomatoSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1"]
+[node name="BuyTomatoSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tomato Seed (10)"
+text = "🍅 Seed"
 
-[node name="BuyBlueberrySeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1"]
+[node name="BuyBlueberrySeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Blueberry Seed (12)"
+text = "🫐 Seed"
 
-[node name="BuyLavenderSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1"]
+[node name="BuyLavenderSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Lavender Seed (15)"
+text = "🌸 Seed"
 
-[node name="ShopRow2" type="HBoxContainer" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="BuySunflowerSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow2"]
+[node name="BuySunflowerSeedButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Sunflower Seed (18)"
+text = "🌻 Seed"
 
-[node name="BuyGlassBottleButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow2"]
+[node name="BuyGlassBottleButton" type="Button" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Glass Bottle (20)"
-
-[node name="HintLabel" type="Label" parent="RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent"]
-layout_mode = 2
-text = "Use actions to progress plots and harvest."
-autowrap_mode = 2
+text = "🫙 Bottle"
 
 [node name="GrowthTimer" type="Timer" parent="."]
 autostart = true

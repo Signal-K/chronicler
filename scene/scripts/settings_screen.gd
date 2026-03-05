@@ -1,23 +1,23 @@
 extends Control
 
 const UIFwk = preload("res://scripts/ui_framework.gd")
-@onready var coins_label: Label = $Root/Summary/SummaryMargin/SummaryBody/CoinsLabel
-@onready var water_label: Label = $Root/Summary/SummaryMargin/SummaryBody/WaterLabel
-@onready var seeds_label: Label = $Root/Summary/SummaryMargin/SummaryBody/SeedsLabel
-@onready var glass_label: Label = $Root/Summary/SummaryMargin/SummaryBody/GlassLabel
-@onready var tutorial_label: Label = $Root/Summary/SummaryMargin/SummaryBody/TutorialLabel
-@onready var hive_tutorial_label: Label = $Root/Summary/SummaryMargin/SummaryBody/HiveTutorialLabel
-@onready var status_label: Label = $Root/Actions/ActionsMargin/ActionsBody/StatusLabel
+@onready var coins_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/CoinsLabel
+@onready var water_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/WaterLabel
+@onready var seeds_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/SeedsLabel
+@onready var glass_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/GlassLabel
+@onready var tutorial_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/TutorialLabel
+@onready var hive_tutorial_label: Label = $ScrollRoot/Root/Summary/SummaryMargin/SummaryBody/HiveTutorialLabel
+@onready var status_label: Label = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/StatusLabel
 
-@onready var add_coins_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1/AddCoinsButton
-@onready var refill_water_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1/RefillWaterButton
-@onready var add_seeds_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2/AddSeedsButton
-@onready var add_glass_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2/AddGlassButton
-@onready var reset_farm_tutorial_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetFarmTutorialButton
-@onready var reset_hive_tutorial_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetHiveTutorialButton
+@onready var add_coins_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1/AddCoinsButton
+@onready var refill_water_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow1/RefillWaterButton
+@onready var add_seeds_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2/AddSeedsButton
+@onready var add_glass_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow2/AddGlassButton
+@onready var reset_farm_tutorial_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetFarmTutorialButton
+@onready var reset_hive_tutorial_button: Button = $ScrollRoot/Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetHiveTutorialButton
 
-@onready var growth_rate_label: Label = $Root/Growth/GrowthMargin/GrowthBody/GrowthRateLabel
-@onready var growth_slider: HSlider = $Root/Growth/GrowthMargin/GrowthBody/GrowthSlider
+@onready var growth_rate_label: Label = $ScrollRoot/Root/Growth/GrowthMargin/GrowthBody/GrowthRateLabel
+@onready var growth_slider: HSlider = $ScrollRoot/Root/Growth/GrowthMargin/GrowthBody/GrowthSlider
 
 func _ready() -> void:
 	_apply_ui_theme()
@@ -34,9 +34,9 @@ func _ready() -> void:
 
 func _apply_ui_theme() -> void:
 	UIFwk.apply_warm_screen_theme(self)
-	UIFwk.style_warm_title($Root/Title, 26)
-	UIFwk.style_warm_panel($Root/Summary)
-	UIFwk.style_warm_panel($Root/Actions)
+	UIFwk.style_warm_title($ScrollRoot/Root/Title, 26)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Summary)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Actions)
 	UIFwk.style_amber_muted(status_label)
 	UIFwk.style_amber_button(add_coins_button)
 	UIFwk.style_amber_button(refill_water_button)
@@ -45,9 +45,9 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_amber_button(reset_farm_tutorial_button)
 	UIFwk.style_amber_button(reset_hive_tutorial_button)
 	# Growth section
-	UIFwk.style_warm_panel($Root/Growth)
-	UIFwk.style_warm_section($Root/Growth/GrowthMargin/GrowthBody/GrowthTitle)
-	UIFwk.style_amber_muted($Root/Growth/GrowthMargin/GrowthBody/GrowthDescLabel)
+	UIFwk.style_warm_panel($ScrollRoot/Root/Growth)
+	UIFwk.style_warm_section($ScrollRoot/Root/Growth/GrowthMargin/GrowthBody/GrowthTitle)
+	UIFwk.style_amber_muted($ScrollRoot/Root/Growth/GrowthMargin/GrowthBody/GrowthDescLabel)
 	UIFwk.style_warm_text(growth_rate_label)
 
 

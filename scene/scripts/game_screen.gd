@@ -21,21 +21,21 @@ var tutorial_steps: Array[Dictionary] = []
 @onready var plant_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons/PlantButton
 @onready var water_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons/WaterButton
 @onready var harvest_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolButtons/HarvestButton
-@onready var crop_row: HBoxContainer = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow
-@onready var shop_section: VBoxContainer = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection
-@onready var hint_label: Label = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/HintLabel
-@onready var crop_selector: OptionButton = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow/CropSelector
+@onready var crop_row: HBoxContainer = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow
+@onready var shop_section: HBoxContainer = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow
+@onready var hint_label: Label = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow/HintLabel
+@onready var crop_selector: OptionButton = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow/CropSelector
 @onready var status_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/StatusLabel
-@onready var level_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn/LevelLabel
-@onready var map_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn/MapLabel
-@onready var coins_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn/CoinsLabel
-@onready var water_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn/WaterLabel
-@onready var seeds_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesColumn/SeedsLabel
-@onready var buy_tomato_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1/BuyTomatoSeedButton
-@onready var buy_blueberry_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1/BuyBlueberrySeedButton
-@onready var buy_lavender_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow1/BuyLavenderSeedButton
-@onready var buy_sunflower_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow2/BuySunflowerSeedButton
-@onready var buy_glass_bottle_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopRow2/BuyGlassBottleButton
+@onready var level_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow/LevelLabel
+@onready var map_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/MapLabel
+@onready var coins_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow/CoinsLabel
+@onready var water_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow/WaterLabel
+@onready var seeds_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/ResourcesRow/SeedsLabel
+@onready var buy_tomato_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow/BuyTomatoSeedButton
+@onready var buy_blueberry_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow/BuyBlueberrySeedButton
+@onready var buy_lavender_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow/BuyLavenderSeedButton
+@onready var buy_sunflower_seed_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow/BuySunflowerSeedButton
+@onready var buy_glass_bottle_button: Button = $RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopRow/BuyGlassBottleButton
 @onready var tutorial_overlay: Control = $TutorialOverlay
 @onready var tutorial_title_label: Label = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialTitleLabel
 @onready var tutorial_message_label: Label = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialMessageLabel
@@ -44,7 +44,7 @@ var tutorial_steps: Array[Dictionary] = []
 @onready var next_tutorial_button: Button = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialButtons/NextTutorialButton
 
 var plot_nodes: Array[Button] = []
-@onready var _plot_grid: GridContainer = $RootLayout/GardenPanel/GardenMargin/Grid
+@onready var _plot_grid: GridContainer = $RootLayout/GardenArea/GardenPanel/GardenMargin/Grid
 
 @onready var crop_textures := {
 	"wheat_seed": preload("res://assets/sprites/crops/wheat_seed.png"),
@@ -87,65 +87,68 @@ func _ready() -> void:
 	_update_tool_buttons()
 	_refresh_all_plots()
 	_refresh_resource_labels()
-	status_label.text = "Tool: Till"
 	_setup_tutorial()
 
 
 func _apply_ui_theme() -> void:
-	# Green farm background
+	# Green farm background (matches RN #4ade80)
 	UIFwk.apply_farm_bg(self)
 
-	# Dark brown header bar
+	# Header: dark brown panel with badge-style resource labels
 	UIFwk.style_header_panel($RootLayout/TopBar)
 	var title_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/Title
-	title_label.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
-	title_label.add_theme_font_size_override("font_size", 18)
+	UIFwk.style_warm_title(title_label, 17)
 
-	# Resource labels - white on brown background
-	UIFwk.style_primary_text(status_label)
 	UIFwk.style_accent_gold(level_label)
-	UIFwk.style_accent_blue(water_label)
 	UIFwk.style_accent_gold(coins_label)
+	UIFwk.style_accent_blue(water_label)
 	UIFwk.style_accent_green(seeds_label)
 
-	# Hide map label (not shown in React Native header)
-	map_label.visible = false
+	# Garden: dark-bordered panel on green BG
+	var garden_panel: PanelContainer = $RootLayout/GardenArea/GardenPanel
+	var garden_style := StyleBoxFlat.new()
+	garden_style.bg_color = Color(0.1, 0.52, 0.18, 0.5)
+	garden_style.border_color = Color(0.08, 0.39, 0.08, 0.8)
+	garden_style.border_width_left = 4
+	garden_style.border_width_top = 4
+	garden_style.border_width_right = 4
+	garden_style.border_width_bottom = 4
+	garden_style.corner_radius_top_left = 12
+	garden_style.corner_radius_top_right = 12
+	garden_style.corner_radius_bottom_right = 12
+	garden_style.corner_radius_bottom_left = 12
+	garden_panel.add_theme_stylebox_override("panel", garden_style)
 
-	# Semi-transparent garden panel on green background
-	UIFwk.style_garden_panel($RootLayout/GardenPanel)
-
-	# Brown toolbar
+	# Toolbar: dark brown #92400e (matches RN SimpleToolbar)
 	UIFwk.style_toolbar_panel($RootLayout/ToolbarPanel)
-	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolsLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
-	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/HintLabel.add_theme_color_override("font_color", UIFwk.MUTED_TEXT_COLOR)
-	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow/CropLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
-	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
 
-	# Action buttons matching React Native SimpleToolbar colours
+	# Tool buttons (matches RN toolbarConfig colors)
 	UIFwk.style_button(till_button, Color("8b4513"))
 	UIFwk.style_button(plant_button, Color("166534"))
 	UIFwk.style_button(water_button, Color("1d4ed8"))
-	UIFwk.style_button(harvest_button, Color("ca8a04"), Color("172554"))
+	UIFwk.style_button(harvest_button, Color("ca8a04"), Color("1c1917"))
 
-	# Shop buttons
+	# Crop selector row
+	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow/CropLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
+
+	# Shop buttons (compact emoji labels)
 	UIFwk.style_button(buy_tomato_seed_button, Color("b91c1c"))
 	UIFwk.style_button(buy_blueberry_seed_button, Color("1e3a8a"))
 	UIFwk.style_button(buy_lavender_seed_button, Color("6d28d9"))
-	UIFwk.style_button(buy_sunflower_seed_button, Color("ca8a04"), Color("172554"))
+	UIFwk.style_button(buy_sunflower_seed_button, Color("ca8a04"), Color("1c1917"))
 	UIFwk.style_button(buy_glass_bottle_button, Color("0f766e"))
 
-	# Tutorial buttons
+	# Tutorial card
+	UIFwk.style_amber_panel($TutorialOverlay/TutorialCard)
 	UIFwk.style_button(skip_tutorial_button, Color("7c2d12"))
 	UIFwk.style_button(next_tutorial_button, Color("0f766e"))
 
 
 func _build_plot_nodes() -> void:
-	# Collect the 6 scene-authored plot nodes first.
 	plot_nodes.clear()
 	for child in _plot_grid.get_children():
 		if child is Button:
 			plot_nodes.append(child)
-	# Spawn additional plots for pages 2-4 (documented runtime exception).
 	var target_count := GameState.get_plot_count()
 	while plot_nodes.size() < target_count:
 		var extra: Button = PLOT_SCENE.instantiate()
@@ -169,13 +172,11 @@ func _initialize_plots() -> void:
 func _on_tool_selected(tool: String) -> void:
 	selected_tool = tool
 	_update_tool_buttons()
-	status_label.text = "Tool: %s" % tool.capitalize()
 	_on_tutorial_tool_selected(tool)
 
 
 func _on_crop_selected(index: int) -> void:
 	selected_crop = crop_selector.get_item_text(index).to_lower()
-	status_label.text = "Crop selected: %s" % selected_crop.capitalize()
 	GameState.set_farm_selected_crop(selected_crop)
 	GameState.save_state()
 	_refresh_resource_labels()
@@ -188,12 +189,10 @@ func _on_plot_pressed(index: int) -> void:
 	if selected_tool == "till":
 		if plot["state"] == "empty":
 			plot["state"] = "tilled"
-			status_label.text = "Plot %d tilled" % (index + 1)
 			_on_tutorial_action("till-plot")
 	elif selected_tool == "plant":
 		if plot["state"] == "tilled":
 			if not GameState.consume_seed(selected_crop, 1):
-				status_label.text = "No %s seeds left" % selected_crop.capitalize()
 				_refresh_resource_labels()
 				return
 			plot["state"] = "planted"
@@ -201,26 +200,21 @@ func _on_plot_pressed(index: int) -> void:
 			plot["crop_type"] = selected_crop
 			plot["needs_water"] = false
 			plot["last_action_at"] = now
-			# Allow immediate watering during the guided tutorial flow.
 			if not GameState.tutorial_completed and str(_current_tutorial_step().get("action", "")) == "plant-seed":
 				plot["needs_water"] = true
-			status_label.text = "Planted %s on plot %d" % [selected_crop.capitalize(), index + 1]
 			_on_tutorial_action("plant-seed")
 	elif selected_tool == "water":
 		if (plot["state"] == "planted" or plot["state"] == "growing") and plot["needs_water"] and plot["growth_stage"] < 5:
 			if not GameState.consume_water(1):
-				status_label.text = "Out of water"
 				_refresh_resource_labels()
 				return
 			plot["growth_stage"] += 1
 			plot["needs_water"] = false
 			plot["last_action_at"] = now
 			plot["state"] = "growing"
-			# Keep the tutorial fast by ripening the first guided crop immediately.
 			if not GameState.tutorial_completed and str(_current_tutorial_step().get("action", "")) == "water-plant":
 				plot["growth_stage"] = 5
 				plot["needs_water"] = false
-			status_label.text = "Watered plot %d" % (index + 1)
 			_on_tutorial_action("water-plant")
 	elif selected_tool == "harvest":
 		if plot["growth_stage"] >= 5:
@@ -228,13 +222,12 @@ func _on_plot_pressed(index: int) -> void:
 			GameState.add_harvest(crop_id, 3)
 			GameState.add_seed(crop_id, 2)
 			GameState.add_coins(8)
-			var xp_event: Dictionary = GameState.award_harvest_xp(crop_id)
+			GameState.award_harvest_xp(crop_id)
 			plot["state"] = "empty"
 			plot["growth_stage"] = 0
 			plot["crop_type"] = ""
 			plot["needs_water"] = false
 			plot["last_action_at"] = 0.0
-			status_label.text = "Harvested plot %d (+%d XP)" % [index + 1, int(xp_event.get("gained", 0))]
 			_on_tutorial_action("harvest-crop")
 		elif plot["state"] != "empty":
 			var crop_return := str(plot["crop_type"])
@@ -245,7 +238,6 @@ func _on_plot_pressed(index: int) -> void:
 			plot["crop_type"] = ""
 			plot["needs_water"] = false
 			plot["last_action_at"] = 0.0
-			status_label.text = "Cleared plot %d" % (index + 1)
 
 	plots[index] = plot
 	_refresh_plot(index)
@@ -256,7 +248,6 @@ func _check_plot_grid_expansion() -> void:
 	var target_count := GameState.get_plot_count()
 	if plot_nodes.size() >= target_count:
 		return
-	# Player purchased a new plot page – add the missing nodes and reconnect.
 	var prev_count := plot_nodes.size()
 	while plot_nodes.size() < target_count:
 		var extra: Button = PLOT_SCENE.instantiate()
@@ -310,7 +301,8 @@ func _refresh_all_plots() -> void:
 
 
 func _refresh_plot(index: int) -> void:
-	plot_nodes[index].set_plot_display(plots[index], crop_textures)
+	if index < plot_nodes.size():
+		plot_nodes[index].set_plot_display(plots[index], crop_textures)
 
 
 func _sync_crop_selector() -> void:
@@ -349,17 +341,13 @@ func _on_buy_item(item_id: String) -> void:
 	if price <= 0:
 		return
 	if GameState.coins < price:
-		status_label.text = "Not enough coins for %s" % item_id.replace("_", " ").capitalize()
 		_refresh_resource_labels()
 		return
-
 	GameState.add_coins(-price)
 	if item_id == "glass_bottle":
 		GameState.add_glass_bottle(1)
-		status_label.text = "Bought 1 glass bottle"
 	else:
 		GameState.add_seed(item_id, 1)
-		status_label.text = "Bought 1 %s seed" % item_id.capitalize()
 	GameState.save_state()
 	_refresh_resource_labels()
 
@@ -375,53 +363,12 @@ func _on_water_regen_tick() -> void:
 func _setup_tutorial() -> void:
 	_ensure_tutorial_resources()
 	tutorial_steps = [
-		{
-			"title": "Quick Start",
-			"message": "You only need four actions to run the farm loop.",
-			"hint": "Press Next to begin.",
-			"type": "info",
-		},
-		{
-			"title": "1. Till",
-			"message": "Tap any empty plot to till it.",
-			"hint": "Use the Till tool, then tap a plot.",
-			"type": "require_action",
-			"action": "till-plot",
-		},
-		{
-			"title": "2. Plant",
-			"message": "Tap the tilled plot to plant your seed.",
-			"hint": "Use the Plant tool.",
-			"type": "require_action",
-			"action": "plant-seed",
-		},
-		{
-			"title": "3. Water",
-			"message": "Water your planted crop once.",
-			"hint": "Use the Water tool.",
-			"type": "require_action",
-			"action": "water-plant",
-		},
-		{
-			"title": "4. Harvest",
-			"message": "Now harvest the ripe crop.",
-			"hint": "Use the Harvest tool and tap that plot.",
-			"type": "require_action",
-			"action": "harvest-crop",
-		},
-		{
-			"title": "Next: Hives",
-			"message": "Farm basics are done. Open Hives to learn bottling and orders.",
-			"hint": "Press Next to jump to the Hives tab.",
-			"type": "transition",
-			"tab": "Hives",
-		},
-		{
-			"title": "Farm Tutorial Complete",
-			"message": "Great start. Continue the guided flow in Hives.",
-			"hint": "You can always reset tutorials in Settings.",
-			"type": "complete",
-		},
+		{"title": "Quick Start", "message": "You only need four actions to run the farm loop.", "hint": "Press Next to begin.", "type": "info"},
+		{"title": "1. Till", "message": "Tap any empty plot to till it.", "hint": "Use the Till tool, then tap a plot.", "type": "require_action", "action": "till-plot"},
+		{"title": "2. Plant", "message": "Tap the tilled plot to plant your seed.", "hint": "Use the Plant tool.", "type": "require_action", "action": "plant-seed"},
+		{"title": "3. Water", "message": "Water your planted crop once.", "hint": "Use the Water tool.", "type": "require_action", "action": "water-plant"},
+		{"title": "4. Harvest", "message": "Now harvest the ripe crop.", "hint": "Use the Harvest tool and tap that plot.", "type": "require_action", "action": "harvest-crop"},
+		{"title": "Farm Tutorial Complete", "message": "Great start. Continue the guided flow in Hives.", "hint": "You can always reset tutorials in Settings.", "type": "complete"},
 	]
 	_refresh_tutorial_ui()
 
@@ -437,11 +384,7 @@ func _refresh_tutorial_ui() -> void:
 		tutorial_overlay.visible = false
 		_apply_tutorial_simplified_layout(false, {})
 		return
-	if tutorial_steps.is_empty():
-		tutorial_overlay.visible = false
-		_apply_tutorial_simplified_layout(false, {})
-		return
-	if GameState.tutorial_step_index >= tutorial_steps.size():
+	if tutorial_steps.is_empty() or GameState.tutorial_step_index >= tutorial_steps.size():
 		GameState.complete_tutorial()
 		GameState.save_state()
 		tutorial_overlay.visible = false
@@ -474,8 +417,6 @@ func _on_next_tutorial() -> void:
 	var step_type := str(step.get("type", "info"))
 	if step_type == "require_tool" or step_type == "require_action":
 		return
-	if step_type == "transition":
-		_focus_tab(str(step.get("tab", "")))
 	_advance_tutorial_step()
 
 
@@ -505,24 +446,6 @@ func _on_tutorial_action(action_id: String) -> void:
 		_advance_tutorial_step()
 
 
-func _focus_tab(tab_name: String) -> void:
-	if tab_name.is_empty():
-		return
-	var root := get_tree().current_scene
-	if root == null:
-		return
-	var tabs_node := root.get_node_or_null("Tabs")
-	if tabs_node == null:
-		return
-	var tabs := tabs_node as TabContainer
-	if tabs == null:
-		return
-	for i in range(tabs.get_tab_count()):
-		if tabs.get_tab_title(i).findn(tab_name) >= 0:
-			tabs.current_tab = i
-			return
-
-
 func _ensure_tutorial_resources() -> void:
 	if GameState.tutorial_completed:
 		return
@@ -540,10 +463,6 @@ func _ensure_tutorial_resources() -> void:
 func _apply_tutorial_simplified_layout(is_active: bool, step: Dictionary) -> void:
 	crop_row.visible = not is_active
 	shop_section.visible = not is_active
-	hint_label.visible = not is_active
-	level_label.visible = not is_active
-	map_label.visible = not is_active
-	coins_label.visible = not is_active
 	if is_active:
 		selected_crop = "tomato"
 		_sync_crop_selector()
@@ -552,7 +471,6 @@ func _apply_tutorial_simplified_layout(is_active: bool, step: Dictionary) -> voi
 		if expected_tool != "" and selected_tool != expected_tool:
 			selected_tool = expected_tool
 			_update_tool_buttons()
-		status_label.text = "Next: %s" % str(step.get("message", "Follow the tutorial step."))
 	else:
 		_apply_tool_gating("")
 
@@ -561,16 +479,11 @@ func _expected_tool_for_step(step: Dictionary) -> String:
 	if str(step.get("type", "")) != "require_action":
 		return ""
 	match str(step.get("action", "")):
-		"till-plot":
-			return "till"
-		"plant-seed":
-			return "plant"
-		"water-plant":
-			return "water"
-		"harvest-crop":
-			return "harvest"
-		_:
-			return ""
+		"till-plot": return "till"
+		"plant-seed": return "plant"
+		"water-plant": return "water"
+		"harvest-crop": return "harvest"
+		_: return ""
 
 
 func _apply_tool_gating(only_tool: String) -> void:
