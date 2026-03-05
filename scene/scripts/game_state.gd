@@ -1,8 +1,21 @@
 extends Node
 
 const SAVE_PATH := "user://bee_garden_save.json"
-const PLOT_COUNT := 6
+const PLOTS_PER_PAGE := 6
+const MAX_PLOT_PAGES := 4
+const PLOT_COUNT := 6  # Legacy alias; use get_plot_count() for dynamic value.
+
+const PLOT_PAGE_UPGRADES: Array = [
+	{"page": 2, "required_level": 2, "cost": 50},
+	{"page": 3, "required_level": 5, "cost": 150},
+	{"page": 4, "required_level": 10, "cost": 300},
+]
+
+var plot_pages := 1
 const CURRENT_TUTORIAL_VERSION := 4
+const CURRENT_SAVE_VERSION := 2  # Increment when save schema changes.
+
+var save_version := CURRENT_SAVE_VERSION
 
 var farm_plots: Array[Dictionary] = []
 var farm_selected_crop := "tomato"
@@ -62,6 +75,8 @@ func _reset_defaults() -> void:
 	hive_tutorial_completed = false
 	hive_tutorial_step_index = 0
 	tutorial_version = CURRENT_TUTORIAL_VERSION
+	save_version = CURRENT_SAVE_VERSION
+	plot_pages = 1
 	unlocked_maps = ["default"]
 	active_map = "default"
 	discovered_planets = []
@@ -208,6 +223,10 @@ func load_state() -> void:
 	if data.has("hive_tutorial_step_index"):
 		hive_tutorial_step_index = int(data["hive_tutorial_step_index"])
 	tutorial_version = loaded_tutorial_version
+	if data.has("save_version"):
+		save_version = int(data["save_version"])
+	if data.has("plot_pages"):
+		plot_pages = max(1, min(int(data["plot_pages"]), MAX_PLOT_PAGES))
 	if data.has("unlocked_maps") and data["unlocked_maps"] is Array:
 		var parsed_maps: Array[String] = []
 		for item in data["unlocked_maps"]:
@@ -258,6 +277,8 @@ func save_state() -> void:
 		"hive_tutorial_completed": hive_tutorial_completed,
 		"hive_tutorial_step_index": hive_tutorial_step_index,
 		"tutorial_version": tutorial_version,
+		"save_version": save_version,
+		"plot_pages": plot_pages,
 		"unlocked_maps": unlocked_maps,
 		"active_map": active_map,
 		"discovered_planets": discovered_planets,
@@ -272,10 +293,11 @@ func save_state() -> void:
 
 
 func _ensure_farm_plots() -> void:
-	if farm_plots.size() > PLOT_COUNT:
-		farm_plots = farm_plots.slice(0, PLOT_COUNT)
+	var target_count := get_plot_count()
+	if farm_plots.size() > target_count:
+		farm_plots = farm_plots.slice(0, target_count)
 
-	while farm_plots.size() < PLOT_COUNT:
+	while farm_plots.size() < target_count:
 		farm_plots.append({
 			"state": "empty",
 			"growth_stage": 0,
@@ -675,3 +697,30 @@ func add_glass_bottle(amount: int = 1) -> void:
 
 func add_bottled_honey(amount: int = 1) -> void:
 	bottled_honey_inventory = max(0, bottled_honey_inventory + amount)
+
+
+func get_plot_count() -> int:
+	return plot_pages * PLOTS_PER_PAGE
+
+
+func unlock_plot_page(target_page: int) -> Dictionary:
+	var upgrade: Dictionary = {}
+	for u in PLOT_PAGE_UPGRADES:
+		if int(u.get("page", 0)) == target_page:
+			upgrade = u
+			break
+	if upgrade.is_empty():
+		return {"ok": false, "message": "Unknown upgrade page."}
+	if plot_pages >= target_page:
+		return {"ok": false, "message": "Already unlocked."}
+	var required_level := int(upgrade.get("required_level", 1))
+	var cost := int(upgrade.get("cost", 0))
+	var current_level := calculate_level_from_xp(total_xp)
+	if current_level < required_level:
+		return {"ok": false, "message": "Reach level %d to unlock Page %d." % [required_level, target_page]}
+	if coins < cost:
+		return {"ok": false, "message": "Need %d coins to unlock Page %d." % [cost, target_page]}
+	add_coins(-cost)
+	plot_pages = target_page
+	_ensure_farm_plots()
+	return {"ok": true, "message": "Page %d unlocked! +6 plots." % target_page}

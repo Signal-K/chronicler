@@ -24,7 +24,10 @@
     "docker:ios": "docker-compose exec app npx expo start --ios",
     "docker:android": "docker-compose exec app npx expo start --android",
     "test:godot:smoke": "HOME=/tmp GODOT_USER_DIR=/tmp/godot /Applications/Godot4.5.app/Contents/MacOS/Godot --headless --path scene --script res://tests/smoke_test.gd",
-    "test:all:build:export": "./scripts/test_export_build_all.sh"
+    "test:all:build:export": "./scripts/test_export_build_all.sh",
+    "electron": "cd electron && npm start",
+    "electron:install": "cd electron && npm install",
+    "electron:build": "cd electron && npm run build"
   },
   "svgo:assets": "svgo -f assets/images -q",
   "svgoConfig": {

@@ -127,3 +127,68 @@ text = "Award Classification XP"
 [node name="StatusLabel" type="Label" parent="Root/Actions/ActionsMargin/ActionsBody"]
 layout_mode = 2
 text = "Use buttons to test progression events."
+
+[node name="Upgrades" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="UpgradesMargin" type="MarginContainer" parent="Root/Upgrades"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="UpgradesBody" type="VBoxContainer" parent="Root/Upgrades/UpgradesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="UpgradesTitle" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+text = "🌱 Farm Expansions"
+
+[node name="PlotPagesLabel" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+text = "Plot pages: 1 / 4 (6 plots each)"
+
+[node name="UpgradeRow1" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Upgrade1Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Page 2 — Lv.2 · 50c"
+
+[node name="Upgrade1Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="UpgradeRow2" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Upgrade2Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Page 3 — Lv.5 · 150c"
+
+[node name="Upgrade2Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="UpgradeRow3" type="HBoxContainer" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Upgrade3Label" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Page 4 — Lv.10 · 300c"
+
+[node name="Upgrade3Button" type="Button" parent="Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3"]
+layout_mode = 2
+text = "Unlock"
+
+[node name="UpgradeStatusLabel" type="Label" parent="Root/Upgrades/UpgradesMargin/UpgradesBody"]
+layout_mode = 2
+text = ""

@@ -14,10 +14,26 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 @onready var pollination_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardPollinationButton
 @onready var classification_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ActionButtons/AwardClassificationButton
 
+@onready var plot_pages_label: Label = $Root/Upgrades/UpgradesMargin/UpgradesBody/PlotPagesLabel
+@onready var upgrade_status_label: Label = $Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeStatusLabel
+@onready var upgrade_buttons: Array[Button] = [
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Button,
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Button,
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Button,
+]
+@onready var upgrade_labels: Array[Label] = [
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow1/Upgrade1Label,
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow2/Upgrade2Label,
+	$Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradeRow3/Upgrade3Label,
+]
+
 func _ready() -> void:
 	_apply_ui_theme()
 	pollination_button.pressed.connect(_on_award_pollination)
 	classification_button.pressed.connect(_on_award_classification)
+	for i in range(upgrade_buttons.size()):
+		var target_page := i + 2
+		upgrade_buttons[i].pressed.connect(_on_upgrade_pressed.bind(target_page))
 	_refresh_ui()
 
 
@@ -40,6 +56,15 @@ func _apply_ui_theme() -> void:
 	# Buttons
 	UIFwk.style_button(pollination_button, Color("0f766e"))
 	UIFwk.style_button(classification_button, Color("1d4ed8"))
+	# Upgrades panel
+	UIFwk.style_warm_panel($Root/Upgrades)
+	UIFwk.style_warm_section($Root/Upgrades/UpgradesMargin/UpgradesBody/UpgradesTitle)
+	UIFwk.style_amber_muted(plot_pages_label)
+	UIFwk.style_amber_muted(upgrade_status_label)
+	for lbl in upgrade_labels:
+		UIFwk.style_warm_text(lbl)
+	for btn in upgrade_buttons:
+		UIFwk.style_amber_button(btn)
 
 
 func _on_award_pollination() -> void:
@@ -71,3 +96,35 @@ func _refresh_ui() -> void:
 	pollination_label.text = "Pollination Events: %d" % GameState.pollination_events
 	sales_label.text = "Sales Completed: %d" % GameState.sales_completed
 	classifications_label.text = "Classifications: %d" % GameState.classifications_completed
+	_refresh_upgrades_ui()
+
+
+func _refresh_upgrades_ui() -> void:
+	var current_pages := GameState.plot_pages
+	var total_plots := GameState.get_plot_count()
+	plot_pages_label.text = "Plot pages: %d / %d (%d plots active)" % [current_pages, GameState.MAX_PLOT_PAGES, total_plots]
+	for i in range(upgrade_buttons.size()):
+		var upgrade: Dictionary = GameState.PLOT_PAGE_UPGRADES[i]
+		var target_page := int(upgrade.get("page", 0))
+		var req_level := int(upgrade.get("required_level", 1))
+		var cost := int(upgrade.get("cost", 0))
+		var current_level := int(GameState.get_progress_info().get("level", 1))
+		var purchased := current_pages >= target_page
+		var can_afford := GameState.coins >= cost
+		var meets_level := current_level >= req_level
+		if purchased:
+			upgrade_labels[i].text = "Page %d ✓ Unlocked" % target_page
+			upgrade_buttons[i].text = "Owned"
+			upgrade_buttons[i].disabled = true
+		else:
+			upgrade_labels[i].text = "Page %d — Lv.%d · %dc" % [target_page, req_level, cost]
+			upgrade_buttons[i].text = "Unlock"
+			upgrade_buttons[i].disabled = not (can_afford and meets_level)
+
+
+func _on_upgrade_pressed(target_page: int) -> void:
+	var result: Dictionary = GameState.unlock_plot_page(target_page)
+	GameState.save_state()
+	upgrade_status_label.text = str(result.get("message", "Upgrade action complete."))
+	_refresh_ui()
+
