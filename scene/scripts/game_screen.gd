@@ -1,8 +1,9 @@
 extends Control
 
 const UIFwk = preload("res://scripts/ui_framework.gd")
-const PLOT_COUNT := 6
 const WATER_INTERVAL_SECONDS := 10.0
+# Plots beyond the first 6 are spawned at runtime – see _expand_plot_grid().
+const PLOT_SCENE = preload("res://scenes/plot.tscn")
 const SHOP_PRICES := {
 	"tomato": 10,
 	"blueberry": 12,
@@ -42,14 +43,8 @@ var tutorial_steps: Array[Dictionary] = []
 @onready var skip_tutorial_button: Button = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialButtons/SkipTutorialButton
 @onready var next_tutorial_button: Button = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialButtons/NextTutorialButton
 
-@onready var plot_nodes: Array[Button] = [
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot1,
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot2,
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot3,
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot4,
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot5,
-	$RootLayout/GardenPanel/GardenMargin/Grid/Plot6,
-]
+var plot_nodes: Array[Button] = []
+@onready var _plot_grid: GridContainer = $RootLayout/GardenPanel/GardenMargin/Grid
 
 @onready var crop_textures := {
 	"wheat_seed": preload("res://assets/sprites/crops/wheat_seed.png"),
@@ -72,6 +67,7 @@ func _ready() -> void:
 	selected_crop = GameState.farm_selected_crop
 	_sync_crop_selector()
 
+	_build_plot_nodes()
 	for i in range(plot_nodes.size()):
 		plot_nodes[i].pressed.connect(_on_plot_pressed.bind(i))
 
@@ -143,9 +139,24 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_button(next_tutorial_button, Color("0f766e"))
 
 
+func _build_plot_nodes() -> void:
+	# Collect the 6 scene-authored plot nodes first.
+	plot_nodes.clear()
+	for child in _plot_grid.get_children():
+		if child is Button:
+			plot_nodes.append(child)
+	# Spawn additional plots for pages 2-4 (documented runtime exception).
+	var target_count := GameState.get_plot_count()
+	while plot_nodes.size() < target_count:
+		var extra: Button = PLOT_SCENE.instantiate()
+		_plot_grid.add_child(extra)
+		plot_nodes.append(extra)
+
+
 func _initialize_plots() -> void:
 	plots.clear()
-	for _i in range(PLOT_COUNT):
+	var target_count := GameState.get_plot_count()
+	for _i in range(target_count):
 		plots.append({
 			"state": "empty",
 			"growth_stage": 0,
@@ -241,7 +252,23 @@ func _on_plot_pressed(index: int) -> void:
 	_persist_state()
 
 
+func _check_plot_grid_expansion() -> void:
+	var target_count := GameState.get_plot_count()
+	if plot_nodes.size() >= target_count:
+		return
+	# Player purchased a new plot page – add the missing nodes and reconnect.
+	var prev_count := plot_nodes.size()
+	while plot_nodes.size() < target_count:
+		var extra: Button = PLOT_SCENE.instantiate()
+		_plot_grid.add_child(extra)
+		plot_nodes.append(extra)
+	for i in range(prev_count, plot_nodes.size()):
+		plot_nodes[i].pressed.connect(_on_plot_pressed.bind(i))
+	_refresh_all_plots()
+
+
 func _on_growth_tick() -> void:
+	_check_plot_grid_expansion()
 	var now := Time.get_unix_time_from_system()
 	var did_change := false
 	for i in range(plots.size()):

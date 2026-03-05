@@ -132,3 +132,37 @@ text = "Reset Hive Tutorial"
 [node name="StatusLabel" type="Label" parent="Root/Actions/ActionsMargin/ActionsBody"]
 layout_mode = 2
 text = "Run migration utility actions from this screen."
+
+[node name="Growth" type="PanelContainer" parent="Root"]
+layout_mode = 2
+
+[node name="GrowthMargin" type="MarginContainer" parent="Root/Growth"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GrowthBody" type="VBoxContainer" parent="Root/Growth/GrowthMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="GrowthTitle" type="Label" parent="Root/Growth/GrowthMargin/GrowthBody"]
+layout_mode = 2
+text = "⏱️ Growth Algorithm"
+
+[node name="GrowthDescLabel" type="Label" parent="Root/Growth/GrowthMargin/GrowthBody"]
+layout_mode = 2
+text = "Adjust the global growth speed multiplier."
+autowrap_mode = 2
+
+[node name="GrowthRateLabel" type="Label" parent="Root/Growth/GrowthMargin/GrowthBody"]
+layout_mode = 2
+text = "Speed: Normal (1.0×)"
+
+[node name="GrowthSlider" type="HSlider" parent="Root/Growth/GrowthMargin/GrowthBody"]
+layout_mode = 2
+min_value = 0.25
+max_value = 4.0
+step = 0.25
+value = 1.0

@@ -4,6 +4,8 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 @onready var coins_label: Label = $Root/Summary/SummaryMargin/SummaryBody/CoinsLabel
 @onready var bottles_label: Label = $Root/Summary/SummaryMargin/SummaryBody/BottlesLabel
 @onready var glass_label: Label = $Root/Summary/SummaryMargin/SummaryBody/GlassLabel
+@onready var water_label: Label = $Root/Summary/SummaryMargin/SummaryBody/WaterLabel
+@onready var plot_pages_label: Label = $Root/Summary/SummaryMargin/SummaryBody/PlotPagesLabel
 @onready var total_harvest_label: Label = $Root/Summary/SummaryMargin/SummaryBody/TotalHarvestLabel
 
 @onready var tomato_seed_label: Label = $Root/SeedsPanel/SeedsMargin/SeedsBody/TomatoSeedLabel
@@ -32,6 +34,8 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_warm_text(bottles_label)
 	UIFwk.style_warm_text(glass_label)
 	UIFwk.style_warm_section(total_harvest_label)
+	UIFwk.style_accent_blue(water_label)
+	UIFwk.style_amber_muted(plot_pages_label)
 	# Seeds section header
 	UIFwk.style_warm_section($Root/SeedsPanel/SeedsMargin/SeedsBody/SeedsTitle)
 	# Crops section header
@@ -40,6 +44,8 @@ func _apply_ui_theme() -> void:
 
 func _refresh_ui() -> void:
 	coins_label.text = "Coins: %d" % GameState.coins
+	water_label.text = "Water: %d / %d" % [GameState.water, GameState.max_water]
+	plot_pages_label.text = "Farm Pages: %d (%d plots)" % [GameState.plot_pages, GameState.get_plot_count()]
 	bottles_label.text = "Bottled Honey: %d" % GameState.bottled_honey_inventory
 	glass_label.text = "Glass Bottles: %d" % GameState.glass_bottles
 

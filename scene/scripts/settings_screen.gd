@@ -16,6 +16,9 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 @onready var reset_farm_tutorial_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetFarmTutorialButton
 @onready var reset_hive_tutorial_button: Button = $Root/Actions/ActionsMargin/ActionsBody/ButtonsRow3/ResetHiveTutorialButton
 
+@onready var growth_rate_label: Label = $Root/Growth/GrowthMargin/GrowthBody/GrowthRateLabel
+@onready var growth_slider: HSlider = $Root/Growth/GrowthMargin/GrowthBody/GrowthSlider
+
 func _ready() -> void:
 	_apply_ui_theme()
 	add_coins_button.pressed.connect(_on_add_coins)
@@ -24,6 +27,8 @@ func _ready() -> void:
 	add_glass_button.pressed.connect(_on_add_glass)
 	reset_farm_tutorial_button.pressed.connect(_on_reset_farm_tutorial)
 	reset_hive_tutorial_button.pressed.connect(_on_reset_hive_tutorial)
+	growth_slider.value = GameState.growth_speed_multiplier
+	growth_slider.value_changed.connect(_on_growth_slider_changed)
 	_refresh_ui()
 
 
@@ -39,6 +44,11 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_amber_button(add_glass_button)
 	UIFwk.style_amber_button(reset_farm_tutorial_button)
 	UIFwk.style_amber_button(reset_hive_tutorial_button)
+	# Growth section
+	UIFwk.style_warm_panel($Root/Growth)
+	UIFwk.style_warm_section($Root/Growth/GrowthMargin/GrowthBody/GrowthTitle)
+	UIFwk.style_amber_muted($Root/Growth/GrowthMargin/GrowthBody/GrowthDescLabel)
+	UIFwk.style_warm_text(growth_rate_label)
 
 
 func _on_add_coins() -> void:
@@ -88,6 +98,27 @@ func _on_reset_hive_tutorial() -> void:
 	_refresh_ui()
 
 
+func _on_growth_slider_changed(value: float) -> void:
+	GameState.growth_speed_multiplier = value
+	GameState.save_state()
+	_refresh_growth_label()
+
+
+func _refresh_growth_label() -> void:
+	var v := GameState.growth_speed_multiplier
+	var label := "Slow (%.2f×)" % v
+	if v < 0.9:
+		label = "Slow (%.2f×)" % v
+	elif v < 1.1:
+		label = "Normal (%.2f×)" % v
+	elif v < 2.5:
+		label = "Fast (%.2f×)" % v
+	else:
+		label = "Very Fast (%.2f×)" % v
+	growth_rate_label.text = "Speed: " + label
+	growth_slider.value = v
+
+
 func _refresh_ui() -> void:
 	coins_label.text = "Coins: %d" % GameState.coins
 	water_label.text = "Water: %d/%d" % [GameState.water, GameState.max_water]
@@ -106,3 +137,4 @@ func _refresh_ui() -> void:
 		"done" if GameState.hive_tutorial_completed else "active",
 		GameState.hive_tutorial_step_index,
 	]
+	_refresh_growth_label()

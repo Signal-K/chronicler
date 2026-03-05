@@ -1,33 +1,13 @@
 extends Control
 
 const UIFwk = preload("res://scripts/ui_framework.gd")
+
 @onready var discovered_count_label: Label = $Root/Summary/SummaryMargin/SummaryBody/DiscoveredCountLabel
 @onready var classifications_label: Label = $Root/Summary/SummaryMargin/SummaryBody/ClassificationsLabel
 @onready var level_label: Label = $Root/Summary/SummaryMargin/SummaryBody/LevelLabel
 @onready var status_label: Label = $Root/Summary/SummaryMargin/SummaryBody/StatusLabel
 @onready var discover_button: Button = $Root/Summary/SummaryMargin/SummaryBody/DiscoverButton
-
-@onready var planet_name_labels: Array[Label] = [
-	$Root/PlanetList/PlanetRow1/PlanetNameLabel,
-	$Root/PlanetList/PlanetRow2/PlanetNameLabel,
-	$Root/PlanetList/PlanetRow3/PlanetNameLabel,
-	$Root/PlanetList/PlanetRow4/PlanetNameLabel,
-	$Root/PlanetList/PlanetRow5/PlanetNameLabel,
-]
-@onready var planet_type_labels: Array[Label] = [
-	$Root/PlanetList/PlanetRow1/PlanetTypeLabel,
-	$Root/PlanetList/PlanetRow2/PlanetTypeLabel,
-	$Root/PlanetList/PlanetRow3/PlanetTypeLabel,
-	$Root/PlanetList/PlanetRow4/PlanetTypeLabel,
-	$Root/PlanetList/PlanetRow5/PlanetTypeLabel,
-]
-@onready var planet_stats_labels: Array[Label] = [
-	$Root/PlanetList/PlanetRow1/PlanetStatsLabel,
-	$Root/PlanetList/PlanetRow2/PlanetStatsLabel,
-	$Root/PlanetList/PlanetRow3/PlanetStatsLabel,
-	$Root/PlanetList/PlanetRow4/PlanetStatsLabel,
-	$Root/PlanetList/PlanetRow5/PlanetStatsLabel,
-]
+@onready var planet_list: VBoxContainer = $Root/CatalogScroll/PlanetList
 
 func _ready() -> void:
 	_apply_ui_theme()
@@ -46,13 +26,6 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_amber_button(discover_button)
 	discover_button.text = "🪐 Discover New Planet"
 
-	for label in planet_name_labels:
-		UIFwk.style_warm_text(label)
-	for label in planet_type_labels:
-		UIFwk.style_amber_muted(label)
-	for label in planet_stats_labels:
-		UIFwk.style_amber_muted(label)
-
 
 func _on_discover_pressed() -> void:
 	var result: Dictionary = GameState.discover_planet()
@@ -66,20 +39,45 @@ func _refresh_ui() -> void:
 	discovered_count_label.text = "Discovered Worlds: %d" % max(0, planets.size() - 1)
 	classifications_label.text = "Classifications: %d" % GameState.classifications_completed
 	level_label.text = "Level: %d" % int(GameState.get_progress_info().get("level", 1))
+	_rebuild_planet_list(planets)
 
-	for i in range(planet_name_labels.size()):
-		if i >= planets.size():
-			planet_name_labels[i].text = "-"
-			planet_type_labels[i].text = "-"
-			planet_stats_labels[i].text = "-"
-			continue
 
-		var planet: Dictionary = planets[i]
+func _rebuild_planet_list(planets: Array[Dictionary]) -> void:
+	# Planet rows are spawned at runtime because the catalog grows dynamically.
+	for child in planet_list.get_children():
+		child.queue_free()
+
+	for planet in planets:
+		var row := PanelContainer.new()
+		UIFwk.style_warm_panel(row)
+
+		var margin := MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 10)
+		margin.add_theme_constant_override("margin_top", 8)
+		margin.add_theme_constant_override("margin_right", 10)
+		margin.add_theme_constant_override("margin_bottom", 8)
+		row.add_child(margin)
+
+		var body := VBoxContainer.new()
+		body.add_theme_constant_override("separation", 2)
+		margin.add_child(body)
+
 		var life_tag := "🟢" if bool(planet.get("has_life", false)) else "⚪"
-		planet_name_labels[i].text = "%s %s" % [life_tag, str(planet.get("name", "Planet"))]
-		planet_type_labels[i].text = str(planet.get("type", "Unknown"))
-		planet_stats_labels[i].text = "R %.1f | G %.1f | Orb %.0fd" % [
+
+		var name_label := Label.new()
+		name_label.text = "%s %s — %s" % [life_tag, str(planet.get("name", "Planet")), str(planet.get("type", "Unknown"))]
+		UIFwk.style_warm_text(name_label)
+		name_label.add_theme_font_size_override("font_size", 14)
+		body.add_child(name_label)
+
+		var stats_label := Label.new()
+		stats_label.text = "Radius %.1f  Gravity %.1f  Orbit %.0fd" % [
 			float(planet.get("radius", 1.0)),
 			float(planet.get("gravity", 9.8)),
 			float(planet.get("orbital_period", 365.0)),
 		]
+		UIFwk.style_amber_muted(stats_label)
+		stats_label.add_theme_font_size_override("font_size", 12)
+		body.add_child(stats_label)
+
+		planet_list.add_child(row)

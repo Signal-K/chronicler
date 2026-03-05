@@ -12,6 +12,7 @@ const PLOT_PAGE_UPGRADES: Array = [
 ]
 
 var plot_pages := 1
+var growth_speed_multiplier := 1.0  # Global override; saved per session.
 const CURRENT_TUTORIAL_VERSION := 4
 const CURRENT_SAVE_VERSION := 2  # Increment when save schema changes.
 
@@ -77,6 +78,7 @@ func _reset_defaults() -> void:
 	tutorial_version = CURRENT_TUTORIAL_VERSION
 	save_version = CURRENT_SAVE_VERSION
 	plot_pages = 1
+	growth_speed_multiplier = 1.0
 	unlocked_maps = ["default"]
 	active_map = "default"
 	discovered_planets = []
@@ -225,6 +227,8 @@ func load_state() -> void:
 	tutorial_version = loaded_tutorial_version
 	if data.has("save_version"):
 		save_version = int(data["save_version"])
+	if data.has("growth_speed_multiplier"):
+		growth_speed_multiplier = clamp(float(data["growth_speed_multiplier"]), 0.25, 4.0)
 	if data.has("plot_pages"):
 		plot_pages = max(1, min(int(data["plot_pages"]), MAX_PLOT_PAGES))
 	if data.has("unlocked_maps") and data["unlocked_maps"] is Array:
@@ -278,6 +282,7 @@ func save_state() -> void:
 		"hive_tutorial_step_index": hive_tutorial_step_index,
 		"tutorial_version": tutorial_version,
 		"save_version": save_version,
+		"growth_speed_multiplier": growth_speed_multiplier,
 		"plot_pages": plot_pages,
 		"unlocked_maps": unlocked_maps,
 		"active_map": active_map,
@@ -618,10 +623,12 @@ func set_active_map(map_id: String) -> Dictionary:
 
 
 func get_active_map_growth_rate() -> float:
+	var base := 1.0
 	for map_def in get_map_definitions():
 		if str(map_def.get("id", "")) == active_map:
-			return float(map_def.get("growth_rate", 1.0))
-	return 1.0
+			base = float(map_def.get("growth_rate", 1.0))
+			break
+	return base * growth_speed_multiplier
 
 
 func get_planet_catalog() -> Array[Dictionary]:

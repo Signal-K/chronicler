@@ -61,6 +61,14 @@ text = "Bottled Honey: 0"
 layout_mode = 2
 text = "Glass Bottles: 0"
 
+[node name="WaterLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Water: 0/100"
+
+[node name="PlotPagesLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
+layout_mode = 2
+text = "Farm Pages: 1 (6 plots)"
+
 [node name="TotalHarvestLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Total Harvested Crops: 0"

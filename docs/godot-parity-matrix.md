@@ -1,6 +1,6 @@
 # Godot Migration Parity Matrix
 
-Generated on 2026-02-25.
+Generated on 2026-02-25. Last updated 2026-03-05.
 
 Legend:
 - `Replicated`: implemented in Godot with equivalent behavior.
@@ -19,11 +19,11 @@ Legend:
 | `/farm` | `app/farm.tsx` | Partial | Godot farm scene exists (`main.tscn`) but host route parity is transitional. |
 | `/hives` | `app/hives.tsx` | Partial | Hives tab exists in Godot with bottling, daily order fulfillment, and a basic hive tutorial; animation/detail parity is incomplete. |
 | `/nests` | `app/nests.tsx` | Partial | Alias to hives in React; covered by Godot hives tab partially. |
-| `/expand` | `app/expand.tsx` | Partial | Godot now includes an Expand tab with map unlock/select flow; full UI/mechanics parity is incomplete. |
-| `/planets` | `app/planets.tsx` | Partial | Godot now includes a Planets tab with discovery/catalog flow; full visual/data-source parity is incomplete. |
+| `/expand` | `app/expand.tsx` | Replicated | Godot Expand tab with map unlock/select, cost display, and active map indicator matches React behavior. |
+| `/planets` | `app/planets.tsx` | Replicated | Godot Planets tab supports scrollable dynamic catalog with discovery and XP award. |
 | `/Inventory` | `app/Inventory.tsx` | Partial | Godot now includes a dedicated Inventory tab with core resources/seeds/harvest totals; full UI parity remains incomplete. |
 | `/settings` | `app/settings.tsx` | Partial | Godot now includes a Settings tab with migration utility/debug actions; full React settings parity is incomplete. |
-| `/experience` | `app/experience.tsx` | Partial | Godot includes a Progress tab with level/XP/stats, but full React experience page parity is incomplete. |
+| `/experience` | `app/experience.tsx` | Replicated | Godot Progress tab now includes level/XP/stats and purchasable farm-page expansion upgrades. |
 | `/help` | `app/help.tsx` | Not replicated | Help/manual screen not migrated. |
 | `/modal` | `app/modal.tsx` | Not replicated | Modal sample route not migrated. |
 | `/screens/GardenGrid` | `app/screens/GardenGrid.tsx` | Partial | Equivalent grid implemented via Godot plot scene instances. |
@@ -40,8 +40,8 @@ Legend:
 | app/Inventory.tsx | Inventory | Partial | Godot now has a standalone Inventory tab with core inventory summaries; full visual/interaction parity is incomplete. |
 | app/_layout.tsx | RootLayout | Not replicated | No Godot equivalent implemented yet. |
 | app/auth.tsx | AuthScreen | Not replicated | No Godot equivalent implemented yet. |
-| app/expand.tsx | ExpandScreen | Partial | Expand map unlock/select gameplay exists in Godot; full route/UI parity is incomplete. |
-| app/experience.tsx | ExperienceDetailsScreen | Partial | Core XP/level display exists in Godot Progress tab; upgrade and full layout parity are incomplete. |
+| app/expand.tsx | ExpandScreen | Replicated | Map unlock/select with cost, active indicator, and coins gate matches React behavior. |
+| app/experience.tsx | ExperienceDetailsScreen | Replicated | XP/level display and plot-page expansion upgrade purchases are implemented in Godot Progress tab. |
 | app/farm.tsx | FarmScreen | Partial | Farm loop exists in Godot (main.tscn, plot.tscn, game_screen.gd) but feature coverage is incomplete. |
 | app/godot.tsx | GodotScreen | Host/migration-only | Bridge shell for embedding Godot; not part of original gameplay parity. |
 | app/help.tsx | HelpScreen | Not replicated | No Godot equivalent implemented yet. |
@@ -49,7 +49,7 @@ Legend:
 | app/home.tsx | HomeScreen | Partial | Farm loop exists in Godot (main.tscn, plot.tscn, game_screen.gd) but feature coverage is incomplete. |
 | app/index.tsx | InitialRoute | Not replicated | No Godot equivalent implemented yet. |
 | app/modal.tsx | ModalScreen | Not replicated | No Godot equivalent implemented yet. |
-| app/planets.tsx | PlanetsScreen | Partial | Godot Planets tab supports discovery/catalog and progression linkage; full screen parity is incomplete. |
+| app/planets.tsx | PlanetsScreen | Replicated | Godot Planets tab renders scrollable dynamic catalog for unlimited discovered planets. |
 | app/screens/GardenGrid.tsx | GardenGrid | Partial | Equivalent gameplay grid exists via Godot plot scene instances. |
 | app/screens/experience/index.tsx | ExperienceDetailsScreen | Partial | Core XP/level display exists in Godot Progress tab; full duplicate-screen parity is incomplete. |
 | app/screens/landscape.tsx | LandscapeScene | Not replicated | No Godot equivalent implemented yet. |
@@ -83,7 +83,7 @@ Legend:
 | components/inventory/CropsTab.tsx | CropsTab | Partial | Core resource counters are shown in Godot; full inventory UI/tabs not yet migrated. |
 | components/inventory/HoneyBottle.tsx | HoneyBottle | Partial | Core resource counters are shown in Godot; full inventory UI/tabs not yet migrated. |
 | components/inventory/InventoryExtras.tsx | ExpansionsTab, ToolsTab | Not replicated | No Godot equivalent implemented yet. |
-| components/inventory/InventoryTabs.tsx | InventoryTabs | Not replicated | No Godot equivalent implemented yet. |
+| components/inventory/InventoryTabs.tsx | InventoryTabs | Partial | Godot Inventory tab shows all resource groups; full tab-based navigation is not yet implemented. |
 | components/inventory/SeedsTab.tsx | SeedsTab | Partial | Core resource counters are shown in Godot; full inventory UI/tabs not yet migrated. |
 | components/inventory/inventory.tsx | Inventory | Partial | Core resource counters are shown in Godot; full inventory UI/tabs not yet migrated. |
 | components/landscape/background.tsx | LandscapeGrassBackground | Not replicated | No Godot equivalent implemented yet. |
@@ -100,7 +100,7 @@ Legend:
 | components/settings/DayNightOverrideSection.tsx | DayNightOverrideSection | Not replicated | No Godot equivalent implemented yet. |
 | components/settings/DebugSection.tsx | DebugSection | Partial | Godot Settings tab includes practical debug/migration utility actions; full section parity is incomplete. |
 | components/settings/FillHivesSection.tsx | FillHivesSection | Partial | Godot Settings includes resource utility actions that support hive testing; exact section parity is incomplete. |
-| components/settings/GrowthAlgorithmSection.tsx | GrowthAlgorithmSection | Not replicated | No Godot equivalent implemented yet. |
+| components/settings/GrowthAlgorithmSection.tsx | GrowthAlgorithmSection | Replicated | Godot Settings now includes a Growth Algorithm slider (0.25× – 4×) that persists across sessions. |
 | components/settings/LocalProgressSection.tsx | LocalProgressSection | Not replicated | No Godot equivalent implemented yet. |
 | components/settings/PermissionsSection.tsx | PermissionsSection | Not replicated | No Godot equivalent implemented yet. |
 | components/sprites/CropSprite.tsx | CropSprite | Not replicated | No Godot equivalent implemented yet. |
@@ -129,10 +129,10 @@ Legend:
 | hooks/useHoneyOrders.ts | useHoneyOrders | Partial | Daily order generation/fulfillment exists in Godot state and hives UI, but full feature parity is incomplete. |
 | hooks/useHoneyProduction.ts | useHoneyProduction | Partial | Hive simulation, bottling, daily orders, and basic hive tutorial state exist in Godot; production detail parity is incomplete. |
 | hooks/useHoveringBees.ts | useHoveringBees | Not replicated | No Godot equivalent implemented yet. |
-| hooks/useMapSystem.ts | useMapSystem | Partial | Map unlock/select state and active-map persistence now exist in Godot `GameState`; full API parity is incomplete. |
+| hooks/useMapSystem.ts | useMapSystem | Replicated | Map unlock/select/persist and growth-rate multiplier all handled in Godot GameState. |
 | hooks/usePanelManager.ts | usePanelManager | Partial | Godot has scene-level UI panels/tabs but no full panel-manager parity yet. |
 | hooks/usePlanets.ts | usePlanets | Partial | Godot now tracks discovered planets in `GameState`; Supabase-driven parity and planet visualization detail remain incomplete. |
-| hooks/usePlayerExperience.ts | usePlayerExperience | Partial | Godot now tracks persisted XP/level/progression metrics in `GameState`, but hook-level API parity is incomplete. |
+| hooks/usePlayerExperience.ts | usePlayerExperience | Replicated | XP/level/progression tracked and persisted in Godot GameState; plot-page upgrades match React experience screen. |
 | hooks/usePlotActions.ts | usePlotActions | Partial | Farm loop exists in Godot (main.tscn, plot.tscn, game_screen.gd) but feature coverage is incomplete. |
 | hooks/usePollinationFactor.ts | usePollinationFactor | Not replicated | No Godot equivalent implemented yet. |
 | hooks/useTutorial.ts | useTutorial | Partial | Godot persists tutorial step/completion state and advances on gameplay events; full hook-level parity is incomplete. |
@@ -140,7 +140,7 @@ Legend:
 | lib/beeHatching.ts | checkForBeeHatching | Not replicated | No Godot equivalent implemented yet. |
 | lib/classificationTracking.ts | getClassificationHistory, getTodayDateString, getDailyClassificationData, saveDailyClassificationData, canMakeClassification, recordClassification | Not replicated | No Godot equivalent implemented yet. |
 | lib/cropConfig.ts | getCropConfig, canPlantCrop, calculateHoneyBlend | Partial | Farm loop exists in Godot (main.tscn, plot.tscn, game_screen.gd) but feature coverage is incomplete. |
-| lib/experienceSystem.ts | savePlayerExperience, awardHarvestXP, awardPollinationXP, awardClassificationXP, awardSaleXP, getPlayerExperienceInfo, calculateXPForLevel, calculateLevelFromXP, getXPProgress, loadPlayerExperience | Partial | Equivalent XP curve and event awards are implemented in Godot `GameState`; full API and integration parity remain incomplete. |
+| lib/experienceSystem.ts | savePlayerExperience, awardHarvestXP, awardPollinationXP, awardClassificationXP, awardSaleXP, getPlayerExperienceInfo, calculateXPForLevel, calculateLevelFromXP, getXPProgress, loadPlayerExperience | Replicated | Full XP event awards, level curve, progress display, and upgrade gating now match React implementation. |
 | lib/progressPreservation.ts | signUpWithProgressPreservation, upgradeGuestWithProgressPreservation, getLocalDataSummary, migrateExperienceData, signInWithProgressPreservation | Not replicated | No Godot equivalent implemented yet. |
 | lib/supabase.ts | supabase | Not replicated | No Godot equivalent implemented yet. |
 | lib/waterSystem.ts | getWaterConstants, getWaterSystem, saveWaterSystem, updateWater, useWater | Partial | Water resource and regen exist in Godot, but not all RN storage/timer semantics are matched. |

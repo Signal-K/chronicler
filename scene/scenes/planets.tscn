@@ -63,148 +63,17 @@ text = "Level: 1"
 
 [node name="DiscoverButton" type="Button" parent="Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
-text = "Discover New Planet"
+text = "🪐 Discover New Planet"
 
 [node name="StatusLabel" type="Label" parent="Root/Summary/SummaryMargin/SummaryBody"]
 layout_mode = 2
 text = "Discover planets to expand your catalog."
 
-[node name="PlanetList" type="VBoxContainer" parent="Root"]
+[node name="CatalogScroll" type="ScrollContainer" parent="Root"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="PlanetList" type="VBoxContainer" parent="Root/CatalogScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
-
-[node name="PlanetRow1" type="PanelContainer" parent="Root/PlanetList"]
-layout_mode = 2
-
-[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
-text = "🟢 Earth"
-
-[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 8.0
-offset_right = 520.0
-offset_bottom = 28.0
-text = "Home World"
-
-[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow1"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 520.0
-offset_bottom = 50.0
-text = "R 1.0 | G 9.8 | Orb 365d"
-
-[node name="PlanetRow2" type="PanelContainer" parent="Root/PlanetList"]
-layout_mode = 2
-
-[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 8.0
-offset_right = 520.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow2"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 520.0
-offset_bottom = 50.0
-text = "-"
-
-[node name="PlanetRow3" type="PanelContainer" parent="Root/PlanetList"]
-layout_mode = 2
-
-[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 8.0
-offset_right = 520.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow3"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 520.0
-offset_bottom = 50.0
-text = "-"
-
-[node name="PlanetRow4" type="PanelContainer" parent="Root/PlanetList"]
-layout_mode = 2
-
-[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 8.0
-offset_right = 520.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow4"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 520.0
-offset_bottom = 50.0
-text = "-"
-
-[node name="PlanetRow5" type="PanelContainer" parent="Root/PlanetList"]
-layout_mode = 2
-
-[node name="PlanetNameLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 260.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetTypeLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 8.0
-offset_right = 520.0
-offset_bottom = 28.0
-text = "-"
-
-[node name="PlanetStatsLabel" type="Label" parent="Root/PlanetList/PlanetRow5"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 520.0
-offset_bottom = 50.0
-text = "-"
