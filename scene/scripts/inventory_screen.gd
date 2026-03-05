@@ -22,10 +22,20 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_accent_gold(coins_label)
-	UIFwk.style_accent_blue(glass_label)
-	UIFwk.style_accent_green(total_harvest_label)
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_warm_title($Root/Title, 26)
+	UIFwk.style_warm_panel($Root/Summary)
+	UIFwk.style_warm_panel($Root/SeedsPanel)
+	UIFwk.style_warm_panel($Root/CropsPanel)
+	# Summary labels
+	UIFwk.style_amber_text(coins_label)
+	UIFwk.style_warm_text(bottles_label)
+	UIFwk.style_warm_text(glass_label)
+	UIFwk.style_warm_section(total_harvest_label)
+	# Seeds section header
+	UIFwk.style_warm_section($Root/SeedsPanel/SeedsMargin/SeedsBody/SeedsTitle)
+	# Crops section header
+	UIFwk.style_warm_section($Root/CropsPanel/CropsMargin/CropsBody/CropsTitle)
 
 
 func _refresh_ui() -> void:

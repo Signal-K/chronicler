@@ -96,21 +96,49 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $RootLayout, $RootLayout/TopBar/TopBarMargin/TopBarRow/Title)
-	UIFwk.style_accent_gold(status_label)
-	UIFwk.style_accent_green(level_label)
+	# Green farm background
+	UIFwk.apply_farm_bg(self)
+
+	# Dark brown header bar
+	UIFwk.style_header_panel($RootLayout/TopBar)
+	var title_label: Label = $RootLayout/TopBar/TopBarMargin/TopBarRow/Title
+	title_label.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
+	title_label.add_theme_font_size_override("font_size", 18)
+
+	# Resource labels - white on brown background
+	UIFwk.style_primary_text(status_label)
+	UIFwk.style_accent_gold(level_label)
 	UIFwk.style_accent_blue(water_label)
 	UIFwk.style_accent_gold(coins_label)
+	UIFwk.style_accent_green(seeds_label)
 
+	# Hide map label (not shown in React Native header)
+	map_label.visible = false
+
+	# Semi-transparent garden panel on green background
+	UIFwk.style_garden_panel($RootLayout/GardenPanel)
+
+	# Brown toolbar
+	UIFwk.style_toolbar_panel($RootLayout/ToolbarPanel)
+	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ToolsLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
+	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/HintLabel.add_theme_color_override("font_color", UIFwk.MUTED_TEXT_COLOR)
+	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/CropRow/CropLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
+	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/ShopSection/ShopLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
+
+	# Action buttons matching React Native SimpleToolbar colours
 	UIFwk.style_button(till_button, Color("8b4513"))
 	UIFwk.style_button(plant_button, Color("166534"))
 	UIFwk.style_button(water_button, Color("1d4ed8"))
 	UIFwk.style_button(harvest_button, Color("ca8a04"), Color("172554"))
+
+	# Shop buttons
 	UIFwk.style_button(buy_tomato_seed_button, Color("b91c1c"))
 	UIFwk.style_button(buy_blueberry_seed_button, Color("1e3a8a"))
 	UIFwk.style_button(buy_lavender_seed_button, Color("6d28d9"))
 	UIFwk.style_button(buy_sunflower_seed_button, Color("ca8a04"), Color("172554"))
 	UIFwk.style_button(buy_glass_bottle_button, Color("0f766e"))
+
+	# Tutorial buttons
 	UIFwk.style_button(skip_tutorial_button, Color("7c2d12"))
 	UIFwk.style_button(next_tutorial_button, Color("0f766e"))
 
@@ -274,11 +302,10 @@ func _persist_state() -> void:
 
 func _refresh_resource_labels() -> void:
 	var progress_info: Dictionary = GameState.get_progress_info()
-	level_label.text = "Level: %d" % int(progress_info.get("level", 1))
-	map_label.text = "Map: %s" % GameState.active_map.capitalize()
-	coins_label.text = "Coins: %d" % GameState.coins
-	water_label.text = "Water: %d/%d" % [GameState.water, GameState.max_water]
-	seeds_label.text = "%s seeds: %d" % [selected_crop.capitalize(), GameState.get_seed_count(selected_crop)]
+	level_label.text = "Lv.%d" % int(progress_info.get("level", 1))
+	coins_label.text = "🪙%d" % GameState.coins
+	water_label.text = "💧%d/%d" % [GameState.water, GameState.max_water]
+	seeds_label.text = "🌱%d %s" % [GameState.get_seed_count(selected_crop), selected_crop.capitalize()]
 	_update_shop_button_states()
 
 

@@ -3,40 +3,50 @@
 [ext_resource type="Script" path="res://scripts/hive_card.gd" id="1"]
 
 [node name="HiveCard" type="PanelContainer"]
-custom_minimum_size = Vector2(0, 118)
+custom_minimum_size = Vector2(0, 120)
 script = ExtResource("1")
 
 [node name="CardMargin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
 
-[node name="CardBody" type="VBoxContainer" parent="CardMargin"]
+[node name="CardRow" type="HBoxContainer" parent="CardMargin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 14
 
-[node name="HeaderRow" type="HBoxContainer" parent="CardMargin/CardBody"]
+[node name="HiveIconLabel" type="Label" parent="CardMargin/CardRow"]
 layout_mode = 2
+text = "🏺"
+vertical_alignment = 1
 
-[node name="HiveName" type="Label" parent="CardMargin/CardBody/HeaderRow"]
+[node name="InfoColumn" type="VBoxContainer" parent="CardMargin/CardRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="HiveName" type="Label" parent="CardMargin/CardRow/InfoColumn"]
+layout_mode = 2
 text = "Hive"
 
-[node name="StatsRow" type="HBoxContainer" parent="CardMargin/CardBody"]
+[node name="StatsRow" type="HBoxContainer" parent="CardMargin/CardRow/InfoColumn"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BeeCountLabel" type="Label" parent="CardMargin/CardBody/StatsRow"]
+[node name="BeeCountLabel" type="Label" parent="CardMargin/CardRow/InfoColumn/StatsRow"]
 layout_mode = 2
-text = "Bees: 0"
+text = "🐝 0 bees"
 
-[node name="HoneyLabel" type="Label" parent="CardMargin/CardBody/StatsRow"]
+[node name="HoneyLabel" type="Label" parent="CardMargin/CardRow/InfoColumn/StatsRow"]
 layout_mode = 2
-text = "Honey: 0"
+text = "🍯 0/15"
 
-[node name="BottleButton" type="Button" parent="CardMargin/CardBody"]
+[node name="ProductionLabel" type="Label" parent="CardMargin/CardRow/InfoColumn/StatsRow"]
 layout_mode = 2
-text = "Bottle Honey"
+text = "🟡 Ready"
+
+[node name="BottleButton" type="Button" parent="CardMargin/CardRow/InfoColumn"]
+layout_mode = 2
+text = "Collect Honey"

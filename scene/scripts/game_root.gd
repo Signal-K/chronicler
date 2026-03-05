@@ -5,7 +5,7 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 @onready var tabs: TabContainer = $Tabs
 
 func _ready() -> void:
-	UIFwk.apply_tab_theme(tabs)
+	UIFwk.apply_warm_tab_theme(tabs)
 	_apply_tab_titles()
 
 

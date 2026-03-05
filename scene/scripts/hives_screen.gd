@@ -10,47 +10,55 @@ var hives: Array[Dictionary] = [
 ]
 var hive_tutorial_steps: Array[Dictionary] = []
 var bottle_buttons: Array[Button] = []
+var _active_tab: String = "hives"
 
-@onready var hive_summary_panel: PanelContainer = $Root/HiveSummary
-@onready var orders_panel: PanelContainer = $Root/OrdersPanel
-@onready var hive_list: VBoxContainer = $Root/HiveList
-@onready var total_honey_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/TotalHoneyLabel
-@onready var bottled_inventory_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/BottledInventoryLabel
-@onready var glass_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/GlassLabel
-@onready var coins_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/CoinsLabel
-@onready var level_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/LevelLabel
-@onready var status_label: Label = $Root/HiveSummary/SummaryMargin/SummaryBody/StatusLabel
-@onready var orders_date_label: Label = $Root/OrdersPanel/OrdersMargin/OrdersBody/OrdersDateLabel
+@onready var header_panel: PanelContainer = $Root/HeaderPanel
+@onready var total_honey_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/InventoryRow/TotalHoneyLabel
+@onready var glass_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/InventoryRow/GlassLabel
+@onready var coins_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/InventoryRow/CoinsLabel
+@onready var level_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/LevelLabel
+@onready var bottled_inventory_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/BottledInventoryLabel
+@onready var status_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/StatusLabel
+@onready var subtitle_label: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/SubtitleLabel
+
+@onready var hives_tab_button: Button = $Root/TabBar/HivesTabButton
+@onready var orders_tab_button: Button = $Root/TabBar/OrdersTabButton
+
+@onready var hive_list: VBoxContainer = $Root/ContentArea/ContentBox/HiveList
+@onready var orders_panel: VBoxContainer = $Root/ContentArea/ContentBox/OrdersPanel
 
 @onready var hive_cards: Array[PanelContainer] = [
-	$Root/HiveList/HiveCard1,
-	$Root/HiveList/HiveCard2,
-	$Root/HiveList/HiveCard3,
+	$Root/ContentArea/ContentBox/HiveList/HiveCard1,
+	$Root/ContentArea/ContentBox/HiveList/HiveCard2,
+	$Root/ContentArea/ContentBox/HiveList/HiveCard3,
 ]
+
+@onready var orders_date_label: Label = $Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrdersDateLabel
+
 @onready var order_detail_labels: Array[Label] = [
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/Order1DetailLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/Order2DetailLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/Order3DetailLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/OrderRow1Inner/Order1DetailLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/OrderRow2Inner/Order2DetailLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/OrderRow3Inner/Order3DetailLabel,
 ]
 @onready var order_reward_labels: Array[Label] = [
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/Order1RewardLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/Order2RewardLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/Order3RewardLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/OrderRow1Inner/Order1RewardLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/OrderRow2Inner/Order2RewardLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/OrderRow3Inner/Order3RewardLabel,
 ]
 @onready var order_status_labels: Array[Label] = [
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/Order1StatusLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/Order2StatusLabel,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/Order3StatusLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/OrderRow1Inner/Order1StatusLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/OrderRow2Inner/Order2StatusLabel,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/OrderRow3Inner/Order3StatusLabel,
 ]
 @onready var order_buttons: Array[Button] = [
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/Order1Button,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/Order2Button,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/Order3Button,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1/OrderRow1Inner/Order1Button,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2/OrderRow2Inner/Order2Button,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3/OrderRow3Inner/Order3Button,
 ]
-@onready var order_rows: Array[HBoxContainer] = [
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2,
-	$Root/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3,
+@onready var order_rows: Array[PanelContainer] = [
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow1,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow2,
+	$Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrderRow3,
 ]
 @onready var tutorial_overlay: Control = $TutorialOverlay
 @onready var tutorial_title_label: Label = $TutorialOverlay/TutorialCard/TutorialMargin/TutorialBody/TutorialTitleLabel
@@ -66,28 +74,94 @@ func _ready() -> void:
 
 	bottle_buttons.clear()
 	for i in range(hive_cards.size()):
-		var button: Button = hive_cards[i].get_node("CardMargin/CardBody/BottleButton")
+		var button: Button = hive_cards[i].get_node("CardMargin/CardRow/InfoColumn/BottleButton")
 		bottle_buttons.append(button)
 		button.pressed.connect(_on_bottle_pressed.bind(i))
 	for i in range(order_buttons.size()):
 		order_buttons[i].pressed.connect(_on_fulfill_order_pressed.bind(i))
+
+	hives_tab_button.pressed.connect(func(): _switch_tab("hives"))
+	orders_tab_button.pressed.connect(func(): _switch_tab("orders"))
+
 	skip_tutorial_button.pressed.connect(_on_skip_tutorial)
 	next_tutorial_button.pressed.connect(_on_next_tutorial)
+	_switch_tab("hives")
 	_refresh_ui()
 	_setup_hive_tutorial()
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_muted_text(status_label)
-	UIFwk.style_accent_blue(orders_date_label)
-	UIFwk.style_accent_gold(total_honey_label)
-	UIFwk.style_accent_gold(coins_label)
-	UIFwk.style_accent_green(level_label)
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_amber_panel(header_panel)
+
+	var title_node: Label = $Root/HeaderPanel/HeaderMargin/HeaderContent/TitleRow/Title
+	UIFwk.style_amber_text(title_node)
+	title_node.add_theme_font_size_override("font_size", 26)
+
+	UIFwk.style_amber_muted(subtitle_label)
+	UIFwk.style_amber_text(total_honey_label)
+	UIFwk.style_amber_text(glass_label)
+	UIFwk.style_amber_text(coins_label)
+	UIFwk.style_amber_muted(status_label)
+
+	_style_tab_buttons()
+
+	UIFwk.style_warm_section($Root/ContentArea/ContentBox/OrdersPanel/OrdersMargin/OrdersBody/OrdersTitle)
+	UIFwk.style_amber_muted(orders_date_label)
 	for label in order_reward_labels:
-		UIFwk.style_accent_gold(label)
+		label.add_theme_color_override("font_color", UIFwk.AMBER_TEXT)
+		label.add_theme_font_size_override("font_size", 15)
+	for row in order_rows:
+		UIFwk.style_warm_panel(row)
+	for s_label in order_status_labels:
+		UIFwk.style_amber_muted(s_label)
+	for d_label in order_detail_labels:
+		UIFwk.style_warm_text(d_label)
 	for button in order_buttons:
 		UIFwk.style_button(button, Color("0f766e"))
+
+	UIFwk.style_amber_panel($TutorialOverlay/TutorialCard)
+	UIFwk.style_button(skip_tutorial_button, Color("7c2d12"))
+	UIFwk.style_button(next_tutorial_button, Color("0f766e"))
+
+
+func _style_tab_buttons() -> void:
+	var active_style := StyleBoxFlat.new()
+	active_style.bg_color = UIFwk.AMBER_BORDER
+	active_style.border_color = UIFwk.AMBER_TEXT
+	active_style.border_width_bottom = 3
+
+	var inactive_style := StyleBoxFlat.new()
+	inactive_style.bg_color = UIFwk.AMBER_HEADER_BG
+	inactive_style.border_color = UIFwk.AMBER_BORDER
+	inactive_style.border_width_bottom = 1
+
+	if _active_tab == "hives":
+		hives_tab_button.add_theme_stylebox_override("normal", active_style)
+		hives_tab_button.add_theme_stylebox_override("hover", active_style)
+		hives_tab_button.add_theme_color_override("font_color", UIFwk.AMBER_TEXT)
+		orders_tab_button.add_theme_stylebox_override("normal", inactive_style)
+		orders_tab_button.add_theme_stylebox_override("hover", inactive_style)
+		orders_tab_button.add_theme_color_override("font_color", UIFwk.AMBER_MUTED)
+	else:
+		orders_tab_button.add_theme_stylebox_override("normal", active_style)
+		orders_tab_button.add_theme_stylebox_override("hover", active_style)
+		orders_tab_button.add_theme_color_override("font_color", UIFwk.AMBER_TEXT)
+		hives_tab_button.add_theme_stylebox_override("normal", inactive_style)
+		hives_tab_button.add_theme_stylebox_override("hover", inactive_style)
+		hives_tab_button.add_theme_color_override("font_color", UIFwk.AMBER_MUTED)
+
+
+func _switch_tab(tab: String) -> void:
+	_active_tab = tab
+	hive_list.visible = tab == "hives"
+	orders_panel.visible = tab == "orders"
+	var open_count := 0
+	for order in GameState.snapshot_honey_orders():
+		if not bool(order.get("fulfilled", false)):
+			open_count += 1
+	orders_tab_button.text = "📋 Orders (%d)" % open_count
+	_style_tab_buttons()
 
 
 func _on_honey_tick() -> void:
@@ -133,14 +207,13 @@ func _refresh_ui() -> void:
 		hive_cards[i].configure(hives[i])
 		total += int(hives[i]["honey_bottles"])
 
-	total_honey_label.text = "Total Honey Bottles: %d" % total
-	bottled_inventory_label.text = "Bottled Inventory: %d" % GameState.bottled_honey_inventory
-	glass_label.text = "Glass Bottles: %d" % GameState.glass_bottles
-	coins_label.text = "Coins: %d" % GameState.coins
-	level_label.text = "Level: %d" % int(GameState.get_progress_info().get("level", 1))
-	if total == 0 and status_label.text.is_empty():
+	total_honey_label.text = "🍯 %d bottles" % total
+	glass_label.text = "🫙 %d glass" % GameState.glass_bottles
+	coins_label.text = "🪙 %d" % GameState.coins
+	if status_label.text.is_empty() and total == 0:
 		status_label.text = "No bottled honey available."
 	_refresh_orders_ui()
+	_switch_tab(_active_tab)
 
 
 func _refresh_orders_ui() -> void:
@@ -161,10 +234,14 @@ func _refresh_orders_ui() -> void:
 		var fulfilled := bool(order.get("fulfilled", false))
 		var can_fulfill := GameState.bottled_honey_inventory >= required
 
-		order_detail_labels[i].text = "%s: Ship %d bottled honey" % [str(order.get("title", "Order")), required]
+		order_detail_labels[i].text = "%s: Ship %d honey" % [str(order.get("title", "Order")), required]
 		order_reward_labels[i].text = "+%dc" % reward
-		order_status_labels[i].text = "Done" if fulfilled else "Open"
+		order_status_labels[i].text = "✓ Done" if fulfilled else "Open"
 		order_buttons[i].disabled = fulfilled or not can_fulfill
+		if not fulfilled and can_fulfill:
+			UIFwk.style_button(order_buttons[i], Color("0f766e"))
+		else:
+			UIFwk.style_button(order_buttons[i], Color("9CA3AF"))
 
 
 func _on_fulfill_order_pressed(index: int) -> void:
@@ -196,14 +273,14 @@ func _setup_hive_tutorial() -> void:
 		{
 			"title": "1. Bottle Honey",
 			"message": "Bottle one honey from any hive with stock.",
-			"hint": "Tap Bottle Honey on a hive card.",
+			"hint": "Tap Collect Honey on a hive card.",
 			"type": "require_action",
 			"action": "bottle-honey",
 		},
 		{
 			"title": "2. Ship an Order",
 			"message": "Fulfill an open order to convert bottled honey into coins and XP.",
-			"hint": "Use the Fulfill button in Orders.",
+			"hint": "Switch to the Orders tab and use Fulfill.",
 			"type": "require_action",
 			"action": "fulfill-order",
 		},
@@ -309,31 +386,20 @@ func _ensure_tutorial_order_ready() -> void:
 
 func _apply_hive_tutorial_simplified_layout(is_active: bool, step: Dictionary) -> void:
 	if not is_active:
-		hive_summary_panel.visible = true
-		hive_list.visible = true
-		orders_panel.visible = true
-		total_honey_label.visible = true
-		coins_label.visible = true
-		level_label.visible = true
-		orders_date_label.visible = true
-		for row in order_rows:
-			row.visible = true
+		hive_list.visible = _active_tab == "hives"
+		orders_panel.visible = _active_tab == "orders"
 		for button in bottle_buttons:
 			button.disabled = false
+		for i in range(order_rows.size()):
+			order_rows[i].visible = true
 		return
 
-	total_honey_label.visible = false
-	coins_label.visible = false
-	level_label.visible = false
-	orders_date_label.visible = false
 	status_label.text = "Next: %s" % str(step.get("message", "Follow the tutorial step."))
 	var action_id := str(step.get("action", ""))
 	var focus_order_index := _first_open_order_index()
 
 	if action_id == "bottle-honey":
-		hive_summary_panel.visible = true
-		hive_list.visible = true
-		orders_panel.visible = false
+		_switch_tab("hives")
 		for button in bottle_buttons:
 			button.disabled = false
 		for button in order_buttons:
@@ -341,22 +407,16 @@ func _apply_hive_tutorial_simplified_layout(is_active: bool, step: Dictionary) -
 		return
 
 	if action_id == "fulfill-order":
-		hive_summary_panel.visible = true
-		hive_list.visible = false
-		orders_panel.visible = true
+		_switch_tab("orders")
 		for button in bottle_buttons:
 			button.disabled = true
 		for i in range(order_rows.size()):
 			order_rows[i].visible = i == focus_order_index
 		return
 
-	hive_summary_panel.visible = true
-	hive_list.visible = true
-	orders_panel.visible = false
+	_switch_tab("hives")
 	for button in bottle_buttons:
 		button.disabled = false
-	for i in range(order_rows.size()):
-		order_rows[i].visible = true
 
 
 func _first_open_order_index() -> int:

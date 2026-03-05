@@ -36,20 +36,22 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_accent_gold(discovered_count_label)
-	UIFwk.style_accent_blue(classifications_label)
-	UIFwk.style_accent_green(level_label)
-	UIFwk.style_muted_text(status_label)
-	UIFwk.style_button(discover_button, Color("1d4ed8"))
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_warm_title($Root/Title, 26)
+	UIFwk.style_warm_panel($Root/Summary)
+	UIFwk.style_amber_text(discovered_count_label)
+	UIFwk.style_amber_muted(classifications_label)
+	UIFwk.style_warm_text(level_label)
+	UIFwk.style_amber_muted(status_label)
+	UIFwk.style_amber_button(discover_button)
 	discover_button.text = "🪐 Discover New Planet"
 
 	for label in planet_name_labels:
-		UIFwk.style_primary_text(label)
+		UIFwk.style_warm_text(label)
 	for label in planet_type_labels:
-		UIFwk.style_accent_blue(label)
+		UIFwk.style_amber_muted(label)
 	for label in planet_stats_labels:
-		UIFwk.style_muted_text(label)
+		UIFwk.style_amber_muted(label)
 
 
 func _on_discover_pressed() -> void:

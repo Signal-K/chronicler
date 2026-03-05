@@ -53,23 +53,25 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_accent_gold(coins_label)
-	UIFwk.style_muted_text(status_label)
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_warm_title($Root/Title, 26)
+	UIFwk.style_warm_panel($Root/Summary)
+	UIFwk.style_amber_text(coins_label)
+	UIFwk.style_amber_muted(status_label)
 
 	for label in map_name_labels:
-		UIFwk.style_primary_text(label)
+		UIFwk.style_warm_text(label)
 		label.add_theme_font_size_override("font_size", 16)
 	for label in map_desc_labels:
-		UIFwk.style_accent_blue(label)
+		UIFwk.style_amber_muted(label)
 	for label in map_state_labels:
-		UIFwk.style_accent_gold(label)
+		UIFwk.style_amber_text(label)
 
 	for i in range(unlock_buttons.size()):
-		UIFwk.style_button(unlock_buttons[i], Color("b91c1c"))
+		UIFwk.style_amber_button(unlock_buttons[i])
 		unlock_buttons[i].text = "🔓 Unlock"
 	for i in range(select_buttons.size()):
-		UIFwk.style_button(select_buttons[i], Color("065f46"))
+		UIFwk.style_amber_button(select_buttons[i])
 		select_buttons[i].text = "✅ Select"
 
 

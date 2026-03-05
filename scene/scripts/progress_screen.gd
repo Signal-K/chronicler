@@ -22,8 +22,22 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_muted_text(status_label)
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_warm_title($Root/Title, 26)
+	# Section panels
+	UIFwk.style_warm_panel($Root/Overview)
+	UIFwk.style_warm_panel($Root/Stats)
+	UIFwk.style_warm_panel($Root/Actions)
+	# Labels
+	UIFwk.style_warm_section($Root/Overview/OverviewMargin/OverviewBody/LevelLabel)
+	UIFwk.style_warm_text(xp_label)
+	UIFwk.style_warm_text(harvests_label)
+	UIFwk.style_warm_text(unique_harvests_label)
+	UIFwk.style_warm_text(pollination_label)
+	UIFwk.style_warm_text(sales_label)
+	UIFwk.style_warm_text(classifications_label)
+	UIFwk.style_warm_muted(status_label)
+	# Buttons
 	UIFwk.style_button(pollination_button, Color("0f766e"))
 	UIFwk.style_button(classification_button, Color("1d4ed8"))
 

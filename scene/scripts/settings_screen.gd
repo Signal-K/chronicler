@@ -28,14 +28,17 @@ func _ready() -> void:
 
 
 func _apply_ui_theme() -> void:
-	UIFwk.apply_screen_theme(self, $Root, $Root/Title)
-	UIFwk.style_muted_text(status_label)
-	UIFwk.style_button(add_coins_button, Color("a16207"))
-	UIFwk.style_button(refill_water_button, Color("2563eb"))
-	UIFwk.style_button(add_seeds_button, Color("15803d"))
-	UIFwk.style_button(add_glass_button, Color("0f766e"))
-	UIFwk.style_button(reset_farm_tutorial_button, Color("7c2d12"))
-	UIFwk.style_button(reset_hive_tutorial_button, Color("7c2d12"))
+	UIFwk.apply_warm_screen_theme(self)
+	UIFwk.style_warm_title($Root/Title, 26)
+	UIFwk.style_warm_panel($Root/Summary)
+	UIFwk.style_warm_panel($Root/Actions)
+	UIFwk.style_amber_muted(status_label)
+	UIFwk.style_amber_button(add_coins_button)
+	UIFwk.style_amber_button(refill_water_button)
+	UIFwk.style_amber_button(add_seeds_button)
+	UIFwk.style_amber_button(add_glass_button)
+	UIFwk.style_amber_button(reset_farm_tutorial_button)
+	UIFwk.style_amber_button(reset_hive_tutorial_button)
 
 
 func _on_add_coins() -> void:
