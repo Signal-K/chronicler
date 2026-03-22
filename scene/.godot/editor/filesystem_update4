@@ -1,0 +1,11 @@
+res://scripts/game_screen.gd
+res://scenes/plot.tscn
+res://scripts/plot.gd
+res://scenes/hive_card.tscn
+res://scripts/expand_screen.gd
+res://scripts/hives_screen.gd
+res://scripts/inventory_screen.gd
+res://scripts/planets_screen.gd
+res://scripts/progress_screen.gd
+res://scripts/settings_screen.gd
+res://scripts/game_state.gd
