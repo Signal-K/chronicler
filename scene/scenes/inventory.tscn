@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory_screen.gd" id="1"]
+
+[node name="Inventory" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBox" type="VBoxContainer" parent="Scroll"]
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Scroll/VBox"]
+text = "🎒 Inventory"
+horizontal_alignment = 1
+
+[node name="CoinsLabel" type="Label" parent="Scroll/VBox"]
+text = "🪙 Coins: 100"
+
+[node name="SeedsSection" type="VBoxContainer" parent="Scroll/VBox"]
+
+[node name="SeedsTitle" type="Label" parent="Scroll/VBox/SeedsSection"]
+text = "Seeds"
+
+[node name="List" type="VBoxContainer" parent="Scroll/VBox/SeedsSection"]
+
+[node name="HarvestedSection" type="VBoxContainer" parent="Scroll/VBox"]
+
+[node name="HarvestedTitle" type="Label" parent="Scroll/VBox/HarvestedSection"]
+text = "Harvested"
+
+[node name="List" type="VBoxContainer" parent="Scroll/VBox/HarvestedSection"]
+
+[node name="HoneySection" type="VBoxContainer" parent="Scroll/VBox"]
+
+[node name="HoneyTitle" type="Label" parent="Scroll/VBox/HoneySection"]
+text = "Honey"
+
+[node name="List" type="VBoxContainer" parent="Scroll/VBox/HoneySection"]

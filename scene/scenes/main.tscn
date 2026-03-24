@@ -1,0 +1,71 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/game_screen.gd" id="1"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(1, 1, 1, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Header" type="HBoxContainer" parent="VBox"]
+custom_minimum_size = Vector2(0, 48)
+
+[node name="CoinsLabel" type="Label" parent="VBox/Header"]
+text = "🪙 100"
+size_flags_horizontal = 3
+
+[node name="Garden" type="ScrollContainer" parent="VBox"]
+size_flags_vertical = 3
+
+[node name="Grid" type="GridContainer" parent="VBox/Garden"]
+columns = 3
+size_flags_horizontal = 3
+
+[node name="Toolbar" type="HBoxContainer" parent="VBox"]
+custom_minimum_size = Vector2(0, 56)
+
+[node name="ToolLabel" type="Label" parent="VBox/Toolbar"]
+text = "Tool: none"
+size_flags_horizontal = 3
+
+[node name="TillBtn" type="Button" parent="VBox/Toolbar"]
+text = "Till"
+
+[node name="PlantBtn" type="Button" parent="VBox/Toolbar"]
+text = "Plant"
+
+[node name="HarvestBtn" type="Button" parent="VBox/Toolbar"]
+text = "Harvest"
+
+[node name="ShovelBtn" type="Button" parent="VBox/Toolbar"]
+text = "Shovel"
+
+[node name="Toast" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.9
+anchor_right = 0.5
+anchor_bottom = 0.9
+offset_left = -150.0
+offset_right = 150.0
+offset_top = -20.0
+offset_bottom = 20.0
+horizontal_alignment = 1
+visible = false
+
+[connection signal="pressed" from="VBox/Toolbar/TillBtn" to="." method="_on_till_pressed"]
+[connection signal="pressed" from="VBox/Toolbar/PlantBtn" to="." method="_on_plant_pressed"]
+[connection signal="pressed" from="VBox/Toolbar/HarvestBtn" to="." method="_on_harvest_pressed"]
+[connection signal="pressed" from="VBox/Toolbar/ShovelBtn" to="." method="_on_shovel_pressed"]
