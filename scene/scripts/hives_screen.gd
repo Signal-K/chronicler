@@ -234,7 +234,12 @@ func _refresh_ui() -> void:
 	level_label.text = "Lv.%d" % int(GameState.get_progress_info().get("level", 1))
 	bottled_inventory_label.text = "🏺 %d in hives" % total
 	_refresh_orders_ui()
-	_switch_tab(_active_tab)
+	# Update order count badge without full tab restyle.
+	var open_count := 0
+	for order in GameState.snapshot_honey_orders():
+		if not bool(order.get("fulfilled", false)):
+			open_count += 1
+	orders_tab_button.text = "📋 Orders (%d)" % open_count
 
 
 func _refresh_orders_ui() -> void:
