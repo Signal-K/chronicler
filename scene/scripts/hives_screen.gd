@@ -198,7 +198,8 @@ func _on_bottle_pressed(index: int) -> void:
 	var honey_cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(honey_type, {})
 	var emoji: String = str(honey_cfg.get("emoji", "🍯"))
 	var type_name: String = str(honey_cfg.get("name", "Honey"))
-	status_label.text = "%s Bottled 1 %s from %s." % [emoji, type_name, str(hive["name"])]
+	var quality := _compute_bottle_quality(hives[index])
+	status_label.text = "%s Bottled 1 %s (Quality %d/100) from %s." % [emoji, type_name, quality, str(hive["name"])]
 	_on_hive_tutorial_action("bottle-honey")
 	_refresh_ui()
 	_persist_state()
@@ -450,6 +451,24 @@ func _first_open_order_index() -> int:
 		if not bool(orders[i].get("fulfilled", false)):
 			return i
 	return 0
+
+
+func _compute_bottle_quality(hive: Dictionary) -> int:
+	# 0–50 pts from bee count
+	var bee_count := int(hive.get("bee_count", 0))
+	var bee_score := int(clamp(float(bee_count) / float(GameState.MAX_BEES_PER_HIVE) * 50.0, 0.0, 50.0))
+	# 0–20 pts for production hours (8-16 or 20-4)
+	var hour: int = Time.get_time_dict_from_system().get("hour", 12)
+	var in_hours := (hour >= 8 and hour <= 16) or hour >= 20 or hour <= 4
+	var hour_score := 20 if in_hours else 0
+	# 0–30 pts for crop diversity (10 per unique crop type harvested)
+	var harvested := GameState.harvested
+	var diversity := 0
+	for crop in harvested:
+		if int(harvested.get(crop, 0)) > 0:
+			diversity += 1
+	var diversity_score := min(30, diversity * 10)
+	return bee_score + hour_score + diversity_score
 
 
 func _on_bee_hatched_in_hive(hive_name: String) -> void:

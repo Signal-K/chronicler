@@ -219,6 +219,7 @@ func _on_plot_pressed(index: int) -> void:
 				plot["growth_stage"] = 5
 				plot["needs_water"] = false
 			_on_tutorial_action("water-plant")
+			_flash_plot(index, Color("93c5fd"))  # Blue flash on water
 	elif selected_tool == "harvest":
 		if plot["growth_stage"] >= 5:
 			var crop_id := str(plot["crop_type"])
@@ -235,6 +236,7 @@ func _on_plot_pressed(index: int) -> void:
 			plot["needs_water"] = false
 			plot["last_action_at"] = 0.0
 			_on_tutorial_action("harvest-crop")
+			_flash_plot(index, Color("fde047"))  # Gold flash on harvest
 		elif plot["state"] != "empty":
 			var crop_return := str(plot["crop_type"])
 			if crop_return != "":
@@ -520,3 +522,12 @@ func _apply_tool_gating(only_tool: String) -> void:
 	plant_button.disabled = only_tool != "plant"
 	water_button.disabled = only_tool != "water"
 	harvest_button.disabled = only_tool != "harvest"
+
+
+func _flash_plot(index: int, flash_color: Color) -> void:
+	if index >= plot_nodes.size():
+		return
+	var node := plot_nodes[index]
+	var tween := create_tween()
+	tween.tween_property(node, "modulate", flash_color, 0.08)
+	tween.tween_property(node, "modulate", Color.WHITE, 0.25)

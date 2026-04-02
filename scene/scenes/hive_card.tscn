@@ -47,6 +47,22 @@ text = "🍯 0/15"
 layout_mode = 2
 text = "🟡 Ready"
 
+[node name="BeeProgressRow" type="HBoxContainer" parent="CardMargin/CardRow/InfoColumn"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BeeProgressLabel" type="Label" parent="CardMargin/CardRow/InfoColumn/BeeProgressRow"]
+layout_mode = 2
+text = "🐝"
+
+[node name="BeeProgressBar" type="ProgressBar" parent="CardMargin/CardRow/InfoColumn/BeeProgressRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+custom_minimum_size = Vector2(0, 10)
+value = 0
+show_percentage = false
+
 [node name="BottleButton" type="Button" parent="CardMargin/CardRow/InfoColumn"]
 layout_mode = 2
 text = "Collect Honey"

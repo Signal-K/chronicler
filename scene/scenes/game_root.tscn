@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dro36j4a4btql"]
+[gd_scene load_steps=10 format=3 uid="uid://dro36j4a4btql"]
 
 [ext_resource type="Script" path="res://scripts/game_root.gd" id="1_root"]
 [ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1_i8h2m"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/expand.tscn" id="5_5rj8k"]
 [ext_resource type="PackedScene" path="res://scenes/planets.tscn" id="6_0lyaj"]
 [ext_resource type="PackedScene" path="res://scenes/inventory.tscn" id="7_nfg2m"]
+[ext_resource type="PackedScene" path="res://scenes/help.tscn" id="8_help"]
 
 [node name="GameRoot" type="Control"]
 layout_mode = 3
@@ -47,4 +48,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Inventory" parent="Tabs" instance=ExtResource("7_nfg2m")]
+layout_mode = 2
+
+[node name="Help" parent="Tabs" instance=ExtResource("8_help")]
 layout_mode = 2

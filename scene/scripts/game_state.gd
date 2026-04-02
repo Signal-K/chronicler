@@ -58,6 +58,8 @@ var honey_type_inventory: Dictionary = {}  # {"light": 2, "amber": 1, ...}
 var glass_bottles := 10
 var honey_orders: Array[Dictionary] = []
 var orders_generated_on := ""
+var orders_fulfilled_today: Dictionary = {}  # {honey_type: count} resets daily
+const ORDER_QUOTA_PER_TYPE := 2   # After this many fulfils of a type today, reward halves
 var total_xp := 0
 var harvests_count := 0
 var unique_harvests: Dictionary = {}
@@ -94,6 +96,7 @@ func _reset_defaults() -> void:
 	glass_bottles = 10
 	honey_orders = []
 	orders_generated_on = ""
+	orders_fulfilled_today = {}
 	total_xp = 0
 	harvests_count = 0
 	unique_harvests = {}
@@ -247,6 +250,8 @@ func load_state() -> void:
 		honey_orders = parsed_orders
 	if data.has("orders_generated_on"):
 		orders_generated_on = str(data["orders_generated_on"])
+	if data.has("orders_fulfilled_today") and data["orders_fulfilled_today"] is Dictionary:
+		orders_fulfilled_today = (data["orders_fulfilled_today"] as Dictionary).duplicate(true)
 	if data.has("total_xp"):
 		total_xp = int(data["total_xp"])
 	if data.has("harvests_count"):
@@ -314,6 +319,7 @@ func save_state() -> void:
 		"glass_bottles": glass_bottles,
 		"honey_orders": honey_orders,
 		"orders_generated_on": orders_generated_on,
+		"orders_fulfilled_today": orders_fulfilled_today,
 		"total_xp": total_xp,
 		"harvests_count": harvests_count,
 		"unique_harvests": unique_harvests,
@@ -454,6 +460,7 @@ func ensure_daily_orders() -> void:
 		return
 	orders_generated_on = today
 	honey_orders = _build_daily_orders(today)
+	orders_fulfilled_today = {}  # Reset quota on new day
 
 
 func snapshot_honey_orders() -> Array[Dictionary]:
@@ -489,13 +496,23 @@ func fulfill_honey_order(order_id: String) -> Dictionary:
 			return {"ok": false, "message": "Need %d %s (have %d)." % [required, type_name, available]}
 
 		consume_typed_honey(honey_type, required)
-		add_coins(reward)
+
+		# Apply daily quota reduction after ORDER_QUOTA_PER_TYPE fulfils of this type.
+		var fulfilled_so_far := int(orders_fulfilled_today.get(honey_type, 0))
+		var quota_hit := fulfilled_so_far >= ORDER_QUOTA_PER_TYPE
+		var actual_reward := reward / 2 if quota_hit else reward
+		orders_fulfilled_today[honey_type] = fulfilled_so_far + 1
+
+		add_coins(actual_reward)
 		var honey_cfg: Dictionary = HONEY_TYPE_CONFIG.get(honey_type, {})
 		var xp_gain := max(1, required * int(honey_cfg.get("base_xp", 4)))
+		if quota_hit:
+			xp_gain = xp_gain / 2
 		award_sale_xp(xp_gain)
 		order["fulfilled"] = true
 		honey_orders[i] = order
-		return {"ok": true, "message": "Order fulfilled! +%d coins." % reward}
+		var quota_warn := " (quota reached — 50% reward)" if quota_hit else ""
+		return {"ok": true, "message": "Order fulfilled! +%d coins.%s" % [actual_reward, quota_warn]}
 
 	return {"ok": false, "message": "Order not found."}
 

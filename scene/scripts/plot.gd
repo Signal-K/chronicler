@@ -29,13 +29,17 @@ func set_plot_display(plot: Dictionary, crop_textures: Dictionary) -> void:
 	if state == "empty":
 		bg_color = Color("a16207")
 	elif state == "tilled":
-		if plot.get("watered", false):
-			bg_color = Color("2d1508")
-			border_color = Color("0c0a09")
-		else:
-			bg_color = Color("92400e")
+		bg_color = Color("92400e")
 	elif growth_stage >= 5:
 		bg_color = Color("78350f")
+		border_color = Color("ca8a04")  # Gold border when harvest-ready
+	elif state == "growing" and not needs_water:
+		# Actively growing — dark moist soil
+		bg_color = Color("2d1508")
+		border_color = Color("1d4ed8")  # Blue border shows "watered"
+	elif needs_water:
+		bg_color = Color("92400e")
+		border_color = Color("60a5fa")  # Light blue border — needs water
 	else:
 		bg_color = Color("92400e")
 
@@ -78,8 +82,10 @@ func set_plot_display(plot: Dictionary, crop_textures: Dictionary) -> void:
 	stage_label.text = "Stage %d" % growth_stage
 
 	if growth_stage >= 5:
-		status_label.text = "Harvest"
+		status_label.text = "✨ Harvest"
 	elif needs_water:
-		status_label.text = "Needs Water"
+		status_label.text = "💧 Water"
+		stage_label.add_theme_color_override("font_color", Color("93c5fd"))
+		status_label.add_theme_color_override("font_color", Color("93c5fd"))
 	else:
-		status_label.text = "Growing"
+		status_label.text = "🌱 Growing"
