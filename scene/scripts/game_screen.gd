@@ -405,10 +405,12 @@ func _on_buy_item(item_id: String) -> void:
 
 func _on_water_regen_tick() -> void:
 	var amount := max(1, roundi(GameState.growth_speed_multiplier))
+	var before := GameState.water
 	GameState.refill_water(amount)
 	# Adjust timer interval so faster growth = faster water regen.
 	_water_regen_timer.wait_time = max(0.5, 2.0 / GameState.growth_speed_multiplier)
-	GameState.save_state()
+	if GameState.water != before:
+		GameState.save_state()
 
 
 func _setup_tutorial() -> void:

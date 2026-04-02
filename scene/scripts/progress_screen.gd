@@ -54,6 +54,21 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_warm_text(sales_label)
 	UIFwk.style_warm_text(classifications_label)
 	UIFwk.style_warm_muted(status_label)
+	# XP progress bar
+	var bar_fill := StyleBoxFlat.new()
+	bar_fill.bg_color = UIFwk.AMBER_BORDER
+	bar_fill.corner_radius_top_left = 4
+	bar_fill.corner_radius_top_right = 4
+	bar_fill.corner_radius_bottom_right = 4
+	bar_fill.corner_radius_bottom_left = 4
+	progress_bar.add_theme_stylebox_override("fill", bar_fill)
+	var bar_bg := StyleBoxFlat.new()
+	bar_bg.bg_color = UIFwk.WARM_PANEL_BORDER
+	bar_bg.corner_radius_top_left = 4
+	bar_bg.corner_radius_top_right = 4
+	bar_bg.corner_radius_bottom_right = 4
+	bar_bg.corner_radius_bottom_left = 4
+	progress_bar.add_theme_stylebox_override("background", bar_bg)
 	# Buttons
 	UIFwk.style_button(pollination_button, Color("0f766e"))
 	UIFwk.style_button(classification_button, Color("1d4ed8"))
