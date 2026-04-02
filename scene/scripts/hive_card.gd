@@ -55,7 +55,6 @@ func configure(data: Dictionary) -> void:
 	else:
 		UIFwk.style_disabled_button(bottle_button)
 
-	var bee_count := int(data.get("bee_count", 0))
 	if bee_count > 0 and honey <= 0:
 		production_label.text = "🟢 Producing"
 		production_label.add_theme_color_override("font_color", Color("166534"))
