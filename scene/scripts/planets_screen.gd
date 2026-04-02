@@ -12,6 +12,7 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 func _ready() -> void:
 	_apply_ui_theme()
 	discover_button.pressed.connect(_on_discover_pressed)
+	GameState.resources_changed.connect(_refresh_ui)
 	_refresh_ui()
 
 

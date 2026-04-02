@@ -55,11 +55,16 @@ func configure(data: Dictionary) -> void:
 	else:
 		UIFwk.style_disabled_button(bottle_button)
 
-	# Production status based on hour
-	var hour: int = Time.get_time_dict_from_system().get("hour", 12)
-	if (hour >= 8 and hour <= 16) or hour >= 20 or hour <= 4:
+	var bee_count := int(data.get("bee_count", 0))
+	if bee_count > 0 and honey <= 0:
+		production_label.text = "🟢 Producing"
+		production_label.add_theme_color_override("font_color", Color("166534"))
+	elif honey >= 15:
+		production_label.text = "🟡 Full"
+		production_label.add_theme_color_override("font_color", Color("92400e"))
+	elif bee_count == 0:
+		production_label.text = "🔴 No bees"
+		production_label.add_theme_color_override("font_color", Color("9f1239"))
+	else:
 		production_label.text = "🟢 Active"
 		production_label.add_theme_color_override("font_color", Color("166534"))
-	else:
-		production_label.text = "🔴 Dormant"
-		production_label.add_theme_color_override("font_color", Color("9f1239"))

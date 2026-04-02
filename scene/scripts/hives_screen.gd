@@ -102,6 +102,9 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_amber_text(glass_label)
 	UIFwk.style_amber_text(coins_label)
 	UIFwk.style_amber_muted(status_label)
+	level_label.visible = true
+	UIFwk.style_amber_muted(level_label)
+	level_label.add_theme_font_size_override("font_size", 13)
 
 	_style_tab_buttons()
 
@@ -227,6 +230,8 @@ func _refresh_ui() -> void:
 	coins_label.text = "🪙 %d" % GameState.coins
 	if status_label.text.is_empty() and total == 0:
 		status_label.text = "No bottled honey available."
+	level_label.text = "Lv.%d" % int(GameState.get_progress_info().get("level", 1))
+	bottled_inventory_label.text = "🏺 %d in hives" % total
 	_refresh_orders_ui()
 	_switch_tab(_active_tab)
 

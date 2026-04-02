@@ -569,6 +569,7 @@ func add_seed(crop_id: String, amount: int = 1) -> void:
 
 func add_harvest(crop_id: String, amount: int = 1) -> void:
 	harvested[crop_id] = int(harvested.get(crop_id, 0)) + amount
+	resources_changed.emit()
 
 
 func award_harvest_xp(crop_id: String) -> Dictionary:
@@ -579,12 +580,14 @@ func award_harvest_xp(crop_id: String) -> Dictionary:
 		unique_harvests[crop_id] = true
 		total_xp += 10
 		gained += 10
+	resources_changed.emit()
 	return {"gained": gained, "level": calculate_level_from_xp(total_xp)}
 
 
 func award_pollination_xp() -> Dictionary:
 	pollination_events += 1
 	total_xp += 10
+	resources_changed.emit()
 	_check_bee_hatching()
 	return {"gained": 10, "level": calculate_level_from_xp(total_xp)}
 
@@ -609,6 +612,7 @@ func _check_bee_hatching() -> void:
 func award_classification_xp() -> Dictionary:
 	classifications_completed += 1
 	total_xp += 10
+	resources_changed.emit()
 	return {"gained": 10, "level": calculate_level_from_xp(total_xp)}
 
 
@@ -616,6 +620,7 @@ func award_sale_xp(amount: int) -> Dictionary:
 	var gained: int = max(0, amount)
 	sales_completed += 1
 	total_xp += gained
+	resources_changed.emit()
 	return {"gained": gained, "level": calculate_level_from_xp(total_xp)}
 
 

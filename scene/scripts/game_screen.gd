@@ -261,6 +261,15 @@ func _check_plot_grid_expansion() -> void:
 		var extra: Button = PLOT_SCENE.instantiate()
 		_plot_grid.add_child(extra)
 		plot_nodes.append(extra)
+	# Grow local plots array to match — new slots start empty.
+	while plots.size() < target_count:
+		plots.append({
+			"state": "empty",
+			"growth_stage": 0,
+			"crop_type": "",
+			"needs_water": false,
+			"last_action_at": 0.0,
+		})
 	for i in range(prev_count, plot_nodes.size()):
 		plot_nodes[i].pressed.connect(_on_plot_pressed.bind(i))
 	_refresh_all_plots()
@@ -328,6 +337,7 @@ func _persist_state() -> void:
 
 
 func _refresh_resource_labels() -> void:
+	_check_plot_grid_expansion()
 	var progress_info: Dictionary = GameState.get_progress_info()
 	level_label.text = "Lv.%d" % int(progress_info.get("level", 1))
 	coins_label.text = "🪙%d" % GameState.coins
