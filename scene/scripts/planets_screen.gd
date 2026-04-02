@@ -67,12 +67,16 @@ func _on_discover_pressed() -> void:
 	_refresh_ui()
 
 
+var _last_planet_count := -1
+
 func _refresh_ui() -> void:
 	var planets := GameState.get_planet_catalog()
 	discovered_count_label.text = "Discovered Worlds: %d" % max(0, planets.size() - 1)
 	classifications_label.text = "Classifications: %d" % GameState.classifications_completed
 	level_label.text = "Level: %d" % int(GameState.get_progress_info().get("level", 1))
-	_rebuild_planet_list(planets)
+	if planets.size() != _last_planet_count:
+		_last_planet_count = planets.size()
+		_rebuild_planet_list(planets)
 
 
 func _rebuild_planet_list(planets: Array[Dictionary]) -> void:

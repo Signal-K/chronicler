@@ -229,13 +229,16 @@ func _on_plot_pressed(index: int) -> void:
 	elif selected_tool == "harvest":
 		if plot["growth_stage"] >= 5:
 			var crop_id := str(plot["crop_type"])
+			var coins_earned := int(HARVEST_COINS.get(crop_id, 8))
 			GameState.add_harvest(crop_id, 3)
 			GameState.add_seed(crop_id, 2)
-			GameState.add_coins(int(HARVEST_COINS.get(crop_id, 8)))
-			GameState.award_harvest_xp(crop_id)
+			GameState.add_coins(coins_earned)
+			var xp_result := GameState.award_harvest_xp(crop_id)
+			var xp_gained := int(xp_result.get("gained", 1))
 			# Lavender and sunflower attract bees — award pollination XP.
 			if crop_id == "lavender" or crop_id == "sunflower":
-				GameState.award_pollination_xp()
+				var pol_result := GameState.award_pollination_xp()
+				xp_gained += int(pol_result.get("gained", 0))
 			plot["state"] = "empty"
 			plot["growth_stage"] = 0
 			plot["crop_type"] = ""
@@ -243,6 +246,8 @@ func _on_plot_pressed(index: int) -> void:
 			plot["last_action_at"] = 0.0
 			_on_tutorial_action("harvest-crop")
 			_flash_plot(index, Color("fde047"))  # Gold flash on harvest
+			status_label.visible = true
+			status_label.text = "🌾 +%dc  +%dXP" % [coins_earned, xp_gained]
 		elif plot["state"] != "empty":
 			var crop_return := str(plot["crop_type"])
 			if crop_return != "":
