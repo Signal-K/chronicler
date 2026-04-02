@@ -211,7 +211,7 @@ func _on_bottle_pressed(index: int) -> void:
 
 func _refresh_ui() -> void:
 	var total := 0
-	for i in range(hives.size()):
+	for i in range(min(hives.size(), hive_cards.size())):
 		hive_cards[i].configure(hives[i])
 		total += int(hives[i]["honey_bottles"])
 
