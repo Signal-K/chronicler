@@ -178,8 +178,8 @@ func _on_honey_tick() -> void:
 		hive["honey_bottles"] = int(hive["honey_bottles"]) + 1
 		hives[i] = hive
 		did_change = true
-	_refresh_ui()
 	if did_change:
+		_refresh_ui()
 		_persist_state()
 
 

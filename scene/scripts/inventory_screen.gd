@@ -81,4 +81,4 @@ func _refresh_ui() -> void:
 
 
 func _on_refresh_tick() -> void:
-	_refresh_ui()
+	pass  # Handled by GameState.resources_changed signal
