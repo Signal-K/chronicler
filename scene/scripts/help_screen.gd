@@ -11,7 +11,7 @@ const HELP_SECTIONS: Array = [
 			["Till", "Select the Till tool and tap an empty plot to prepare the soil."],
 			["Plant", "Select the Plant tool, choose a crop, then tap a tilled plot. Uses 1 seed."],
 			["Water", "Select the Water tool and tap a plot when it shows 💧 Water. Uses 1 water."],
-			["Harvest", "Select Harvest and tap a plot showing ✨ Harvest. Earns coins, seeds, and XP."],
+			["Harvest", "Select Harvest and tap a plot showing ✨ Harvest. Earns seeds and XP. Coins: 🍅6 🫐8 🌻10 💜12."],
 			["Tip", "Lavender and Sunflower harvests award Pollination XP, which hatches new bees!"],
 		],
 	},

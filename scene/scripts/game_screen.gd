@@ -11,6 +11,12 @@ const SHOP_PRICES := {
 	"sunflower": 18,
 	"glass_bottle": 20,
 }
+const HARVEST_COINS := {
+	"tomato": 6,
+	"blueberry": 8,
+	"sunflower": 10,
+	"lavender": 12,
+}
 
 var selected_tool := "till"
 var selected_crop := "tomato"
@@ -225,7 +231,7 @@ func _on_plot_pressed(index: int) -> void:
 			var crop_id := str(plot["crop_type"])
 			GameState.add_harvest(crop_id, 3)
 			GameState.add_seed(crop_id, 2)
-			GameState.add_coins(8)
+			GameState.add_coins(int(HARVEST_COINS.get(crop_id, 8)))
 			GameState.award_harvest_xp(crop_id)
 			# Lavender and sunflower attract bees — award pollination XP.
 			if crop_id == "lavender" or crop_id == "sunflower":
