@@ -1,9 +1,14 @@
 extends Node
 
+signal resources_changed
+signal bee_hatched(hive_name: String)
+
 const SAVE_PATH := "user://bee_garden_save.json"
 const PLOTS_PER_PAGE := 6
 const MAX_PLOT_PAGES := 4
 const PLOT_COUNT := 6  # Legacy alias; use get_plot_count() for dynamic value.
+const POLLINATION_PER_BEE := 3  # Pollination events needed to hatch one new bee.
+const MAX_BEES_PER_HIVE := 12
 
 const PLOT_PAGE_UPGRADES: Array = [
 	{"page": 2, "required_level": 2, "cost": 50},
@@ -490,11 +495,13 @@ func consume_seed(crop_id: String, amount: int = 1) -> bool:
 	if current < amount:
 		return false
 	seeds[crop_id] = current - amount
+	resources_changed.emit()
 	return true
 
 
 func add_seed(crop_id: String, amount: int = 1) -> void:
 	seeds[crop_id] = get_seed_count(crop_id) + amount
+	resources_changed.emit()
 
 
 func add_harvest(crop_id: String, amount: int = 1) -> void:
@@ -515,7 +522,25 @@ func award_harvest_xp(crop_id: String) -> Dictionary:
 func award_pollination_xp() -> Dictionary:
 	pollination_events += 1
 	total_xp += 10
+	_check_bee_hatching()
 	return {"gained": 10, "level": calculate_level_from_xp(total_xp)}
+
+
+func _check_bee_hatching() -> void:
+	if pollination_events % POLLINATION_PER_BEE != 0:
+		return
+	# Find a hive below the bee cap and add one bee.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("bee_hatch_%d" % pollination_events)
+	var candidates: Array[int] = []
+	for i in range(hives.size()):
+		if int(hives[i].get("bee_count", 0)) < MAX_BEES_PER_HIVE:
+			candidates.append(i)
+	if candidates.is_empty():
+		return
+	var target := candidates[rng.randi() % candidates.size()]
+	hives[target]["bee_count"] = int(hives[target]["bee_count"]) + 1
+	bee_hatched.emit(str(hives[target].get("name", "Hive")))
 
 
 func award_classification_xp() -> Dictionary:
@@ -656,7 +681,9 @@ func discover_planet() -> Dictionary:
 		{"type": "Ice World", "prefix": "Cry", "radius": 0.8, "gravity": 6.8, "orbital_period": 520.0, "has_life": false},
 		{"type": "Volcanic World", "prefix": "Ign", "radius": 1.1, "gravity": 12.0, "orbital_period": 180.0, "has_life": false},
 	]
-	var pick_index := int(Time.get_unix_time_from_system()) % archetypes.size()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("planet_%d" % next_planet_id) ^ int(Time.get_unix_time_from_system())
+	var pick_index := rng.randi_range(0, archetypes.size() - 1)
 	var arch: Dictionary = archetypes[pick_index]
 	var planet := {
 		"id": next_planet_id,
@@ -680,30 +707,38 @@ func consume_water(amount: int = 1) -> bool:
 	if water < amount:
 		return false
 	water -= amount
+	resources_changed.emit()
 	return true
 
 
 func refill_water(amount: int = 1) -> void:
+	var before := water
 	water = min(max_water, water + amount)
+	if water != before:
+		resources_changed.emit()
 
 
 func add_coins(amount: int) -> void:
 	coins = max(0, coins + amount)
+	resources_changed.emit()
 
 
 func consume_glass_bottle(amount: int = 1) -> bool:
 	if glass_bottles < amount:
 		return false
 	glass_bottles -= amount
+	resources_changed.emit()
 	return true
 
 
 func add_glass_bottle(amount: int = 1) -> void:
 	glass_bottles = max(0, glass_bottles + amount)
+	resources_changed.emit()
 
 
 func add_bottled_honey(amount: int = 1) -> void:
 	bottled_honey_inventory = max(0, bottled_honey_inventory + amount)
+	resources_changed.emit()
 
 
 func get_plot_count() -> int:

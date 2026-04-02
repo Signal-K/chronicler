@@ -21,6 +21,7 @@ const UIFwk = preload("res://scripts/ui_framework.gd")
 func _ready() -> void:
 	_apply_ui_theme()
 	_refresh_ui()
+	GameState.resources_changed.connect(_refresh_ui)
 
 
 func _apply_ui_theme() -> void:

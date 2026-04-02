@@ -35,6 +35,7 @@ func _ready() -> void:
 		var target_page := i + 2
 		upgrade_buttons[i].pressed.connect(_on_upgrade_pressed.bind(target_page))
 	_refresh_ui()
+	GameState.resources_changed.connect(_refresh_ui)
 
 
 func _apply_ui_theme() -> void:

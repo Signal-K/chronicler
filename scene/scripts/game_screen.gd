@@ -45,6 +45,7 @@ var tutorial_steps: Array[Dictionary] = []
 
 var plot_nodes: Array[Button] = []
 @onready var _plot_grid: GridContainer = $RootLayout/GardenArea/GardenPanel/GardenMargin/Grid
+@onready var _water_regen_timer: Timer = $WaterRegenTimer
 
 @onready var crop_textures := {
 	"wheat_seed": preload("res://assets/sprites/crops/wheat_seed.png"),
@@ -88,6 +89,8 @@ func _ready() -> void:
 	_refresh_all_plots()
 	_refresh_resource_labels()
 	_setup_tutorial()
+	GameState.resources_changed.connect(_refresh_resource_labels)
+	GameState.bee_hatched.connect(_on_bee_hatched)
 
 
 func _apply_ui_theme() -> void:
@@ -223,6 +226,9 @@ func _on_plot_pressed(index: int) -> void:
 			GameState.add_seed(crop_id, 2)
 			GameState.add_coins(8)
 			GameState.award_harvest_xp(crop_id)
+			# Lavender and sunflower attract bees — award pollination XP.
+			if crop_id == "lavender" or crop_id == "sunflower":
+				GameState.award_pollination_xp()
 			plot["state"] = "empty"
 			plot["growth_stage"] = 0
 			plot["crop_type"] = ""
@@ -325,7 +331,24 @@ func _refresh_resource_labels() -> void:
 	coins_label.text = "🪙%d" % GameState.coins
 	water_label.text = "💧%d/%d" % [GameState.water, GameState.max_water]
 	seeds_label.text = "🌱%d %s" % [GameState.get_seed_count(selected_crop), selected_crop.capitalize()]
+	# Show active map when it's not the default.
+	if GameState.active_map != "default":
+		var map_icon := ""
+		for map_def in GameState.get_map_definitions():
+			if str(map_def.get("id", "")) == GameState.active_map:
+				map_icon = "%s %s" % [str(map_def.get("icon", "")), str(map_def.get("name", ""))]
+				break
+		map_label.text = map_icon
+		map_label.visible = not map_icon.is_empty()
+	else:
+		map_label.visible = false
 	_update_shop_button_states()
+
+
+func _on_bee_hatched(hive_name: String) -> void:
+	status_label.visible = true
+	status_label.text = "🐝 A bee hatched in %s!" % hive_name
+	GameState.save_state()
 
 
 func _update_shop_button_states() -> void:
@@ -353,11 +376,11 @@ func _on_buy_item(item_id: String) -> void:
 
 
 func _on_water_regen_tick() -> void:
-	var before := GameState.water
-	GameState.refill_water(1)
-	if GameState.water != before:
-		GameState.save_state()
-	_refresh_resource_labels()
+	var amount := max(1, roundi(GameState.growth_speed_multiplier))
+	GameState.refill_water(amount)
+	# Adjust timer interval so faster growth = faster water regen.
+	_water_regen_timer.wait_time = max(0.5, 2.0 / GameState.growth_speed_multiplier)
+	GameState.save_state()
 
 
 func _setup_tutorial() -> void:

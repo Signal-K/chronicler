@@ -3,11 +3,7 @@ extends Control
 const UIFwk = preload("res://scripts/ui_framework.gd")
 const MAX_HONEY := 15
 
-var hives: Array[Dictionary] = [
-	{"id": "hive-1", "name": "Starter Hive", "bee_count": 5, "honey_bottles": 3},
-	{"id": "hive-2", "name": "Clover Hive", "bee_count": 2, "honey_bottles": 1},
-	{"id": "hive-3", "name": "Lavender Hive", "bee_count": 0, "honey_bottles": 0},
-]
+var hives: Array[Dictionary] = []
 var hive_tutorial_steps: Array[Dictionary] = []
 var bottle_buttons: Array[Button] = []
 var _active_tab: String = "hives"
@@ -87,7 +83,10 @@ func _ready() -> void:
 	next_tutorial_button.pressed.connect(_on_next_tutorial)
 	_switch_tab("hives")
 	_refresh_ui()
-	_setup_hive_tutorial()
+	if not GameState.hive_tutorial_completed:
+		_setup_hive_tutorial()
+	GameState.resources_changed.connect(_refresh_ui)
+	GameState.bee_hatched.connect(_on_bee_hatched_in_hive)
 
 
 func _apply_ui_theme() -> void:
@@ -425,3 +424,11 @@ func _first_open_order_index() -> int:
 		if not bool(orders[i].get("fulfilled", false)):
 			return i
 	return 0
+
+
+func _on_bee_hatched_in_hive(hive_name: String) -> void:
+	# Reload hive data from GameState so bee count updates immediately.
+	hives = GameState.snapshot_hives()
+	_refresh_ui()
+	status_label.text = "🐝 A bee hatched in %s!" % hive_name
+	GameState.save_state()
