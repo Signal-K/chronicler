@@ -10,6 +10,28 @@ const PLOT_COUNT := 6  # Legacy alias; use get_plot_count() for dynamic value.
 const POLLINATION_PER_BEE := 3  # Pollination events needed to hatch one new bee.
 const MAX_BEES_PER_HIVE := 12
 
+# Honey type system — matches React Native HONEY_TYPE_CONFIG
+const CROP_TO_HONEY_TYPE: Dictionary = {
+	"tomato": "light",
+	"blueberry": "amber",
+	"sunflower": "amber",
+	"lavender": "specialty",
+}
+const HONEY_TYPE_CONFIG: Dictionary = {
+	"light":      {"name": "Light Honey",      "emoji": "🍯", "base_price": 15, "base_xp": 10},
+	"amber":      {"name": "Amber Honey",      "emoji": "🍯", "base_price": 20, "base_xp": 15},
+	"dark":       {"name": "Dark Honey",       "emoji": "🍯", "base_price": 25, "base_xp": 20},
+	"specialty":  {"name": "Specialty Honey",  "emoji": "✨", "base_price": 35, "base_xp": 30},
+	"wildflower": {"name": "Wildflower Blend", "emoji": "🌸", "base_price": 18, "base_xp": 12},
+}
+const ORDER_CHARACTERS: Array = [
+	{"name": "Farmer Joe",    "emoji": "👨‍🌾", "messages": ["Howdy! Need honey for the farm!", "The farmhands are running low!"]},
+	{"name": "Chef Rosa",     "emoji": "👩‍🍳", "messages": ["I need honey for my special recipe!", "My restaurant needs the finest!"]},
+	{"name": "Baker Tim",     "emoji": "🧑‍🍳", "messages": ["Honey buns need more honey!", "Running low on sweetener!"]},
+	{"name": "Grandma Bee",   "emoji": "👵",   "messages": ["Dearie, I need honey for my grandchildren!", "My old recipe calls for this honey!"]},
+	{"name": "Tea Master Li", "emoji": "🧘",   "messages": ["The perfect honey for my tea ceremony!", "Balance requires the right sweetness."]},
+]
+
 const PLOT_PAGE_UPGRADES: Array = [
 	{"page": 2, "required_level": 2, "cost": 50},
 	{"page": 3, "required_level": 5, "cost": 150},
@@ -31,7 +53,8 @@ var water := 100
 var max_water := 100
 var seeds: Dictionary = {}
 var harvested: Dictionary = {}
-var bottled_honey_inventory := 0
+var bottled_honey_inventory := 0       # Total across all types (kept for compat)
+var honey_type_inventory: Dictionary = {}  # {"light": 2, "amber": 1, ...}
 var glass_bottles := 10
 var honey_orders: Array[Dictionary] = []
 var orders_generated_on := ""
@@ -67,6 +90,7 @@ func _reset_defaults() -> void:
 	seeds = _default_seed_counts()
 	harvested = _default_harvested_counts()
 	bottled_honey_inventory = 0
+	honey_type_inventory = {}
 	glass_bottles = 10
 	honey_orders = []
 	orders_generated_on = ""
@@ -137,13 +161,22 @@ func _today_key() -> String:
 func _build_daily_orders(date_key: String) -> Array[Dictionary]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(hash(date_key))
+	var honey_type_keys: Array = HONEY_TYPE_CONFIG.keys()
 	var orders: Array[Dictionary] = []
 	for i in range(3):
 		var required := rng.randi_range(1, 4)
-		var reward := required * 9 + rng.randi_range(0, 3)
+		var char_pick: Dictionary = ORDER_CHARACTERS[rng.randi() % ORDER_CHARACTERS.size()]
+		var msg_pick: String = (char_pick["messages"] as Array)[rng.randi() % (char_pick["messages"] as Array).size()]
+		var honey_type: String = honey_type_keys[rng.randi() % honey_type_keys.size()]
+		var honey_cfg: Dictionary = HONEY_TYPE_CONFIG[honey_type]
+		var reward := required * int(honey_cfg["base_price"]) + rng.randi_range(0, 5)
 		orders.append({
 			"id": "order-%d-%s" % [i + 1, date_key],
-			"title": "Daily Order %d" % (i + 1),
+			"title": "%s %s" % [char_pick["emoji"], char_pick["name"]],
+			"character_name": char_pick["name"],
+			"character_emoji": char_pick["emoji"],
+			"character_message": msg_pick,
+			"honey_type": honey_type,
 			"required_bottles": required,
 			"reward_coins": reward,
 			"fulfilled": false,
@@ -197,8 +230,13 @@ func load_state() -> void:
 		seeds = (data["seeds"] as Dictionary).duplicate(true)
 	if data.has("harvested") and data["harvested"] is Dictionary:
 		harvested = (data["harvested"] as Dictionary).duplicate(true)
-	if data.has("bottled_honey_inventory"):
-		bottled_honey_inventory = int(data["bottled_honey_inventory"])
+	if data.has("honey_type_inventory") and data["honey_type_inventory"] is Dictionary:
+		honey_type_inventory = (data["honey_type_inventory"] as Dictionary).duplicate(true)
+		_sync_bottled_honey_total()
+	elif data.has("bottled_honey_inventory") and int(data["bottled_honey_inventory"]) > 0:
+		# Migrate old flat count to wildflower type.
+		honey_type_inventory = {"wildflower": int(data["bottled_honey_inventory"])}
+		_sync_bottled_honey_total()
 	if data.has("glass_bottles"):
 		glass_bottles = int(data["glass_bottles"])
 	if data.has("honey_orders") and data["honey_orders"] is Array:
@@ -272,6 +310,7 @@ func save_state() -> void:
 		"seeds": seeds,
 		"harvested": harvested,
 		"bottled_honey_inventory": bottled_honey_inventory,
+		"honey_type_inventory": honey_type_inventory,
 		"glass_bottles": glass_bottles,
 		"honey_orders": honey_orders,
 		"orders_generated_on": orders_generated_on,
@@ -332,6 +371,7 @@ func _ensure_resource_state() -> void:
 		harvested = _default_harvested_counts()
 	if coins < 0:
 		coins = 0
+	_sync_bottled_honey_total()
 	if bottled_honey_inventory < 0:
 		bottled_honey_inventory = 0
 	if glass_bottles < 0:
@@ -441,15 +481,21 @@ func fulfill_honey_order(order_id: String) -> Dictionary:
 
 		var required := int(order.get("required_bottles", 0))
 		var reward := int(order.get("reward_coins", 0))
-		if bottled_honey_inventory < required:
-			return {"ok": false, "message": "Not enough bottled honey for this order."}
+		var honey_type: String = str(order.get("honey_type", "wildflower"))
+		var available := get_honey_count(honey_type)
+		if available < required:
+			var cfg: Dictionary = HONEY_TYPE_CONFIG.get(honey_type, {})
+			var type_name: String = str(cfg.get("name", honey_type))
+			return {"ok": false, "message": "Need %d %s (have %d)." % [required, type_name, available]}
 
-		bottled_honey_inventory -= required
+		consume_typed_honey(honey_type, required)
 		add_coins(reward)
-		award_sale_xp(max(1, required * 4))
+		var honey_cfg: Dictionary = HONEY_TYPE_CONFIG.get(honey_type, {})
+		var xp_gain := max(1, required * int(honey_cfg.get("base_xp", 4)))
+		award_sale_xp(xp_gain)
 		order["fulfilled"] = true
 		honey_orders[i] = order
-		return {"ok": true, "message": "Order fulfilled (+%d coins)." % reward}
+		return {"ok": true, "message": "Order fulfilled! +%d coins." % reward}
 
 	return {"ok": false, "message": "Order not found."}
 
@@ -737,8 +783,52 @@ func add_glass_bottle(amount: int = 1) -> void:
 
 
 func add_bottled_honey(amount: int = 1) -> void:
-	bottled_honey_inventory = max(0, bottled_honey_inventory + amount)
+	add_typed_honey("wildflower", amount)
+
+
+func get_honey_count(honey_type: String) -> int:
+	return int(honey_type_inventory.get(honey_type, 0))
+
+
+func add_typed_honey(honey_type: String, amount: int) -> void:
+	if not HONEY_TYPE_CONFIG.has(honey_type):
+		honey_type = "wildflower"
+	honey_type_inventory[honey_type] = get_honey_count(honey_type) + amount
+	_sync_bottled_honey_total()
 	resources_changed.emit()
+
+
+func consume_typed_honey(honey_type: String, amount: int) -> bool:
+	var current := get_honey_count(honey_type)
+	if current < amount:
+		return false
+	honey_type_inventory[honey_type] = current - amount
+	if honey_type_inventory[honey_type] <= 0:
+		honey_type_inventory.erase(honey_type)
+	_sync_bottled_honey_total()
+	resources_changed.emit()
+	return true
+
+
+func _sync_bottled_honey_total() -> void:
+	var total := 0
+	for v in honey_type_inventory.values():
+		total += int(v)
+	bottled_honey_inventory = total
+
+
+func get_dominant_honey_type() -> String:
+	# Determine honey type from which crops have been harvested most.
+	var best_crop := ""
+	var best_count := 0
+	for crop in harvested:
+		var count := int(harvested.get(crop, 0))
+		if count > best_count:
+			best_count = count
+			best_crop = crop
+	if best_crop != "" and CROP_TO_HONEY_TYPE.has(best_crop):
+		return CROP_TO_HONEY_TYPE[best_crop]
+	return "wildflower"
 
 
 func get_plot_count() -> int:

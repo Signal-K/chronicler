@@ -192,9 +192,13 @@ func _on_bottle_pressed(index: int) -> void:
 
 	hive["honey_bottles"] = int(hive["honey_bottles"]) - 1
 	hives[index] = hive
-	GameState.add_bottled_honey(1)
+	var honey_type := GameState.get_dominant_honey_type()
+	GameState.add_typed_honey(honey_type, 1)
 	GameState.add_coins(3)
-	status_label.text = "Bottled 1 honey from %s." % str(hive["name"])
+	var honey_cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(honey_type, {})
+	var emoji: String = str(honey_cfg.get("emoji", "🍯"))
+	var type_name: String = str(honey_cfg.get("name", "Honey"))
+	status_label.text = "%s Bottled 1 %s from %s." % [emoji, type_name, str(hive["name"])]
 	_on_hive_tutorial_action("bottle-honey")
 	_refresh_ui()
 	_persist_state()
@@ -206,7 +210,18 @@ func _refresh_ui() -> void:
 		hive_cards[i].configure(hives[i])
 		total += int(hives[i]["honey_bottles"])
 
-	total_honey_label.text = "🍯 %d bottles" % total
+	# Build typed honey summary string
+	var honey_parts: Array[String] = []
+	for honey_type in GameState.honey_type_inventory:
+		var count := int(GameState.honey_type_inventory[honey_type])
+		if count <= 0:
+			continue
+		var cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(honey_type, {})
+		honey_parts.append("%s×%d" % [str(cfg.get("emoji", "🍯")), count])
+	if honey_parts.is_empty():
+		total_honey_label.text = "🍯 0 bottles"
+	else:
+		total_honey_label.text = " ".join(honey_parts)
 	glass_label.text = "🫙 %d glass" % GameState.glass_bottles
 	coins_label.text = "🪙 %d" % GameState.coins
 	if status_label.text.is_empty() and total == 0:
@@ -233,9 +248,18 @@ func _refresh_orders_ui() -> void:
 		var fulfilled := bool(order.get("fulfilled", false))
 		var can_fulfill := GameState.bottled_honey_inventory >= required
 
-		order_detail_labels[i].text = "%s: Ship %d honey" % [str(order.get("title", "Order")), required]
+		var honey_type: String = str(order.get("honey_type", "wildflower"))
+		var honey_cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(honey_type, {})
+		var honey_emoji: String = str(honey_cfg.get("emoji", "🍯"))
+		var honey_name: String = str(honey_cfg.get("name", "Honey"))
+		var char_emoji: String = str(order.get("character_emoji", "👤"))
+		order_detail_labels[i].text = "%s %s: %d × %s %s" % [
+			char_emoji, str(order.get("character_name", "Order %d" % (i+1))),
+			required, honey_emoji, honey_name
+		]
 		order_reward_labels[i].text = "+%dc" % reward
-		order_status_labels[i].text = "✓ Done" if fulfilled else "Open"
+		var available := GameState.get_honey_count(honey_type)
+		order_status_labels[i].text = "✓ Done" if fulfilled else ("Have %d" % available)
 		order_buttons[i].disabled = fulfilled or not can_fulfill
 		if not fulfilled and can_fulfill:
 			UIFwk.style_button(order_buttons[i], Color("0f766e"))
@@ -249,7 +273,9 @@ func _on_fulfill_order_pressed(index: int) -> void:
 		return
 	var result: Dictionary = GameState.fulfill_honey_order(str(orders[index].get("id", "")))
 	_refresh_ui()
-	status_label.text = str(result.get("message", "Order action complete."))
+	var char_msg: String = str(orders[index].get("character_message", ""))
+	var base_msg: String = str(result.get("message", "Order action complete."))
+	status_label.text = base_msg + (" — \"%s\"" % char_msg if char_msg != "" else "")
 	if bool(result.get("ok", false)):
 		_on_hive_tutorial_action("fulfill-order")
 	GameState.save_state()
