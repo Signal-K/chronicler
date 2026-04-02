@@ -247,9 +247,8 @@ func _refresh_orders_ui() -> void:
 		var required := int(order.get("required_bottles", 0))
 		var reward := int(order.get("reward_coins", 0))
 		var fulfilled := bool(order.get("fulfilled", false))
-		var can_fulfill := GameState.bottled_honey_inventory >= required
-
 		var honey_type: String = str(order.get("honey_type", "wildflower"))
+		var can_fulfill := GameState.get_honey_count(honey_type) >= required
 		var honey_cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(honey_type, {})
 		var honey_emoji: String = str(honey_cfg.get("emoji", "🍯"))
 		var honey_name: String = str(honey_cfg.get("name", "Honey"))

@@ -29,6 +29,7 @@ func _ready() -> void:
 	reset_hive_tutorial_button.pressed.connect(_on_reset_hive_tutorial)
 	growth_slider.value = GameState.growth_speed_multiplier
 	growth_slider.value_changed.connect(_on_growth_slider_changed)
+	GameState.resources_changed.connect(_refresh_ui)
 	_refresh_ui()
 
 

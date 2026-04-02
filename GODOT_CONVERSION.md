@@ -28,35 +28,38 @@
 | **Animated bees / harvest fx** | ✅ | ❌ | Not yet implemented |
 | **Building placement** | ✅ | ❌ | Greenhouse, silo, water tank etc — not yet |
 | **Experience details screen** | ✅ | ⚠️ | Folded into progress.tscn — adequate |
-| **Help / searchable docs screen** | ✅ | ❌ | Not yet — Settings has debug only |
+| **Help / searchable docs screen** | ✅ | ✅ | help.tscn + help_screen.gd with 7 sections covering all mechanics |
 | **Dark mode / theme toggle** | ✅ | ❌ | Not needed for Godot |
-| **Honey quality score** | ✅ | ❌ | RN shows quality 0–100 per bottle — not yet in Godot |
-| **Daily quota per honey type** | ✅ | ❌ | RN reduces reward after 2 orders per type per day |
+| **Honey quality score** | ✅ | ✅ | Quality 0–100 computed from bee count, hours, crop diversity; shown on bottle |
+| **Daily quota per honey type** | ✅ | ✅ | orders_fulfilled_today: Dictionary; rewards halve after 2 of same type |
 
 ---
 
 ## What to Build Next (Priority Order)
 
-### P1 — Core Loop Gaps
-1. **Daily quota system for orders**: RN reduces order rewards by 50% after 2 fulfilled orders of the same honey type per day. Add `orders_fulfilled_today: Dictionary` to GameState, check in `fulfill_honey_order`, halve reward if over quota.
+### P1 — Core Loop Gaps ✅ DONE
+- ~~Daily quota system for orders~~ — implemented (`orders_fulfilled_today`, halved rewards after 2 per type)
+- ~~Honey quality score~~ — implemented (0–100 from bee count + production hours + crop diversity)
+- ~~Plot grid visual feedback~~ — implemented (💧 label on watered plots, gold border on harvest-ready)
+- ~~Harvest animation~~ — implemented (Tween gold flash on harvest, blue on water)
+- ~~Bee count progress bar on hive cards~~ — implemented (BeeProgressBar in hive_card.tscn)
+- ~~Help screen~~ — implemented (help.tscn + help_screen.gd, 7 sections, added to game_root.tscn)
+- ~~Cross-screen resource sync~~ — all screens connect `GameState.resources_changed`
 
-2. **Honey quality score**: When bottling, compute a quality 0–100 based on: bee count in hive, whether it's production hours, number of lavender/sunflower harvested. Display on the bottled honey entry and factor into order XP reward.
+### P2 — Polish ✅ DONE
+- ~~Bee hatching loop~~ — implemented (`POLLINATION_PER_BEE=3`, `_check_bee_hatching()`, `bee_hatched` signal)
+- ~~Honey type → order pipeline~~ — full chain: crop harvest → dominant type → order fulfillment
+- ~~Planet type colors and stat cards~~ — dark navy theme, per-type color panels, life badge
+- ~~Warm amber UI theme~~ — UIFwk constants, styled panels/buttons across all screens
 
-3. **Plot grid visual feedback**: Watered plots should show a distinct visual state (darkened soil). Currently the color change only happens via the StyleBoxFlat but there's no "water shimmer" indicator. Add a small 💧 label overlay on watered plots.
+### P3 — Remaining Work
+1. **Building placement system**: The RN app has Greenhouse, Silo, Water Tank, Minecart, Train Station, Track. These are drag-and-place structures on the farm view. In Godot this would require a separate placement mode in the farm screen with a structure grid overlaying the plot grid. **Large scope — not started.**
 
-### P2 — Polish
-4. **Harvest animation**: Flash the plot green/gold when a crop is harvested. Godot `Tween` can animate `modulate` on the plot button.
+2. **Plot upgrade immediate expansion**: Buying a plot page upgrade waits up to 1s for the growth timer tick before the grid expands. Should call `_check_plot_grid_expansion()` directly from `progress_screen.gd` after purchase, or emit a dedicated signal.
 
-5. **Bee count visible on hive cards**: Already shown in `BeeCountLabel`, but should show a progress bar toward MAX_BEES_PER_HIVE (12) so the pollination→bee loop is visible.
+3. **Nests screen**: `app/nests.tsx` is just an alias for Hives. Already handled.
 
-6. **Help screen**: Add a `help.tscn` / `help_screen.gd` with expandable sections covering the game loop, honey types, biomes, and XP events.
-
-### P3 — Features (Larger Work)
-7. **Building placement system**: The RN app has Greenhouse, Silo, Water Tank, Minecart, Train Station, Track. These are drag-and-place structures on the farm view. In Godot this would require a separate placement mode in the farm screen with a structure grid overlaying the plot grid.
-
-8. **Nests screen**: `app/nests.tsx` is just an alias for Hives. Already handled.
-
-9. **Godot bridge**: `app/godot.tsx` embeds Godot via `GodotHostView` for native. Once the Godot game is feature-complete, the RN app can route all non-auth screens directly to the Godot scene, keeping RN only as the auth/account wrapper.
+4. **Godot bridge**: `app/godot.tsx` embeds Godot via `GodotHostView` for native. Once the Godot game is feature-complete, the RN app can route all non-auth screens directly to the Godot scene, keeping RN only as the auth/account wrapper.
 
 ---
 

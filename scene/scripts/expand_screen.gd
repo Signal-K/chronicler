@@ -58,6 +58,7 @@ func _ready() -> void:
 	for i in range(unlock_buttons.size()):
 		unlock_buttons[i].pressed.connect(_on_unlock_pressed.bind(i))
 		select_buttons[i].pressed.connect(_on_select_pressed.bind(i))
+	GameState.resources_changed.connect(_refresh_ui)
 	_refresh_ui()
 
 

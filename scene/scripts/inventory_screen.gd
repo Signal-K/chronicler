@@ -47,7 +47,19 @@ func _refresh_ui() -> void:
 	coins_label.text = "Coins: %d" % GameState.coins
 	water_label.text = "Water: %d / %d" % [GameState.water, GameState.max_water]
 	plot_pages_label.text = "Farm Pages: %d (%d plots)" % [GameState.plot_pages, GameState.get_plot_count()]
-	bottles_label.text = "Bottled Honey: %d" % GameState.bottled_honey_inventory
+	var honey_inv: Dictionary = GameState.honey_type_inventory
+	var honey_parts: Array = []
+	var honey_cfg_map: Dictionary = GameState.HONEY_TYPE_CONFIG
+	for htype in ["wildflower", "light", "amber", "specialty"]:
+		var count := int(honey_inv.get(htype, 0))
+		if count > 0:
+			var cfg: Dictionary = honey_cfg_map.get(htype, {})
+			var emoji: String = str(cfg.get("emoji", "🍯"))
+			honey_parts.append("%s×%d" % [emoji, count])
+	if honey_parts.is_empty():
+		bottles_label.text = "Bottled Honey: none"
+	else:
+		bottles_label.text = "Bottled Honey: " + ", ".join(honey_parts)
 	glass_label.text = "Glass Bottles: %d" % GameState.glass_bottles
 
 	var tomato_h := int(GameState.harvested.get("tomato", 0))
