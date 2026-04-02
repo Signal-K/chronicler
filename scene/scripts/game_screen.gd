@@ -140,7 +140,12 @@ func _apply_ui_theme() -> void:
 	# Crop selector row
 	$RootLayout/ToolbarPanel/ToolbarMargin/ToolbarContent/SecondRow/CropLabel.add_theme_color_override("font_color", UIFwk.TITLE_COLOR)
 
-	# Shop buttons (compact emoji labels)
+	# Shop buttons — show crop emoji + price
+	buy_tomato_seed_button.text = "🍅 %dc" % SHOP_PRICES["tomato"]
+	buy_blueberry_seed_button.text = "🫐 %dc" % SHOP_PRICES["blueberry"]
+	buy_lavender_seed_button.text = "🌸 %dc" % SHOP_PRICES["lavender"]
+	buy_sunflower_seed_button.text = "🌻 %dc" % SHOP_PRICES["sunflower"]
+	buy_glass_bottle_button.text = "🫙 %dc" % SHOP_PRICES["glass_bottle"]
 	UIFwk.style_button(buy_tomato_seed_button, Color("b91c1c"))
 	UIFwk.style_button(buy_blueberry_seed_button, Color("1e3a8a"))
 	UIFwk.style_button(buy_lavender_seed_button, Color("6d28d9"))
