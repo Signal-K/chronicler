@@ -164,7 +164,8 @@ func _today_key() -> String:
 func _build_daily_orders(date_key: String) -> Array[Dictionary]:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(hash(date_key))
-	var honey_type_keys: Array = HONEY_TYPE_CONFIG.keys()
+	# Only include types that players can actually produce via harvesting.
+	var honey_type_keys: Array = ["wildflower", "light", "amber", "specialty"]
 	var orders: Array[Dictionary] = []
 	for i in range(3):
 		var required := rng.randi_range(1, 4)

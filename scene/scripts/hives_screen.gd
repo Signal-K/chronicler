@@ -97,6 +97,7 @@ func _apply_ui_theme() -> void:
 	UIFwk.style_amber_text(title_node)
 	title_node.add_theme_font_size_override("font_size", 26)
 
+	subtitle_label.text = "Hives produce honey continuously while bees are present."
 	UIFwk.style_amber_muted(subtitle_label)
 	UIFwk.style_amber_text(total_honey_label)
 	UIFwk.style_amber_text(glass_label)
@@ -262,7 +263,10 @@ func _refresh_orders_ui() -> void:
 			char_emoji, str(order.get("character_name", "Order %d" % (i+1))),
 			required, honey_emoji, honey_name
 		]
-		order_reward_labels[i].text = "+%dc" % reward
+		var fulfilled_so_far := int(GameState.orders_fulfilled_today.get(honey_type, 0))
+		var quota_hit := not fulfilled and fulfilled_so_far >= GameState.ORDER_QUOTA_PER_TYPE
+		var display_reward := reward / 2 if quota_hit else reward
+		order_reward_labels[i].text = "+%dc%s" % [display_reward, " (50%!)" if quota_hit else ""]
 		var available := GameState.get_honey_count(honey_type)
 		order_status_labels[i].text = "✓ Done" if fulfilled else ("Have %d" % available)
 		order_buttons[i].disabled = fulfilled or not can_fulfill

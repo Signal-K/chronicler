@@ -114,7 +114,12 @@ func _on_select_pressed(index: int) -> void:
 
 func _refresh_ui() -> void:
 	maps = GameState.get_map_definitions()
-	active_map_label.text = "Active Map: %s" % GameState.active_map.capitalize()
+	var active_map_name := GameState.active_map.capitalize()
+	for map_def in maps:
+		if str(map_def.get("id", "")) == GameState.active_map:
+			active_map_name = "%s %s" % [str(map_def.get("icon", "")), str(map_def.get("name", active_map_name))]
+			break
+	active_map_label.text = "Active: %s" % active_map_name
 	coins_label.text = "🪙 %d" % GameState.coins
 
 	for i in range(map_name_labels.size()):
@@ -128,7 +133,9 @@ func _refresh_ui() -> void:
 		var active := GameState.active_map == map_id
 		var cost := int(map_def.get("unlock_cost", 0))
 		map_name_labels[i].text = "%s %s" % [str(map_def.get("icon", "")), str(map_def.get("name", map_id))]
-		map_desc_labels[i].text = str(map_def.get("description", ""))
+		var growth_rate := float(map_def.get("growth_rate", 1.0))
+		var rate_str := "%.1f× growth" % growth_rate
+		map_desc_labels[i].text = "%s — %s" % [str(map_def.get("description", "")), rate_str]
 		if active:
 			map_state_labels[i].text = "✅ Active"
 		elif unlocked:

@@ -28,7 +28,7 @@ const HELP_SECTIONS: Array = [
 	{
 		"title": "🐝 Hives & Honey",
 		"entries": [
-			["Production hours", "Hives produce honey 8AM–4PM and 8PM–4AM only."],
+			["Production",       "Hives produce honey continuously as long as bees are present (cap: 15 bottles)."],
 			["Bottling",         "Use a glass bottle to collect honey from a hive. Earn 3 coins per bottle."],
 			["Bee hatching",     "Every 3 Pollination events, a new bee hatches in a random hive (cap: 12 bees)."],
 			["Orders",           "Fulfill daily orders for specific honey types to earn coins and XP."],
