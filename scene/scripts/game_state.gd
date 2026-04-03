@@ -335,7 +335,7 @@ func can_make_classification() -> bool:
 	var max_daily := min(hives.size(), 2)
 	return daily_classification_count < max_daily
 
-func record_classification(crop_type: String) -> bool:
+func record_classification(type: String, project: String = "Internal", species_id: String = "", photo_url: String = "") -> bool:
 	if not can_make_classification():
 		return false
 
@@ -343,13 +343,30 @@ func record_classification(crop_type: String) -> bool:
 	var now := Time.get_unix_time_from_system()
 	var entry := {
 		"id": "classification_" + str(now),
-		"type": crop_type,
+		"type": type,
+		"project": project,
+		"species_id": species_id,
+		"photo_url": photo_url,
 		"timestamp": now,
 		"date": _today_string()
 	}
 	classification_history.append(entry)
 	if classification_history.size() > 1000:
 		classification_history.remove_at(0)
+
+	add_xp(10) # Award XP for classification
+	
+	# Project specific rewards
+	if project == "Zooniverse":
+		# Bonus honey for Zooniverse
+		for hive in hives:
+			hive["honey_accumulated"] += 5.0
+		hives_changed.emit()
+	elif project == "iNaturalist":
+		# Bonus seed for iNaturalist
+		var seed_id = SEED_PRICES.keys()[randi() % SEED_PRICES.size()]
+		seeds[seed_id] = seeds.get(seed_id, 0) + 1
+		inventory_changed.emit()
 
 	SaveManager.save_game(self)
 	return true

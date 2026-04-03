@@ -4,8 +4,6 @@ extends Control
 @onready var stats_label: Label = $VBox/StatsLabel
 
 func _ready() -> void:
-	# No specific signal for classification change yet, but record_classification saves.
-	# We could add a signal if needed.
 	_refresh()
 
 func _refresh() -> void:
@@ -27,7 +25,10 @@ func _refresh() -> void:
 	# Display history in reverse (newest first)
 	for i in range(history.size() - 1, -1, -1):
 		var entry = history[i]
-		var row := HBoxContainer.new()
+		var row := VBoxContainer.new()
+		row.add_theme_constant_override("separation", 2)
+		
+		var h_box := HBoxContainer.new()
 		
 		var type_lbl := Label.new()
 		type_lbl.text = entry.get("type", "Unknown").capitalize()
@@ -37,8 +38,20 @@ func _refresh() -> void:
 		date_lbl.text = entry.get("date", "")
 		date_lbl.modulate = Color(0.7, 0.7, 0.7)
 		
-		row.add_child(type_lbl)
-		row.add_child(date_lbl)
+		h_box.add_child(type_lbl)
+		h_box.add_child(date_lbl)
+		row.add_child(h_box)
+		
+		if "project" in entry:
+			var proj_lbl := Label.new()
+			proj_lbl.text = "Project: " + entry["project"]
+			proj_lbl.theme_override_font_sizes/font_size = 12
+			proj_lbl.modulate = Color(0.6, 0.8, 1.0)
+			row.add_child(proj_lbl)
+		
+		var sep := HSeparator.new()
+		row.add_child(sep)
+		
 		history_list.add_child(row)
 
 func _on_back_pressed() -> void:

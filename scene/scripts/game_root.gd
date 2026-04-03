@@ -10,6 +10,8 @@ const SCREENS := {
 	"planets":   "res://scenes/planets.tscn",
 	"settings":  "res://scenes/settings.tscn",
 	"almanac":   "res://scenes/almanac.tscn",
+	"discover":  "res://scenes/discover.tscn",
+	"classification": "res://scenes/classification.tscn",
 	"help":      "res://scenes/help.tscn",
 }
 
@@ -36,6 +38,7 @@ func _on_tab_hives() -> void:    _navigate("hives")
 func _on_tab_shop() -> void:     _navigate("shop")
 func _on_tab_inventory() -> void: _navigate("inventory")
 func _on_tab_progress() -> void: _navigate("progress")
+func _on_tab_discover() -> void: _navigate("discover")
 func _on_tab_expand() -> void:   _navigate("expand")
 func _on_tab_planets() -> void:  _navigate("planets")
 func _on_tab_settings() -> void: _navigate("settings")

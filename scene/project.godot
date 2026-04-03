@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://scripts/game_state.gd"
 SaveManager="*res://scripts/save_manager.gd"
+CitizenScienceManager="*res://scripts/citizen_science_manager.gd"
 
 [display]
 

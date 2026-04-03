@@ -17,15 +17,15 @@ timeSpent: 0
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Replicate daily classification tracking and history into Godot. This limits the number of classifications a user can make per day based on their hive count and records them for the (future) almanac. Mirrors `lib/classificationTracking.ts`.
+Replicate daily classification tracking and history into Godot. This limits the number of classifications a user can make per day based on their hive count and records them for the almanac. Integrated with real APIs from Zooniverse (Bumble Bee Identification) and iNaturalist (Pollinator Scouting).
 <!-- SECTION:DESCRIPTION:END -->
 
 ## What to do
 
-- Implement `classification_manager.gd` (singleton or part of `game_state.gd`)
-- Methods: `get_daily_data()`, `can_make_classification()`, `record_classification(type)`, `get_history()`
-- Limit: `max_daily_classifications = min(hive_count, 2)`
-- Persist daily data and history in the save file (mirroring `CLASSIFICATION_STORAGE_KEY` and `user_classifications_history`)
+- Implement `citizen_science_manager.gd` for API handling (Zooniverse & iNaturalist).
+- Update `GameState.record_classification(type, project, species_id, photo_url)` to award XP and bonuses.
+- Create `discover.tscn` and `classification.tscn` for the identification workflow.
+- Persist detailed history in the save file.
 
 ## Source reference
 - RN: `lib/classificationTracking.ts`, `hooks/useClassificationTracking.ts`

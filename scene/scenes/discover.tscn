@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/discover_screen.gd" id="1"]
+
+[node name="Discover" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="Title" type="Label" parent="VBox"]
+text = "🔍 Citizen Science"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="VBox"]
+text = "Daily Classifications Left: "
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="iNatBtn" type="Button" parent="VBox/Buttons"]
+text = "Scout for Bees (iNaturalist)"
+
+[node name="ZoonBtn" type="Button" parent="VBox/Buttons"]
+text = "Identify Bumble Bees (Zooniverse)"
+
+[connection signal="pressed" from="VBox/Buttons/iNatBtn" to="." method="_on_inat_pressed"]
+[connection signal="pressed" from="VBox/Buttons/ZoonBtn" to="." method="_on_zoon_pressed"]
