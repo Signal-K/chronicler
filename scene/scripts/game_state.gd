@@ -251,7 +251,6 @@ func _tick_weather(delta: float) -> void:
 				weather_changed.emit(is_raining)
 
 func _in_production_window() -> bool:
-...
 	if force_daytime: return true
 	var hour := Time.get_datetime_dict_from_system()["hour"] as int
 	return (hour >= 8 and hour < 16) or hour >= 20 or hour < 4
@@ -332,7 +331,7 @@ func can_make_classification() -> bool:
 		classification_date = today
 		daily_classification_count = 0
 
-	var max_daily := min(hives.size(), 2)
+	var max_daily: int = min(hives.size(), 2)
 	return daily_classification_count < max_daily
 
 func record_classification(type: String, project: String = "Internal", species_id: String = "", photo_url: String = "") -> bool:
@@ -626,7 +625,7 @@ func fulfill_order(order_id: String) -> Dictionary:
 		if available < needed:
 			return { "success": false, "message": "Not enough %s honey (have %d, need %d)" % [honey_type, available, needed] }
 		_deduct_bottled_honey(honey_type, needed)
-		var was_reduced := fulfilled_counts.get(honey_type, 0) >= QUOTA_PER_TYPE
+		var was_reduced: bool = fulfilled_counts.get(honey_type, 0) >= QUOTA_PER_TYPE
 		var coins_earned: int = order["coins"] / 2 if was_reduced else order["coins"]
 		var xp_earned: int = order["xp"]
 		add_coins(coins_earned)

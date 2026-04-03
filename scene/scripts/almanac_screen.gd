@@ -45,7 +45,7 @@ func _refresh() -> void:
 		if "project" in entry:
 			var proj_lbl := Label.new()
 			proj_lbl.text = "Project: " + entry["project"]
-			proj_lbl.theme_override_font_sizes/font_size = 12
+			proj_lbl.add_theme_font_size_override("font_size", 12)
 			proj_lbl.modulate = Color(0.6, 0.8, 1.0)
 			row.add_child(proj_lbl)
 		

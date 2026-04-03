@@ -1,0 +1,52 @@
+name: Godot Tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  godot-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.5
+        run: |
+          wget -q "https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip" -O /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          sudo mv /tmp/Godot_v4.5-stable_linux.x86_64 /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+
+      - name: Import project (generate .godot cache)
+        run: godot --headless --path scene --import 2>&1 || true
+
+      - name: Smoke test
+        run: godot --headless --path scene -s tests/smoke_test.gd
+
+      - name: Unit test
+        run: godot --headless --path scene res://scenes/unit_test.tscn
+
+  godot-e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build e2e image
+        run: docker build -f docker/Dockerfile.e2e -t bee-garden-e2e .
+
+      - name: Run e2e tour
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/e2e-output:/root/.local/share/godot/app_userdata/bee-garden" \
+            bee-garden-e2e
+
+      - name: Upload e2e artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: e2e-output/

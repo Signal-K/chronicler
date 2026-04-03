@@ -77,7 +77,7 @@ const HELP_SECTIONS := [
 	# ... more sections can be added following the same pattern
 ]
 
-@onready var section_list: VBoxContainer = $Scroll/SectionList
+@onready var section_list: VBoxContainer = $VBox/Scroll/SectionList
 var expanded_section: String = ""
 
 func _ready() -> void:

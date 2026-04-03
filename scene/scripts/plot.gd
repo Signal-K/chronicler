@@ -2,21 +2,42 @@ extends Button
 
 signal plot_pressed(index: int)
 
-const CROP_SPRITES := {
-	"":          null,
-	"tomato":    "res://assets/sprites/crops/tomato_full.png",
-	"blueberry": "res://assets/sprites/crops/blueberry_full.png",
-	"lavender":  "res://assets/sprites/crops/lavender_full.png",
-	"sunflower": "res://assets/sprites/crops/sunflower_full.png",
-	"pumpkin":   "res://assets/sprites/crops/pumpkin_full.png",
-	"potato":    "res://assets/sprites/crops/potato_full.png",
+# Stage sprites: [seed, sprout, mid, full] — per crop where available, wheat fallback
+const STAGE_SPRITES := {
+	"tomato":    [
+		"res://assets/Sprites/Crops/Tomato/1 - Tomato Seed.png",
+		"res://assets/Sprites/Crops/Tomato/2 - Tomato Sprout.png",
+		"res://assets/Sprites/Crops/Tomato/3 - Tomato Mid.png",
+		"res://assets/Sprites/Crops/Tomato/4 - Tomato Full.png",
+	],
+	"pumpkin":   [
+		"res://assets/Sprites/Crops/Pumpkin/1 - Pumpkin Seed.png",
+		"res://assets/Sprites/Crops/Pumpkin/2 - Pumpkin Sprout.png",
+		"res://assets/Sprites/Crops/Pumpkin/3 - Pumpkin Mid.png",
+		"res://assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png",
+	],
+	"potato":    [
+		"res://assets/Sprites/Crops/Potato/1 - Potato Seed.png",
+		"res://assets/Sprites/Crops/Potato/2 - Potato Sprout.png",
+		"res://assets/Sprites/Crops/Potato/3 - Potato Mid.png",
+		"res://assets/Sprites/Crops/Potato/4 - Potato Full.png",
+	],
 }
-const STAGE_SPRITES := [
-	"res://assets/sprites/crops/wheat_seed.png",
-	"res://assets/sprites/crops/wheat_sprout.png",
-	"res://assets/sprites/crops/wheat_mid.png",
-	"res://assets/sprites/crops/wheat_full.png",
+# Crops without stage sets use wheat stages + their own full image
+const WHEAT_STAGES := [
+	"res://assets/Sprites/Crops/Wheat/1---Wheat-Seed.png",
+	"res://assets/Sprites/Crops/Wheat/2---Wheat-Sprout.png",
+	"res://assets/Sprites/Crops/Wheat/3---Wheat-Mid.png",
+	"res://assets/Sprites/Crops/Wheat/4---Wheat-Full.png",
 ]
+const FULL_SPRITES := {
+	"tomato":    "res://assets/Sprites/Crops/Tomato/4 - Tomato Full.png",
+	"blueberry": "res://assets/Sprites/Crops/Blueberry.png",
+	"lavender":  "res://assets/Sprites/Crops/Lavender.png",
+	"sunflower": "res://assets/Sprites/Crops/Sunflower.png",
+	"pumpkin":   "res://assets/Sprites/Crops/Pumpkin/4 - Pumpkin Full.png",
+	"potato":    "res://assets/Sprites/Crops/Potato/4 - Potato Full.png",
+}
 
 var plot_index: int = 0
 
@@ -43,11 +64,12 @@ func _refresh() -> void:
 			sprite.texture = null
 			label.text = "[~]"
 		"planted", "growing":
-			var stage_idx := clampi(p["growth_stage"], 0, STAGE_SPRITES.size() - 1)
-			sprite.texture = load(STAGE_SPRITES[stage_idx])
+			var stages: Array = STAGE_SPRITES.get(p["crop_id"], WHEAT_STAGES)
+			var stage_idx := clampi(p["growth_stage"], 0, stages.size() - 1)
+			var path: String = stages[stage_idx]
+			sprite.texture = load(path) if ResourceLoader.exists(path) else null
 			label.text = ""
 		"harvestable":
-			var crop_path: String = CROP_SPRITES.get(p["crop_id"], "")
-			if crop_path and ResourceLoader.exists(crop_path):
-				sprite.texture = load(crop_path)
+			var crop_path: String = FULL_SPRITES.get(p["crop_id"], "")
+			sprite.texture = load(crop_path) if crop_path and ResourceLoader.exists(crop_path) else null
 			label.text = "✓"

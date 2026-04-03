@@ -1,7 +1,7 @@
 extends Control
 
-@onready var list: VBoxContainer = $Scroll/List
-@onready var coins_label: Label = $Footer/CoinsLabel
+@onready var list: VBoxContainer = $VBox/Scroll/List
+@onready var coins_label: Label = $VBox/Footer/CoinsLabel
 
 func _ready() -> void:
 	GameState.inventory_changed.connect(_refresh)

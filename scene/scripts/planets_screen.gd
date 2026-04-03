@@ -3,7 +3,7 @@ extends Control
 # Planets are sourced from Supabase classifications in the RN app.
 # In the Godot port we show a placeholder list until a backend integration ticket is created.
 
-@onready var list: VBoxContainer = $Scroll/List
+@onready var list: VBoxContainer = $VBox/Scroll/List
 
 const PLACEHOLDER_PLANETS := [
 	{ "name": "Kepler-22b", "type": "Super-Earth", "color": "#4A90D9" },

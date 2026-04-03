@@ -1,7 +1,5 @@
 extends Node2D
 
-const BeeScene := preload("res://scenes/bee.tscn") # Assume this will be created or used as Sprite2D
-
 var bee_entities: Array = []
 var spawn_timer: float = 0.0
 const SPAWN_INTERVAL := 30.0

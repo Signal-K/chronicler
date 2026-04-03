@@ -90,9 +90,9 @@ func _on_image_received(result: int, response_code: int, _headers: PackedStringA
 		return
 
 	var image := Image.new()
-	var error = Image.load_jpg_from_buffer(body)
+	var error = image.load_jpg_from_buffer(body)
 	if error != OK:
-		error = Image.load_png_from_buffer(body)
+		error = image.load_png_from_buffer(body)
 	
 	if error != OK:
 		error_occurred.emit("Failed to load image data.")

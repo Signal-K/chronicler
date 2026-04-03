@@ -29,7 +29,7 @@ func _make_order_row(order: Dictionary) -> HBoxContainer:
 
 	var info := Label.new()
 	var cfg: Dictionary = GameState.HONEY_TYPE_CONFIG.get(order["honey_type"], {})
-	var reduced := GameState.fulfilled_counts.get(order["honey_type"], 0) >= GameState.QUOTA_PER_TYPE
+	var reduced: bool = GameState.fulfilled_counts.get(order["honey_type"], 0) >= GameState.QUOTA_PER_TYPE
 	var coins_text := "%d🪙" % (order["coins"] / 2 if reduced else order["coins"])
 	if reduced: coins_text += " (½)"
 	info.text = "%s %s — %s x%d  %s" % [

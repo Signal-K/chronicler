@@ -32,6 +32,9 @@ size_flags_vertical = 3
 columns = 3
 size_flags_horizontal = 3
 
+[node name="CropSelector" type="OptionButton" parent="VBox"]
+text = "🌱 Tomato (5)"
+
 [node name="Toolbar" type="HBoxContainer" parent="VBox"]
 custom_minimum_size = Vector2(0, 56)
 
@@ -44,6 +47,9 @@ text = "Till"
 
 [node name="PlantBtn" type="Button" parent="VBox/Toolbar"]
 text = "Plant"
+
+[node name="WaterBtn" type="Button" parent="VBox/Toolbar"]
+text = "Water"
 
 [node name="HarvestBtn" type="Button" parent="VBox/Toolbar"]
 text = "Harvest"
@@ -67,5 +73,7 @@ visible = false
 
 [connection signal="pressed" from="VBox/Toolbar/TillBtn" to="." method="_on_till_pressed"]
 [connection signal="pressed" from="VBox/Toolbar/PlantBtn" to="." method="_on_plant_pressed"]
+[connection signal="pressed" from="VBox/Toolbar/WaterBtn" to="." method="_on_water_pressed"]
 [connection signal="pressed" from="VBox/Toolbar/HarvestBtn" to="." method="_on_harvest_pressed"]
 [connection signal="pressed" from="VBox/Toolbar/ShovelBtn" to="." method="_on_shovel_pressed"]
+[connection signal="item_selected" from="VBox/CropSelector" to="." method="_on_crop_selected"]

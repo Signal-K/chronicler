@@ -10,9 +10,11 @@ var selected_crop: String = "tomato"
 @onready var coins_label: Label = $VBox/Header/CoinsLabel
 @onready var toast: Label = $Toast
 @onready var modulate_node: CanvasModulate = $CanvasModulate
+@onready var crop_selector: OptionButton = $VBox/CropSelector
 
 func _ready() -> void:
 	GameState.inventory_changed.connect(_refresh_header)
+	GameState.inventory_changed.connect(_refresh_crop_selector)
 	GameState.water_changed.connect(_refresh_header)
 	GameState.weather_changed.connect(_on_weather_changed)
 	GameState.bee_hatched.connect(_on_bee_hatched)
@@ -21,7 +23,27 @@ func _ready() -> void:
 	GameState.garden_expanded.connect(_rebuild_grid)
 	_rebuild_grid(GameState.unlocked_rows)
 	_refresh_header()
+	_refresh_crop_selector()
 	_on_time_changed(GameState.time_of_day)
+
+func _refresh_crop_selector() -> void:
+	var prev := selected_crop
+	crop_selector.clear()
+	var idx := 0
+	var restore_idx := 0
+	for crop_id in GameState.seeds:
+		var count: int = GameState.seeds.get(crop_id, 0)
+		if count > 0:
+			var cfg: Dictionary = GameState.CROP_CONFIGS.get(crop_id, {})
+			crop_selector.add_item("%s %s (%d)" % [cfg.get("emoji", "🌱"), crop_id.capitalize(), count])
+			crop_selector.set_item_metadata(idx, crop_id)
+			if crop_id == prev:
+				restore_idx = idx
+			idx += 1
+	if crop_selector.item_count > 0:
+		crop_selector.select(restore_idx)
+		selected_crop = crop_selector.get_item_metadata(restore_idx)
+	crop_selector.visible = crop_selector.item_count > 0
 
 func _rebuild_grid(_rows: int = 0) -> void:
 	for child in grid.get_children():
@@ -83,6 +105,9 @@ func _on_plant_pressed() -> void:  _set_tool("plant")
 func _on_water_pressed() -> void:  _set_tool("water")
 func _on_harvest_pressed() -> void: _set_tool("harvest")
 func _on_shovel_pressed() -> void: _set_tool("shovel")
+
+func _on_crop_selected(index: int) -> void:
+	selected_crop = crop_selector.get_item_metadata(index)
 
 func _set_tool(tool: String) -> void:
 	selected_tool = tool
