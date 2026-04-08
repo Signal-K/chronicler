@@ -24,7 +24,7 @@ jobs:
         run: godot --headless --path scene --import 2>&1 || true
 
       - name: Smoke test
-        run: godot --headless --path scene -s tests/smoke_test.gd
+        run: godot --headless --path scene res://scenes/smoke_test.tscn
 
       - name: Unit test
         run: godot --headless --path scene res://scenes/unit_test.tscn

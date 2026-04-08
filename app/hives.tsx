@@ -14,7 +14,7 @@ import type { BottledHoney } from '../types/inventory';
 const HIVE_TUTORIAL_SHOWN_KEY = 'hive_tutorial_shown';
 
 export default function HivesScreen() {
-  const { hives, bottleHoneyFromHive, honeyProduction } = useHiveState();
+  const { hives, bottleHoneyFromHive } = useHiveState();
   const { inventory, setInventory } = useGameState();
   const { 
     orders, 
@@ -25,9 +25,13 @@ export default function HivesScreen() {
   } = useHoneyOrders();
   
   const [refreshKey, setRefreshKey] = useState(0);
-  const [forceDay, setForceDay] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [activeTab, setActiveTab] = useState<'hives' | 'orders'>('hives');
+  const bottledHoney: BottledHoney[] = inventory.bottledHoney || [];
+  const glassBottles = inventory.items?.glass_bottle || 0;
+  const farmingHistory = Object.keys(inventory.harvested || {}).filter(
+    crop => (inventory.harvested[crop] || 0) > 0
+  );
 
   // Check if we should show the hive tutorial
   useEffect(() => {
@@ -46,37 +50,21 @@ export default function HivesScreen() {
     setShowTutorial(false);
   };
 
-  // Get user's bottled honey from inventory
-  const getBottledHoney = (): BottledHoney[] => {
-    const bottledHoneyArray: BottledHoney[] = inventory.bottledHoney || [];
-    return bottledHoneyArray;
-  };
-
-  // Get glass bottle count
-  const getGlassBottles = (): number => {
-    return inventory.items?.glass_bottle || 0;
-  };
-
-  // Get farming history (which crops user has harvested)
-  const getFarmingHistory = (): string[] => {
-    return Object.keys(inventory.harvested || {}).filter(
-      crop => (inventory.harvested[crop] || 0) > 0
-    );
-  };
-
   // Refresh daily orders when screen loads
   useEffect(() => {
     if (ordersLoaded) {
-      refreshDailyOrders(getBottledHoney(), getFarmingHistory());
+      const nextFarmingHistory = Object.keys(inventory.harvested || {}).filter(
+        crop => (inventory.harvested[crop] || 0) > 0
+      );
+      refreshDailyOrders(inventory.bottledHoney || [], nextFarmingHistory);
     }
-  }, [ordersLoaded]);
+  }, [inventory.bottledHoney, inventory.harvested, ordersLoaded, refreshDailyOrders]);
 
   // Check force daytime setting and refresh more frequently when active
   useEffect(() => {
     const checkForceDay = async () => {
       const setting = await AsyncStorage.getItem('forceDaytime');
       const isForceDay = setting === 'true';
-      setForceDay(isForceDay);
       
       if (isForceDay) {
         // Force refresh every 2 seconds when in force day mode
@@ -146,9 +134,6 @@ export default function HivesScreen() {
   };
 
   const handleFulfillOrder = async (orderId: string) => {
-    const bottledHoney = getBottledHoney();
-    const glassBottles = getGlassBottles();
-    
     // Find the order to get details
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
@@ -197,7 +182,7 @@ export default function HivesScreen() {
   };
 
   // Calculate total bottled honey count
-  const totalBottledHoney = getBottledHoney().reduce((sum, b) => sum + b.amount, 0);
+  const totalBottledHoney = bottledHoney.reduce((sum, b) => sum + b.amount, 0);
 
   return (
     <View style={styles.container}>
@@ -218,7 +203,7 @@ export default function HivesScreen() {
             🍯 {totalBottledHoney} bottles
           </Text>
           <Text style={styles.inventoryText}>
-            🫙 {getGlassBottles()} glass
+            🫙 {glassBottles} glass
           </Text>
           <Text style={styles.inventoryText}>
             🪙 {inventory.coins}
@@ -273,11 +258,11 @@ export default function HivesScreen() {
       ) : (
         <OrdersPanel
           orders={orders}
-          userHoneyStock={getBottledHoney()}
-          glassBottles={getGlassBottles()}
+          userHoneyStock={bottledHoney}
+          glassBottles={glassBottles}
           onFulfillOrder={handleFulfillOrder}
           getQuotaStatus={getQuotaStatus}
-          onRefreshOrders={() => refreshDailyOrders(getBottledHoney(), getFarmingHistory())}
+          onRefreshOrders={() => refreshDailyOrders(bottledHoney, farmingHistory)}
         />
       )}
     </View>

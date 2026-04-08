@@ -65,20 +65,12 @@ export function GameHeader({
         <Text style={styles.weatherIcon}>{getWeatherIcon()}</Text>
       </Pressable>
 
-      {/* Level badge (debug: clickable, alert, log, color change) */}
       <Pressable
         style={({ pressed }) => [
           styles.levelBadge,
           pressed && { backgroundColor: '#f87171', borderColor: '#b91c1c' }
         ]}
-        onPress={() => {
-          if (onLevelPress) {
-            console.log('🟢 GameHeader: Level badge pressed');
-            onLevelPress();
-          } else {
-            console.log('🟡 GameHeader: onLevelPress not defined');
-          }
-        }}
+        onPress={onLevelPress}
       >
         <Text style={styles.levelText}>Lv.{level ?? 0}</Text>
       </Pressable>

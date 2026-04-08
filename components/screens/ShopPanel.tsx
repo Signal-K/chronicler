@@ -1,8 +1,6 @@
-
-
 import React from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BlueberrySeedIcon, CoinIcon, GlassBottleIcon, LavenderSeedIcon, SunflowerSeedIcon, TomatoSeedIcon } from "../../components/ui/ShopIcons";
+import { BlueberrySeedIcon, CoinIcon, GlassBottleIcon, LavenderSeedIcon, SunflowerSeedIcon, TomatoSeedIcon } from "../ui/ShopIcons";
 import { useThemeColor } from '../../hooks/use-theme-color';
 import type { InventoryData } from '../../hooks/useGameState';
 
@@ -30,8 +28,7 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
   const cardBg = useThemeColor({ light: '#FEF9C3', dark: '#0f1720' }, 'background');
   const cardBorder = useThemeColor({ light: '#F59E0B', dark: '#2b2b2b' }, 'icon');
   const itemText = useThemeColor({}, 'text');
-  const priceBg = useThemeColor({ light: '#FEF3C7', dark: '#0f1720' }, 'background');
-  
+
   const handlePurchase = (item: (typeof shopItems)[0]) => {
     if (inventory.coins >= item.price) {
       const newInventory = {
@@ -55,11 +52,8 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
     }
   }
 
-
-
   const content = (
     <View style={[styles.container, isExpanded && styles.expandedContainer, { backgroundColor: bg }] }>
-      {/* Header */}
       <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }] }>
         <Text style={[styles.headerTitle, { color: headerText }]}>🛍️ Shop</Text>
         <View style={styles.headerActions}>
@@ -73,7 +67,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Coins Display */}
         <View style={[styles.coinsCard, { backgroundColor: cardBg, borderColor: cardBorder }] }>
           <CoinIcon size={32} />
           <View style={styles.coinsInfo}>
@@ -82,7 +75,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
           </View>
         </View>
 
-        {/* Items Grid */}
         <View style={styles.gridContainer}>
           {shopItems.map((item) => {
             const ItemIcon = item.icon;
@@ -118,10 +110,6 @@ export function Shop({ inventory, setInventory, onClose, isExpanded, onToggleExp
             );
           })}
         </View>
-
-
-
-
       </ScrollView>
     </View>
   )
@@ -262,35 +250,22 @@ const styles = StyleSheet.create({
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "#FEF3C7",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#F59E0B",
+    gap: 6,
   },
   priceText: {
     fontSize: 16,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "#92400E",
   },
   priceTextDisabled: {
-    color: "#9CA3AF",
+    color: "#78716C",
   },
   lockedOverlay: {
     position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: "#EF4444",
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    alignItems: "center",
-    justifyContent: "center",
   },
   lockedText: {
-    fontSize: 12,
+    fontSize: 18,
   },
-
-})
+});

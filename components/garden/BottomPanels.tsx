@@ -1,10 +1,10 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Shop } from '../../app/screens/shop';
 // Settings removed
 import type { InventoryData } from '../../hooks/useGameState';
 import type { PollinationFactorData } from '../../types/pollinationFactor';
 import { Inventory } from '../inventory/inventory';
+import { Shop } from '../screens/ShopPanel';
 
 interface BottomPanelsProps {
   isAnyPanelOpen: boolean;

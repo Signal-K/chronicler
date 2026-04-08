@@ -12,6 +12,7 @@ func save_game(gs) -> void:
 	cfg.set_value("player", "pollination_score", gs.pollination_score)
 	cfg.set_value("player", "total_harvests", gs.total_harvests)
 	cfg.set_value("player", "pollination_milestones", gs.pollination_milestones)
+	cfg.set_value("player", "unique_harvests", gs.unique_harvests)
 
 	cfg.set_value("water", "current_water", gs.current_water)
 	cfg.set_value("water", "last_updated_water", gs.last_updated_water)
@@ -55,6 +56,7 @@ func load_game(gs) -> void:
 	gs.pollination_score = cfg.get_value("player", "pollination_score", 0.0)
 	gs.total_harvests = cfg.get_value("player", "total_harvests", 0)
 	gs.pollination_milestones = cfg.get_value("player", "pollination_milestones", [])
+	gs.unique_harvests = cfg.get_value("player", "unique_harvests", {})
 
 	gs.current_water = cfg.get_value("water", "current_water", gs.MAX_WATER)
 	gs.last_updated_water = cfg.get_value("water", "last_updated_water", 0.0)

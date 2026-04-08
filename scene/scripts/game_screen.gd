@@ -4,6 +4,7 @@ const PlotScene := preload("res://scenes/plot.tscn")
 
 var selected_tool: String = ""  # "till" | "plant" | "water" | "harvest" | "shovel" | ""
 var selected_crop: String = "tomato"
+var _toast_timer: Timer
 
 @onready var grid: GridContainer = $VBox/Garden/Grid
 @onready var tool_label: Label = $VBox/Toolbar/ToolLabel
@@ -13,6 +14,11 @@ var selected_crop: String = "tomato"
 @onready var crop_selector: OptionButton = $VBox/CropSelector
 
 func _ready() -> void:
+	_toast_timer = Timer.new()
+	_toast_timer.one_shot = true
+	_toast_timer.timeout.connect(_hide_toast)
+	add_child(_toast_timer)
+
 	GameState.inventory_changed.connect(_refresh_header)
 	GameState.inventory_changed.connect(_refresh_crop_selector)
 	GameState.water_changed.connect(_refresh_header)
@@ -96,8 +102,14 @@ func _on_time_changed(tod: String) -> void:
 func _show_toast(msg: String) -> void:
 	toast.text = msg
 	toast.visible = true
-	await get_tree().create_timer(2.5).timeout
+	_toast_timer.start(2.5)
+
+func _hide_toast() -> void:
 	toast.visible = false
+
+func _exit_tree() -> void:
+	if _toast_timer and is_instance_valid(_toast_timer):
+		_toast_timer.stop()
 
 # ── Toolbar button callbacks ──────────────────────────────────────────────────
 func _on_till_pressed() -> void:   _set_tool("till")

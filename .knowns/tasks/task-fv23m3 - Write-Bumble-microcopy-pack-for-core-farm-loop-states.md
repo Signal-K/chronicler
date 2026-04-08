@@ -1,7 +1,7 @@
 ---
 id: fv23m3
 title: Write Bumble microcopy pack for core farm loop states
-status: todo
+status: done
 priority: high
 labels:
   - liam-sprint
@@ -9,8 +9,9 @@ labels:
   - writing
   - ux
   - bumble
+  - agent-foundation
 createdAt: '2026-04-02T21:59:38.740Z'
-updatedAt: '2026-04-02T21:59:38.740Z'
+updatedAt: '2026-04-08T11:00:00Z'
 timeSpent: 0
 parent: yfdpli
 ---
@@ -24,8 +25,12 @@ Create tight player-facing copy for the current loop: harvest feedback, order fu
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Copy covers harvest, orders, bees, progression, and empty-state moments currently present in code
-- [ ] #2 All strings stay short enough for mobile UI and Godot alert/dialog usage
-- [ ] #3 Copy avoids honey quality messaging and does not mention planets
+- [x] #1 Copy covers harvest, orders, bees, progression, and empty-state moments currently present in code
+- [x] #2 All strings stay short enough for mobile UI and Godot alert/dialog usage
+- [x] #3 Copy avoids honey quality messaging and does not mention planets
 <!-- AC:END -->
 
+## What was done
+
+- Added a default string pack in `.knowns/docs/bumble-v0-content-defaults.md`.
+- Included toast, empty-state, order, hive, expansion, and sync placeholder copy sized for current Godot and mobile UI surfaces.

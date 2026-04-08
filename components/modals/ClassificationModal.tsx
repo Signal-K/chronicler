@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
@@ -86,57 +86,8 @@ export default function ClassificationModal({
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  // Global debug function (can be called from console)
-  (global as any).testBumbleStorage = async () => {
-    console.log('🐝 Testing bumble storage from modal...');
-    const connected = await checkStorageConnectivity();
-    if (connected) {
-      await fetchRandomBumbleAnomaly();
-    }
-    return { connected, currentAnomaly };
-  };
-
-  // Debug function to test a specific anomaly ID (you can call this from console)
-  const testSpecificAnomaly = async (anomalyId: number) => {
-    console.log(`🧪 Testing specific anomaly ID: ${anomalyId}`);
-    
-    const imageFormats = ['jpeg', 'jpg', 'png'];
-    
-    for (const format of imageFormats) {
-      const filename = `${anomalyId}.${format}`;
-      console.log(`🔍 Testing: ${filename}`);
-      
-      const { data: urlData } = supabase.storage
-        .from('bumble')
-        .getPublicUrl(filename);
-      
-      if (urlData?.publicUrl) {
-        console.log(`📸 URL: ${urlData.publicUrl}`);
-        
-        try {
-          const response = await fetch(urlData.publicUrl, { method: 'HEAD' });
-          console.log(`📊 Status: ${response.status}`);
-          
-          if (response.ok) {
-            console.log(`✅ SUCCESS: Image accessible at ${urlData.publicUrl}`);
-            // Set this as current image for testing
-            setBeeImageUrl(urlData.publicUrl);
-            setCurrentAnomaly({ id: anomalyId, anomalytype: 'bumble' });
-            return;
-          }
-        } catch (error) {
-          console.error(`❌ Fetch error:`, error);
-        }
-      }
-    }
-    console.log(`❌ No working image found for anomaly ${anomalyId}`);
-  };
-
-  // You can test this in the browser console with:
-  // window.testSpecificAnomaly = testSpecificAnomaly;
-
   // Check storage bucket connectivity
-  const checkStorageConnectivity = async () => {
+  const checkStorageConnectivity = useCallback(async () => {
     try {
       console.log('🔍 Testing storage bucket connectivity...');
       
@@ -157,10 +108,10 @@ export default function ClassificationModal({
       console.error('❌ Storage connectivity check failed:', error);
       return false;
     }
-  };
+  }, []);
 
   // Fetch a random bumble anomaly from Supabase
-  const fetchRandomBumbleAnomaly = async () => {
+  const fetchRandomBumbleAnomaly = useCallback(async () => {
     setLoading(true);
     setBeeImageUrl(null);
     
@@ -220,7 +171,22 @@ export default function ClassificationModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [checkStorageConnectivity]);
+
+  useEffect(() => {
+    (global as any).testBumbleStorage = async () => {
+      console.log('🐝 Testing bumble storage from modal...');
+      const connected = await checkStorageConnectivity();
+      if (connected) {
+        await fetchRandomBumbleAnomaly();
+      }
+      return { connected, currentAnomaly };
+    };
+
+    return () => {
+      delete (global as any).testBumbleStorage;
+    };
+  }, [checkStorageConnectivity, currentAnomaly, fetchRandomBumbleAnomaly]);
 
   // Save classification to Supabase
   const saveClassification = async (beeType: string) => {
@@ -313,7 +279,7 @@ export default function ClassificationModal({
         }),
       ]).start();
     }
-  }, [visible, scaleAnim, fadeAnim]);
+  }, [visible, scaleAnim, fadeAnim, checkStorageConnectivity, fetchRandomBumbleAnomaly]);
 
   const handleClose = () => {
     Animated.parallel([

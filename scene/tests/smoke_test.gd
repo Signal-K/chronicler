@@ -1,6 +1,6 @@
-extends SceneTree
+extends Node
 
-func _init() -> void:
+func _ready() -> void:
 	var pass_count := 0
 	var fail_count := 0
 
@@ -19,18 +19,27 @@ func _init() -> void:
 		"res://scenes/orders_panel.tscn",
 	]
 
+	var game_state := get_node_or_null("/root/GameState")
+	if game_state and game_state.has_method("reset_game"):
+		game_state.reset_game()
+
 	for path in scenes_to_test:
 		var scene := load(path) as PackedScene
 		if scene == null:
 			printerr("FAIL: could not load " + path)
 			fail_count += 1
 		else:
-			print("PASS: " + path)
-			pass_count += 1
-
-	# GameState autoload is not available in bare SceneTree mode.
-	# Its mechanics are fully covered by tests/unit_test.gd (run via unit_test.tscn).
-	print("SKIP: GameState autoload (covered by unit_test.tscn)")
+			var instance := scene.instantiate()
+			if instance == null:
+				printerr("FAIL: could not instantiate " + path)
+				fail_count += 1
+			else:
+				add_child(instance)
+				await get_tree().process_frame
+				print("PASS: " + path)
+				pass_count += 1
+				instance.queue_free()
+				await get_tree().process_frame
 
 	print("\n%d passed, %d failed" % [pass_count, fail_count])
-	quit(1 if fail_count > 0 else 0)
+	get_tree().quit(1 if fail_count > 0 else 0)

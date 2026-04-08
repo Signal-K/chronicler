@@ -2,15 +2,18 @@
 id: b2q9lu
 title: "Ecosystem v0 release readiness for Bumble"
 status: todo
-priority: high
+priority: medium
 labels:
   - release
   - v0
   - ux
   - auth
   - notifications
+  - release-pass
+  - agent-ready
+  - two-week
 createdAt: '2026-03-06T00:00:00Z'
-updatedAt: '2026-03-06T00:00:00Z'
+updatedAt: '2026-04-08T11:00:00Z'
 timeSpent: 0
 ---
 
@@ -37,3 +40,8 @@ Run the release stabilization pass for Bumble noted in ecosystem planning: UI pa
 - UI parity pass closes obvious inconsistency bugs.
 - Early testers can understand progression/reward loop quickly.
 - Feedback instrumentation and prompt path are available.
+
+## Execution Notes
+
+- This is the final pass after the foundation and core-loop lanes in `.knowns/docs/bumble-two-week-agent-plan.md`.
+- Use the new product and copy guardrails to remove leftover overpromising text while checking auth, onboarding, and early feedback flow.

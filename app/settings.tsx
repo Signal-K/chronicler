@@ -31,8 +31,6 @@ export default function SettingsScreen() {
   const [locationPermission, setLocationPermission] = useState<string>('unknown');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [plotStates, setPlotStates] = useState<{[key: number]: {watered: boolean, planted: boolean, wateredAt?: number}}>({});
-  const [autoFillHoneyEnabled, setAutoFillHoneyEnabled] = useState<boolean>(true);
-  const [plots, setPlots] = useState<any[]>([]);
   const [forceDaytime, setForceDaytime] = useState<boolean>(false);
   const [localDataSummary, setLocalDataSummary] = useState<{
     totalKeys: number;
@@ -40,26 +38,10 @@ export default function SettingsScreen() {
     keyDetails: { key: string; size: number; hasData: boolean }[];
   }>({ totalKeys: 0, totalDataSize: 0, keyDetails: [] });
 
-  // Load plots data
-  useEffect(() => {
-    const loadPlots = async () => {
-      try {
-        const plotsData = await AsyncStorage.getItem('plots');
-        if (plotsData) {
-          setPlots(JSON.parse(plotsData));
-        }
-      } catch {
-        // error loading plots
-      }
-    };
-    loadPlots();
-  }, []);
-
   useEffect(() => {
     checkAuthState();
     checkLocationPermission();
     loadPlotStates();
-    loadHoneySettings();
     loadForceDaytimeSettings();
     loadLocalDataSummary();
 
@@ -119,17 +101,6 @@ export default function SettingsScreen() {
       // error loading plot states
     }
   };
-  const loadHoneySettings = async () => {
-    try {
-      const saved = await AsyncStorage.getItem('autoFillHoneyEnabled');
-      if (saved !== null) {
-        setAutoFillHoneyEnabled(JSON.parse(saved));
-      }
-    } catch {
-      // error loading honey settings
-    }
-  };
-
   const loadForceDaytimeSettings = async () => {
     try {
       const saved = await AsyncStorage.getItem('forceDaytime');
@@ -171,17 +142,6 @@ export default function SettingsScreen() {
       // ignore write errors
     }
     setThemeOverride(newValue ? 'dark' : 'light');
-  };
-
-  const toggleAutoFillHoney = async () => {
-    const newValue = !autoFillHoneyEnabled;
-    setAutoFillHoneyEnabled(newValue);
-    
-    try {
-      await AsyncStorage.setItem('autoFillHoneyEnabled', JSON.stringify(newValue));
-    } catch {
-      // error saving honey auto-fill setting
-    }
   };
 
   const toggleForceDaytime = async () => {

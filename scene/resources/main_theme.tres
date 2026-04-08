@@ -1,0 +1,50 @@
+[gd_resource type="Theme" load_steps=5 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_BtnNormal"]
+bg_color = Color(0.133, 0.772, 0.368, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.1)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_BtnHover"]
+bg_color = Color(0.262, 0.871, 0.502, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.1)
+shadow_size = 6
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_BtnPressed"]
+bg_color = Color(0.106, 0.615, 0.294, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 1
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_PanelCosy"]
+bg_color = Color(1, 0.98, 0.94, 0.95)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.4, 0.2, 0, 0.05)
+shadow_size = 10
+
+[resource]
+Button/styles/normal = SubResource("StyleBoxFlat_BtnNormal")
+Button/styles/hover = SubResource("StyleBoxFlat_BtnHover")
+Button/styles/pressed = SubResource("StyleBoxFlat_BtnPressed")
+Panel/styles/panel = SubResource("StyleBoxFlat_PanelCosy")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_PanelCosy")
+Label/colors/font_color = Color(0.2, 0.1, 0, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.1)
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 1

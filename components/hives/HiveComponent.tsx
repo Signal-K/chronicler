@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { HiveData } from '../../types/hive';
@@ -13,21 +12,6 @@ export default function HiveComponent({
   onBottleHoney,
 }: HiveComponentProps) {
   const [pulseAnim] = useState(new Animated.Value(1));
-  const [forceDay, setForceDay] = useState(false);
-  
-  console.log('🚨 NEW COMPONENT LOADING - HONEY BOTTLES:', hive.honey?.honeyBottles || 0);
-  
-  // Check force daytime setting for debug
-  useEffect(() => {
-    const checkForceDay = async () => {
-      const setting = await AsyncStorage.getItem('forceDaytime');
-      const isForceDay = setting === 'true';
-      setForceDay(isForceDay);
-    };
-    checkForceDay();
-    const interval = setInterval(checkForceDay, 2000);
-    return () => clearInterval(interval);
-  }, []);
 
   const honeyBottles = hive.honey?.honeyBottles || 0;
   const isProducing = hive.honey?.productionActive || false;

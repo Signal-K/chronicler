@@ -43,9 +43,6 @@ export function SimpleToolbar({
   currentFarmIndex = 0,
   verticalPage = 'main', // new prop
 }: ToolbarProps) {
-  const handleDownNav = () => {
-    if (onVerticalNavigate) onVerticalNavigate();
-  };
   const [showPlantMenu, setShowPlantMenu] = useState(false);
 
   const availablePlants = [

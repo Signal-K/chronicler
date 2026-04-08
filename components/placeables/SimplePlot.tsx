@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { PlotData, Tool } from '../../hooks/useGameState';
+import { getCropConfig } from '../../lib/cropConfig';
+
 const getPlotWidth = () => {
   // Fixed width for consistent 2x3 grid layout
   // Smaller size to ensure 2 columns fit side by side
   return 145;
-
 };
-
-import type { PlotData, Tool } from '../../hooks/useGameState';
-import { getCropConfig } from '../../lib/cropConfig';
 
 type PlotProps = {
   index: number;

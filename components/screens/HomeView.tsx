@@ -18,11 +18,9 @@ import { useWaterSystem } from '../../hooks/useWaterSystem';
 import { BottomPanels } from '../garden/BottomPanels';
 import { SimpleToolbar } from '../garden/SimpleToolbar';
 // Orders removed
-import { SiloModal } from '../modals/SiloModal';
 import { InteractiveTutorial } from '../tutorial';
 import { BeeHatchAlert } from '../ui/BeeHatchAlert';
 import { GameHeader } from '../ui/GameHeader';
-import { Toast } from '../ui/Toast';
 import { HomeContent } from './HomeContent';
 import { NestsContent } from './NestsContent';
 
@@ -33,12 +31,6 @@ export function HomeView() {
   const [currentScreen, setCurrentScreen] = useState<'nests' | 'home' | 'landscape' | 'expand' | 'godot'>('home');
   const hasShownFirstBee = useRef(false);
   const processedTutorialSteps = useRef(new Set<string>());
-  const [showSiloModal, setShowSiloModal] = useState(false);
-  // showOrdersModal removed
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastTitle, setToastTitle] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
   
   // New bee hatching alert state
   const [beeHatchAlert, setBeeHatchAlert] = useState({ visible: false, message: '' });
@@ -75,6 +67,7 @@ export function HomeView() {
 
   const { currentWater, maxWater, consumeWater } = useWaterSystem(false);
   const { pollinationFactor, incrementFactor, canSpawnBees } = usePollinationFactor();
+  const pollinationScore = pollinationFactor.factor;
   
   // Tutorial state for new users
   const { 
@@ -151,7 +144,7 @@ export function HomeView() {
   const handleBuildHive = useCallback(() => { if (canBuildNewHive(inventory.coins)) { buildNewHive(); setInventory(prev => ({ ...prev, coins: prev.coins - hiveCost })); } }, [buildNewHive, canBuildNewHive, inventory.coins, hiveCost, setInventory]);
   const handleFillHivesFromPollinationFactor = useCallback(() => {
     console.log('🐝 handleFillHivesFromPollinationFactor called');
-    console.log('Pollination factor:', pollinationFactor);
+    console.log('Pollination factor:', pollinationScore);
     console.log('Hives:', hives);
     
     // Note: This callback uses a simplified calculation. For time-based bee generation,
@@ -162,16 +155,16 @@ export function HomeView() {
     const totalCapacity = hives.length * HIVE_CAPACITY;
     const currentTotal = hives.reduce((sum, h) => sum + h.beeCount, 0);
     const remainingCapacity = totalCapacity - currentTotal;
-    const projectedTotal = currentTotal + Math.floor(pollinationFactor.factor * 0.1);
+    const projectedTotal = currentTotal + Math.floor(pollinationScore * 0.1);
     
     console.log('Total capacity:', totalCapacity);
     console.log('Current total bees:', currentTotal);
     console.log('Remaining capacity:', remainingCapacity);
-    console.log('Pollination score * 0.1:', pollinationFactor.factor * 0.1);
+    console.log('Pollination score * 0.1:', pollinationScore * 0.1);
     
     // Only proceed if projected total would be >= 10 (minimum requirement)
     if (projectedTotal >= 10) {
-      const beesToAdd = Math.min(Math.floor(pollinationFactor.factor * 0.1), remainingCapacity);
+      const beesToAdd = Math.min(Math.floor(pollinationScore * 0.1), remainingCapacity);
       
       console.log('Bees to add:', beesToAdd);
       
@@ -203,7 +196,7 @@ export function HomeView() {
     } else {
       console.log(`Not enough bees - projected total ${projectedTotal} is less than minimum 10`);
     }
-  }, [pollinationFactor.factor, hives, addBees]);
+  }, [pollinationScore, hives, addBees]);
 
   useEffect(() => { if (canSpawnBees && !hasShownFirstBee.current) hasShownFirstBee.current = true; }, [canSpawnBees]);
 
@@ -293,13 +286,13 @@ export function HomeView() {
           ]);
           if (storedPlots) setPlotsState(JSON.parse(storedPlots));
           if (storedInventory) setInventory(JSON.parse(storedInventory));
-        } catch (e) {
+        } catch {
           // ignore storage read errors
         }
       };
 
       refreshPlotsFromStorage();
-    }, [verticalPage, setPlotsState]);
+    }, [verticalPage, setInventory, setPlotsState]);
 
   // Nectar bottling removed
 
@@ -368,23 +361,10 @@ export function HomeView() {
           onFillHives={handleFillHivesFromPollinationFactor} 
         />
         {/* Orders removed */}
-        <SiloModal 
-          visible={showSiloModal} 
-          onClose={() => setShowSiloModal(false)} 
-          inventory={inventory} 
-          setInventory={setInventory} 
-        />
         <BeeHatchAlert 
           visible={beeHatchAlert.visible} 
           message={beeHatchAlert.message}
           onClose={() => setBeeHatchAlert({ visible: false, message: '' })}
-        />
-        <Toast 
-          visible={toastVisible} 
-          title={toastTitle} 
-          message={toastMessage} 
-          type={toastType} 
-          onDismiss={() => setToastVisible(false)} 
         />
         {/* New User Interactive Tutorial */}
         <InteractiveTutorial
@@ -418,8 +398,6 @@ export function HomeView() {
     </GestureHandlerRootView>
   );
 }
-
-export default HomeView;
 
 const styles = StyleSheet.create({
   container: {

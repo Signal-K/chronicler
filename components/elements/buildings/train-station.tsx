@@ -1,9 +1,6 @@
 "use client"
 
 export function TrainStation({ size = 180 }: { size?: number }) {
-    const baseX = 0;
-    const baseY = 0;
-
     return (
         <svg width={size} height={size * 1.1} viewBox={`0 0 ${size} ${size * 1.1}`} className="block">
             {/* Platform base */}

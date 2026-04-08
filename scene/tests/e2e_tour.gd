@@ -8,7 +8,7 @@ extends Node
 # ── Config ────────────────────────────────────────────────────────────────────
 const SCREENSHOT_DIR := "user://e2e_screenshots/"
 const REPORT_PATH    := "user://e2e_report.md"
-const STEP_DELAY     := 0.3   # seconds between actions (enough for UI to settle)
+const STEP_DELAY     := 0.5   # transition-aware delay so the new screen is interactive
 
 # ── State ─────────────────────────────────────────────────────────────────────
 var _gs: Node          # GameState autoload
@@ -28,7 +28,7 @@ func _ready() -> void:
 	# Ensure clean slate
 	_gs.reset_game()
 	_gs.set_force_daytime(true)
-	_gs.set_fast_growth(true)
+	_gs.set_fast_growth(false)
 
 	# Load the game root scene as a child so all screens work
 	var game_root_scene := load("res://scenes/game_root.tscn") as PackedScene
@@ -82,7 +82,10 @@ func _run_tour() -> void:
 	# Step 4: Plant on tilled plot
 	await _press_plot(0)
 	await _screenshot("08_plot_0_planted")
-	await _assert_plot_state(0, "planted", "Plot 0 is planted")
+	await _assert_condition(
+		_gs.plots[0]["crop_id"] == "tomato" and _gs.plots[0]["state"] in ["planted", "growing", "harvestable"],
+		"Plot 0 accepted a seed"
+	)
 
 	# Step 5: Till and plant remaining plots
 	await _section("GARDEN - FILL ALL PLOTS")
@@ -466,7 +469,7 @@ func _get_current_screen() -> Node:
 	if container == null: return null
 	var children := container.get_children()
 	if children.is_empty(): return null
-	return children[0]
+	return children[children.size() - 1]
 
 func _assert_screen(expected_key: String, label: String) -> void:
 	# We can't easily check the scene name, so just assert a screen exists

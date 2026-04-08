@@ -1,20 +1,22 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GardenBottomBar } from '../components/garden/GardenBottomBar';
 import { MapCard } from '../components/garden/MapCard';
 import { SimpleToolbar } from '../components/garden/SimpleToolbar';
 import { GameHeader } from '../components/ui/GameHeader';
+import { useGameState } from '../hooks/useGameState';
 import { useMapSystem } from '../hooks/useMapSystem';
 import { usePlayerExperience } from '../hooks/usePlayerExperience';
 
 export default function ExpandScreen() {
   const router = useRouter();
   const { getAllMaps, unlockMap, setActiveMap, activeMapId, isLoading } = useMapSystem();
-  const [coins, setCoins] = useState(500); // TODO: Get from game state
+  const { inventory, setInventory } = useGameState();
   const { experience } = usePlayerExperience();
+  const coins = inventory.coins;
 
   const handleNavigate = (route: string) => {
     router.replace(route as any);
@@ -26,15 +28,18 @@ export default function ExpandScreen() {
     if (success) {
       const map = getAllMaps().find(m => m.id === mapId);
       if (map) {
-        setCoins(prev => prev - map.unlockCost);
-      };
+        setInventory((currentInventory) => ({
+          ...currentInventory,
+          coins: currentInventory.coins - map.unlockCost,
+        }));
+      }
     } else {
       Alert.alert(
         'Cannot unlock',
         'You need more coins to unlock this map',
         [{ text: 'OK' }]
-      )
-    };
+      );
+    }
   };
 
   const handleSelectMap = async (mapId: string) => {
@@ -75,6 +80,9 @@ export default function ExpandScreen() {
         isHarvestSelected={false}
         isShovelSelected={false}
         level={experience?.level ?? 0}
+        onOpenShop={() => {
+          router.push('/home');
+        }}
         onLevelPress={() => {
           router.push('/experience');
         }}

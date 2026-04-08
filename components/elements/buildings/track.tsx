@@ -17,7 +17,6 @@ export function MinecartTrack({
     toY,
     strokeWidth = 3,
 }: TrackProps) {
-    const distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY, 2));
     const angle = Math.atan2(toY - fromY, toX - fromX);
 
     return (

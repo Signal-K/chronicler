@@ -6,8 +6,14 @@ extends Control
 @onready var reward_label: Label = $VBox/RewardLabel
 
 var current_task: Dictionary
+var _return_timer: Timer
 
 func _ready() -> void:
+	_return_timer = Timer.new()
+	_return_timer.one_shot = true
+	_return_timer.timeout.connect(_return_to_discover)
+	add_child(_return_timer)
+
 	current_task = CitizenScienceManager.current_task
 	_display_task()
 
@@ -31,6 +37,9 @@ func _display_task() -> void:
 		button_container.add_child(btn)
 
 func _on_option_selected(option: String) -> void:
+	if _return_timer != null and not _return_timer.is_stopped():
+		return
+
 	var success = GameState.record_classification(
 		option, 
 		current_task["project"], 
@@ -38,19 +47,25 @@ func _on_option_selected(option: String) -> void:
 		current_task["image_url"]
 	)
 	
-	if success:
-		reward_label.text = "Success! +10 XP rewarded."
-		if current_task["project"] == "Zooniverse":
-			reward_label.text += " +5 Honey bonus!"
-		elif current_task["project"] == "iNaturalist":
-			reward_label.text += " +1 Seed bonus!"
-		
-		# Feedback for iNaturalist if correct_answer is known
-		if "correct_answer" in current_task:
-			reward_label.text += "\nReal identification: " + current_task["correct_answer"]
-	
-	await get_tree().create_timer(3.0).timeout
+		if success:
+			reward_label.text = "Success! +10 XP rewarded."
+			if current_task["project"] == "Zooniverse":
+				reward_label.text += " +5 Honey bonus!"
+			elif current_task["project"] == "iNaturalist":
+				reward_label.text += " +1 Seed bonus!"
+			
+			# Feedback for iNaturalist if correct_answer is known
+			if "correct_answer" in current_task:
+				reward_label.text += "\nReal identification: " + current_task["correct_answer"]
+
+	_return_timer.start(3.0)
+
+func _return_to_discover() -> void:
 	GameState.navigate_requested.emit("discover")
 
 func _on_back_pressed() -> void:
 	GameState.navigate_requested.emit("discover")
+
+func _exit_tree() -> void:
+	if _return_timer and is_instance_valid(_return_timer):
+		_return_timer.stop()

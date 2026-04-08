@@ -40,6 +40,7 @@ var xp: int = 0
 var level: int = 1
 var coins: int = 100
 var unlocked_rows: int = INITIAL_ROWS
+var unique_harvests: Dictionary = {} # crop_id: bool
 
 # ── Water System ──────────────────────────────────────────────────────────────
 const MAX_WATER := 100.0
@@ -426,11 +427,27 @@ func harvest_plot(index: int) -> Dictionary:
 	harvested[p["crop_id"]] = harvested.get(p["crop_id"], 0) + crop_count
 	seeds[p["crop_id"]] = seeds.get(p["crop_id"], 0) + seed_count
 	total_harvests += 1
+	
+	# XP Logic
+	var xp_earned := 1
+	var is_first := false
+	if not unique_harvests.has(p["crop_id"]):
+		unique_harvests[p["crop_id"]] = true
+		xp_earned += 10 # First-time bonus
+		is_first = true
+	
 	_add_harvest_to_hive(p["crop_id"], crop_count)
 	_increment_pollination(cfg.get("nectar", 50) / 100.0)
-	add_xp(10)
-	var result := { "crop_id": p["crop_id"], "crop_count": crop_count, "seed_count": seed_count,
-		"emoji": cfg.get("emoji", "🌿") }
+	add_xp(xp_earned)
+	
+	var result := { 
+		"crop_id": p["crop_id"], 
+		"crop_count": crop_count, 
+		"seed_count": seed_count,
+		"emoji": cfg.get("emoji", "🌿"),
+		"xp_earned": xp_earned,
+		"is_first": is_first
+	}
 	plots[index] = _empty_plot()
 	plot_changed.emit(index)
 	inventory_changed.emit()

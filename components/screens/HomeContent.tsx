@@ -82,7 +82,7 @@ export function HomeContent({
   });
 
   // Classification tracking hook
-  const { canClassifyBeeSync, submitClassification, remainingClassifications, todayCount, maxClassifications } = useClassificationTracking(hiveCount);
+  const { canClassifyBeeSync, submitClassification, todayCount, maxClassifications } = useClassificationTracking(hiveCount);
 
   // Bee press handler for classification
   const handleBeePress = useCallback((bee: HoveringBeeData) => {

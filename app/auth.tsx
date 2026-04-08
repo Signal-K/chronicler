@@ -109,7 +109,7 @@ export default function AuthScreen() {
       
       
       // Use Supabase's built-in anonymous authentication
-      const { data, error } = await supabase.auth.signInAnonymously();
+      const { error } = await supabase.auth.signInAnonymously();
 
       if (error) {
         alert(`Guest sign in failed: ${error.message}`);

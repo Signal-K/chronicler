@@ -2,15 +2,17 @@
 id: xqm080
 title: Research citizen-science data and image sources for Bumble
 status: todo
-priority: high
+priority: low
 labels:
   - liam-sprint
   - creative
   - research
   - api
   - bumble
+  - future-ecosystem
+  - deferred
 createdAt: '2026-04-02T21:59:38.789Z'
-updatedAt: '2026-04-02T22:00:23.814Z'
+updatedAt: '2026-04-08T11:00:00Z'
 timeSpent: 0
 parent: yfdpli
 ---
@@ -38,5 +40,7 @@ Initial external research directions:
 - Zooniverse / Panoptes: relevant for project alignment and subject workflows, but likely weaker as a simple live image source.
 - Smithsonian Open Access: useful open media/search API for reference assets, though less directly citizen-science-driven.
 Research output should rank these by integration ease, media quality, and licensing clarity.
-<!-- SECTION:NOTES:END -->
 
+Reorg note:
+- Useful later, but not required for the next two weeks of code-first delivery.
+<!-- SECTION:NOTES:END -->
