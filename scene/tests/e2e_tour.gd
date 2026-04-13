@@ -256,12 +256,6 @@ func _run_tour() -> void:
 	await _screenshot("33_level_up")
 	await _assert_condition(_gs.level >= 2, "Level up triggered")
 
-	# Almanac from progress
-	await _click_button_by_text("📖 View Almanac", "34_almanac_screen")
-	await _screenshot("35_almanac_content")
-	# Back from almanac
-	await _click_button_by_text("Back", "36_back_from_almanac")
-
 	# ── Expand screen ─────────────────────────────────────────────────────────
 	await _section("EXPAND SCREEN")
 	await _navigate("expand")
@@ -296,30 +290,7 @@ func _run_tour() -> void:
 		"No more expansions available"
 	)
 
-	# ── Discover / Citizen Science screen ────────────────────────────────────
-	await _section("DISCOVER SCREEN")
-	await _navigate("discover")
-	await _screenshot("42_discover_screen")
-	await _assert_node_exists("VBox/StatusLabel", "Status label exists")
-
-	# Daily limit reached
-	_gs.daily_classification_count = 999
-	await get_tree().process_frame
-	await _screenshot("43_classification_limit")
-
-	# Reset and check buttons are enabled
-	_gs.classification_date = ""
-	_gs.daily_classification_count = 0
-	await get_tree().process_frame
-	await _screenshot("44_classification_available")
-
-	# ── Planets screen ────────────────────────────────────────────────────────
-	await _section("PLANETS SCREEN")
-	await _navigate("planets")
-	await _screenshot("45_planets_screen")
-	await _assert_node_exists("VBox/Scroll/List", "Planets list exists")
-
-	# ── Settings screen ───────────────────────────────────────────────────────
+	# ── Settings & Auth screen ────────────────────────────────────────────────
 	await _section("SETTINGS SCREEN")
 	await _navigate("settings")
 	await _screenshot("46_settings_screen")
@@ -327,19 +298,26 @@ func _run_tour() -> void:
 	await _assert_node_exists("VBox/FastGrowthCheck", "Fast growth toggle exists")
 	await _assert_node_exists("VBox/ResetBtn", "Reset button exists")
 
+	# Visit Auth from Settings
+	await _section("AUTH SCREEN")
+	await _click_button_by_text("☁️ Account & Cloud Sync", "47_auth_screen")
+	await _assert_node_exists("VBox/StatusLabel", "Auth status label exists")
+	# Back to settings (via tab for simplicity or we could add a back button)
+	await _navigate("settings")
+
 	# Toggle fast growth off and back on
 	_gs.set_fast_growth(false)
 	await get_tree().process_frame
-	await _screenshot("47_fast_growth_off")
+	await _screenshot("48_fast_growth_off")
 	_gs.set_fast_growth(true)
 
 	# ── Navigation: visit every tab and confirm no crash ─────────────────────
 	await _section("FULL TAB NAVIGATION")
 	var all_tabs := ["garden", "hives", "shop", "inventory", "progress",
-					 "discover", "expand", "planets", "settings"]
+					 "expand", "settings"]
 	for tab in all_tabs:
 		await _navigate(tab)
-		await _screenshot("48_tab_%s" % tab)
+		await _screenshot("49_tab_%s" % tab)
 		await _assert_condition(
 			_get_current_screen() != null,
 			"Screen loaded for tab: %s" % tab
@@ -358,11 +336,11 @@ func _run_tour() -> void:
 	_gs.is_raining = true
 	_gs.weather_changed.emit(true)
 	await get_tree().process_frame
-	await _screenshot("49_raining")
+	await _screenshot("50_raining")
 	_gs.is_raining = false
 	_gs.weather_changed.emit(false)
 	await get_tree().process_frame
-	await _screenshot("50_rain_stopped")
+	await _screenshot("51_rain_stopped")
 
 	# ── Pollination & bee hatching ────────────────────────────────────────────
 	await _section("POLLINATION & BEE HATCHING")
@@ -373,7 +351,7 @@ func _run_tour() -> void:
 	await get_tree().process_frame
 	_gs._increment_pollination(10.1)
 	await get_tree().process_frame
-	await _screenshot("51_bee_hatched")
+	await _screenshot("52_bee_hatched")
 	await _assert_condition(_gs.hives[0]["bee_count"] >= 1, "Bee hatched from pollination")
 
 	# ── Bee capacity cap ──────────────────────────────────────────────────────
@@ -385,10 +363,10 @@ func _run_tour() -> void:
 	# ── Reset game ────────────────────────────────────────────────────────────
 	await _section("RESET GAME")
 	await _navigate("settings")
-	await _screenshot("52_before_reset")
+	await _screenshot("53_before_reset")
 	_gs.reset_game()
 	await get_tree().process_frame
-	await _screenshot("53_after_reset")
+	await _screenshot("54_after_reset")
 	await _assert_condition(_gs.coins == 100, "Coins reset to 100")
 	await _assert_condition(_gs.level == 1, "Level reset to 1")
 	await _assert_condition(_gs.plots.size() == _gs.INITIAL_ROWS * _gs.PLOTS_PER_ROW, "Plots reset")

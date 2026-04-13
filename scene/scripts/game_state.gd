@@ -16,12 +16,12 @@ signal navigate_requested(screen_key: String)
 
 # ── Crop config ───────────────────────────────────────────────────────────────
 const CROP_CONFIGS := {
-	"tomato":    { "name": "Tomato",    "emoji": "🍅", "nectar": 25, "bee_attraction": 40,  "harvest_min": 1, "harvest_max": 1, "seed_min": 1, "seed_max": 3 },
-	"blueberry": { "name": "Blueberry", "emoji": "🫐", "nectar": 85, "bee_attraction": 90,  "harvest_min": 1, "harvest_max": 3, "seed_min": 0, "seed_max": 2 },
-	"lavender":  { "name": "Lavender",  "emoji": "🌸", "nectar": 95, "bee_attraction": 100, "harvest_min": 1, "harvest_max": 1, "seed_min": 1, "seed_max": 2 },
-	"sunflower": { "name": "Sunflower", "emoji": "🌻", "nectar": 90, "bee_attraction": 95,  "harvest_min": 1, "harvest_max": 1, "seed_min": 2, "seed_max": 3 },
-	"pumpkin":   { "name": "Pumpkin",   "emoji": "🎃", "nectar": 60, "bee_attraction": 70,  "harvest_min": 1, "harvest_max": 2, "seed_min": 1, "seed_max": 3 },
-	"potato":    { "name": "Potato",    "emoji": "🥔", "nectar": 20, "bee_attraction": 30,  "harvest_min": 2, "harvest_max": 4, "seed_min": 1, "seed_max": 2 },
+	"tomato":    { "name": "Tomato",    "emoji": "🍅", "nectar": 25, "bee_attraction": 40,  "harvest_min": 1, "harvest_max": 1, "seed_min": 1, "seed_max": 3, "required_level": 1 },
+	"potato":    { "name": "Potato",    "emoji": "🥔", "nectar": 20, "bee_attraction": 30,  "harvest_min": 2, "harvest_max": 4, "seed_min": 1, "seed_max": 2, "required_level": 1 },
+	"pumpkin":   { "name": "Pumpkin",   "emoji": "🎃", "nectar": 60, "bee_attraction": 70,  "harvest_min": 1, "harvest_max": 2, "seed_min": 1, "seed_max": 3, "required_level": 2 },
+	"sunflower": { "name": "Sunflower", "emoji": "🌻", "nectar": 90, "bee_attraction": 95,  "harvest_min": 1, "harvest_max": 1, "seed_min": 2, "seed_max": 3, "required_level": 3 },
+	"blueberry": { "name": "Blueberry", "emoji": "🫐", "nectar": 85, "bee_attraction": 90,  "harvest_min": 1, "harvest_max": 3, "seed_min": 0, "seed_max": 2, "required_level": 4 },
+	"lavender":  { "name": "Lavender",  "emoji": "🌸", "nectar": 95, "bee_attraction": 100, "harvest_min": 1, "harvest_max": 1, "seed_min": 1, "seed_max": 2, "required_level": 5 },
 }
 
 const HIVE_LEVELS := {
@@ -517,8 +517,20 @@ func _hatch_bee() -> void:
 func add_xp(amount: int) -> void:
 	xp += amount
 	var new_level := _level_from_xp(xp)
-	if new_level > level:
-		level = new_level
+	while level < new_level:
+		level += 1
+		# Level-up rewards
+		var coin_reward := level * 50
+		add_coins(coin_reward)
+		# Grant random seed for newly unlocked crop or random one
+		var potential_seeds = []
+		for crop_id in CROP_CONFIGS:
+			if CROP_CONFIGS[crop_id].get("required_level", 1) <= level:
+				potential_seeds.append(crop_id)
+		if not potential_seeds.is_empty():
+			var s_id = potential_seeds[randi() % potential_seeds.size()]
+			seeds[s_id] = seeds.get(s_id, 0) + 3
+		
 		level_up.emit(level)
 	SaveManager.save_game(self)
 

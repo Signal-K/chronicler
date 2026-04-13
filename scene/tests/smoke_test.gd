@@ -17,6 +17,7 @@ func _ready() -> void:
 		"res://scenes/planets.tscn",
 		"res://scenes/shop.tscn",
 		"res://scenes/orders_panel.tscn",
+		"res://scenes/auth.tscn",
 	]
 
 	var game_state := get_node_or_null("/root/GameState")

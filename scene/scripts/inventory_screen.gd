@@ -3,14 +3,12 @@ extends Control
 @onready var seeds_list: VBoxContainer = $Scroll/VBox/SeedsSection/List
 @onready var harvested_list: VBoxContainer = $Scroll/VBox/HarvestedSection/List
 @onready var honey_list: VBoxContainer = $Scroll/VBox/HoneySection/List
-@onready var coins_label: Label = $Scroll/VBox/CoinsLabel
 
 func _ready() -> void:
 	GameState.inventory_changed.connect(_refresh)
 	_refresh()
 
 func _refresh() -> void:
-	coins_label.text = "🪙 Coins: %d" % GameState.coins
 	_fill_list(seeds_list, GameState.seeds, "🌱")
 	_fill_list(harvested_list, GameState.harvested, "🌿")
 	_fill_honey_list()

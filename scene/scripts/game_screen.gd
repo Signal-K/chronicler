@@ -8,7 +8,6 @@ var _toast_timer: Timer
 
 @onready var grid: GridContainer = $VBox/Garden/Grid
 @onready var tool_label: Label = $VBox/Toolbar/ToolLabel
-@onready var coins_label: Label = $VBox/Header/CoinsLabel
 @onready var toast: Label = $Toast
 @onready var modulate_node: CanvasModulate = $CanvasModulate
 @onready var crop_selector: OptionButton = $VBox/CropSelector
@@ -19,16 +18,13 @@ func _ready() -> void:
 	_toast_timer.timeout.connect(_hide_toast)
 	add_child(_toast_timer)
 
-	GameState.inventory_changed.connect(_refresh_header)
 	GameState.inventory_changed.connect(_refresh_crop_selector)
-	GameState.water_changed.connect(_refresh_header)
 	GameState.weather_changed.connect(_on_weather_changed)
 	GameState.bee_hatched.connect(_on_bee_hatched)
 	GameState.level_up.connect(_on_level_up)
 	GameState.time_changed.connect(_on_time_changed)
 	GameState.garden_expanded.connect(_rebuild_grid)
 	_rebuild_grid(GameState.unlocked_rows)
-	_refresh_header()
 	_refresh_crop_selector()
 	_on_time_changed(GameState.time_of_day)
 
@@ -39,8 +35,10 @@ func _refresh_crop_selector() -> void:
 	var restore_idx := 0
 	for crop_id in GameState.seeds:
 		var count: int = GameState.seeds.get(crop_id, 0)
-		if count > 0:
-			var cfg: Dictionary = GameState.CROP_CONFIGS.get(crop_id, {})
+		var cfg: Dictionary = GameState.CROP_CONFIGS.get(crop_id, {})
+		var unlocked: bool = cfg.get("required_level", 1) <= GameState.level
+		
+		if count > 0 and unlocked:
 			crop_selector.add_item("%s %s (%d)" % [cfg.get("emoji", "🌱"), crop_id.capitalize(), count])
 			crop_selector.set_item_metadata(idx, crop_id)
 			if crop_id == prev:
@@ -76,9 +74,6 @@ func on_plot_pressed(index: int) -> void:
 			var result := GameState.harvest_plot(index)
 			if not result.is_empty():
 				_show_toast("+%d %s  +%d seeds" % [result["crop_count"], result["emoji"], result["seed_count"]])
-
-func _refresh_header() -> void:
-	coins_label.text = "🪙 %d  💧 %d/%d" % [GameState.coins, int(GameState.current_water), int(GameState.MAX_WATER)]
 
 func _on_weather_changed(is_raining_val: bool) -> void:
 	if is_raining_val:

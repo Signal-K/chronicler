@@ -30,15 +30,8 @@ size_flags_horizontal = 3
 [node name="HiveList" type="VBoxContainer" parent="VBox/Scroll/ScrollVBox"]
 size_flags_horizontal = 3
 
+[node name="BuildBtn" type="Button" parent="VBox/Scroll/ScrollVBox"]
+text = "Build Hive (100🪙)"
+
 [node name="OrdersPanel" type="VBoxContainer" parent="VBox/Scroll/ScrollVBox"]
 size_flags_horizontal = 3
-
-[node name="Footer" type="HBoxContainer" parent="VBox"]
-custom_minimum_size = Vector2(0, 48)
-
-[node name="CoinsLabel" type="Label" parent="VBox/Footer"]
-text = "🪙 100"
-size_flags_horizontal = 3
-
-[node name="BuildBtn" type="Button" parent="VBox/Footer"]
-text = "Build Hive (100🪙)"

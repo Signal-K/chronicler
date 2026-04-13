@@ -17,6 +17,34 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="Header" type="HBoxContainer" parent="VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+
+[node name="WaterLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "💧 100%"
+horizontal_alignment = 1
+
+[node name="CoinsLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🪙 100"
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "⭐ Lvl 1"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "☀️"
+horizontal_alignment = 1
+
 [node name="ScreenContainer" type="Control" parent="VBox"]
 size_flags_vertical = 3
 size_flags_horizontal = 3
@@ -44,16 +72,8 @@ size_flags_horizontal = 3
 text = "📈"
 size_flags_horizontal = 3
 
-[node name="DiscoverTab" type="Button" parent="VBox/TabBar"]
-text = "🔍"
-size_flags_horizontal = 3
-
 [node name="ExpandTab" type="Button" parent="VBox/TabBar"]
 text = "➕"
-size_flags_horizontal = 3
-
-[node name="PlanetsTab" type="Button" parent="VBox/TabBar"]
-text = "🪐"
 size_flags_horizontal = 3
 
 [node name="SettingsTab" type="Button" parent="VBox/TabBar"]
@@ -65,7 +85,5 @@ size_flags_horizontal = 3
 [connection signal="pressed" from="VBox/TabBar/ShopTab" to="." method="_on_tab_shop"]
 [connection signal="pressed" from="VBox/TabBar/InventoryTab" to="." method="_on_tab_inventory"]
 [connection signal="pressed" from="VBox/TabBar/ProgressTab" to="." method="_on_tab_progress"]
-[connection signal="pressed" from="VBox/TabBar/DiscoverTab" to="." method="_on_tab_discover"]
 [connection signal="pressed" from="VBox/TabBar/ExpandTab" to="." method="_on_tab_expand"]
-[connection signal="pressed" from="VBox/TabBar/PlanetsTab" to="." method="_on_tab_planets"]
 [connection signal="pressed" from="VBox/TabBar/SettingsTab" to="." method="_on_tab_settings"]

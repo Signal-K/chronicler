@@ -22,9 +22,6 @@ size_flags_horizontal = 3
 text = "🎒 Inventory"
 horizontal_alignment = 1
 
-[node name="CoinsLabel" type="Label" parent="Scroll/VBox"]
-text = "🪙 Coins: 100"
-
 [node name="SeedsSection" type="VBoxContainer" parent="Scroll/VBox"]
 
 [node name="SeedsTitle" type="Label" parent="Scroll/VBox/SeedsSection"]

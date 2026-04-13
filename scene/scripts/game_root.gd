@@ -7,22 +7,42 @@ const SCREENS := {
 	"inventory": "res://scenes/inventory.tscn",
 	"progress":  "res://scenes/progress.tscn",
 	"expand":    "res://scenes/expand.tscn",
-	"planets":   "res://scenes/planets.tscn",
 	"settings":  "res://scenes/settings.tscn",
-	"almanac":   "res://scenes/almanac.tscn",
-	"discover":  "res://scenes/discover.tscn",
-	"classification": "res://scenes/classification.tscn",
 	"help":      "res://scenes/help.tscn",
+	"auth":      "res://scenes/auth.tscn",
 }
 
 var _current_screen: Node = null
 
 @onready var screen_container: Control = $VBox/ScreenContainer
 @onready var tab_bar: HBoxContainer = $VBox/TabBar
+@onready var water_label: Label = $VBox/Header/WaterLabel
+@onready var coins_label: Label = $VBox/Header/CoinsLabel
+@onready var level_label: Label = $VBox/Header/LevelLabel
+@onready var time_label: Label = $VBox/Header/TimeLabel
 
 func _ready() -> void:
 	GameState.navigate_requested.connect(_navigate)
+	GameState.water_changed.connect(_update_header)
+	GameState.inventory_changed.connect(_update_header)
+	GameState.level_up.connect(func(_l): _update_header())
+	GameState.time_changed.connect(func(_t): _update_header())
+	
+	_update_header()
 	_navigate("garden")
+
+func _update_header() -> void:
+	water_label.text = "💧 %.0f%%" % GameState.current_water
+	coins_label.text = "🪙 %d" % GameState.coins
+	level_label.text = "⭐ Lvl %d" % GameState.level
+	
+	var time_emoji := "☀️"
+	match GameState.time_of_day:
+		"dawn": time_emoji = "🌅"
+		"day":   time_emoji = "☀️"
+		"dusk":  time_emoji = "🌇"
+		"night": time_emoji = "🌕"
+	time_label.text = time_emoji
 
 func _navigate(screen_key: String) -> void:
 	if not SCREENS.has(screen_key):

@@ -7,6 +7,8 @@ const SUPABASE_ANON_KEY := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 # ── Signals ──────────────────────────────────────────────────────────────────
 signal auth_completed(success: bool, error_message: String)
 signal session_restored(success: bool)
+signal save_synced(success: bool, error_message: String)
+signal save_downloaded(success: bool, data: Dictionary, error_message: String)
 
 # ── Auth State ───────────────────────────────────────────────────────────────
 var auth_token: String = ""
@@ -39,11 +41,6 @@ func sign_in(email: String, password: String) -> void:
 	_send_auth_request(endpoint, body)
 
 func sign_in_anonymously() -> void:
-	# Supabase anonymous auth usually works by signing up without email/password 
-	# or using a specific provider if configured.
-	# For now, we'll implement a placeholder or use the GoTrue 'signup' with random credentials if needed,
-	# but Supabase has a specific 'signInAnonymously' in newer JS clients.
-	# The REST API for it is /auth/v1/signup with no body or specific flags.
 	var endpoint := "/auth/v1/signup"
 	var body := {}
 	_send_auth_request(endpoint, body)
@@ -60,10 +57,75 @@ func sign_out() -> void:
 func is_logged_in() -> bool:
 	if auth_token.is_empty():
 		return false
-	
-	# Check expiration (with 60s buffer)
 	var now = Time.get_unix_time_from_system()
 	return now < (expires_at - 60)
+
+# ── Data Sync ───────────────────────────────────────────────────────────────
+
+func upload_save(data: Dictionary) -> void:
+	if not is_logged_in():
+		save_synced.emit(false, "Not logged in")
+		return
+		
+	var endpoint := "/rest/v1/saves"
+	var body := {
+		"user_id": user_id,
+		"data": data,
+		"updated_at": Time.get_datetime_string_from_system(true) + "Z"
+	}
+	
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(_on_upload_completed.bind(http_request))
+	
+	var url = SUPABASE_URL + endpoint
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY,
+		"Authorization: Bearer " + auth_token,
+		"Content-Type: application/json",
+		"Prefer: resolution=merge-duplicates"
+	]
+	
+	var json_body = JSON.stringify(body)
+	http_request.request(url, headers, HTTPClient.METHOD_POST, json_body)
+
+func _on_upload_completed(result: int, response_code: int, _headers: PackedStringArray, _body: PackedByteArray, http_request: HTTPRequest) -> void:
+	http_request.queue_free()
+	if result != HTTPRequest.RESULT_SUCCESS or response_code >= 300:
+		save_synced.emit(false, "Upload failed (" + str(response_code) + ")")
+	else:
+		save_synced.emit(true, "")
+
+func download_save() -> void:
+	if not is_logged_in():
+		save_downloaded.emit(false, {}, "Not logged in")
+		return
+		
+	var endpoint := "/rest/v1/saves?user_id=eq." + user_id + "&select=data&limit=1"
+	
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(_on_download_completed.bind(http_request))
+	
+	var url = SUPABASE_URL + endpoint
+	var headers = [
+		"apikey: " + SUPABASE_ANON_KEY,
+		"Authorization: Bearer " + auth_token
+	]
+	
+	http_request.request(url, headers, HTTPClient.METHOD_GET)
+
+func _on_download_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray, http_request: HTTPRequest) -> void:
+	http_request.queue_free()
+	if result != HTTPRequest.RESULT_SUCCESS or response_code >= 300:
+		save_downloaded.emit(false, {}, "Download failed (" + str(response_code) + ")")
+		return
+		
+	var response_json = JSON.parse_string(body.get_string_from_utf8())
+	if response_json is Array and not response_json.is_empty():
+		save_downloaded.emit(true, response_json[0].get("data", {}), "")
+	else:
+		save_downloaded.emit(false, {}, "No save found")
 
 # ── Internal Methods ─────────────────────────────────────────────────────────
 
@@ -87,19 +149,15 @@ func _send_auth_request(endpoint: String, body: Dictionary) -> void:
 
 func _on_auth_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray, http_request: HTTPRequest) -> void:
 	http_request.queue_free()
-	
 	if result != HTTPRequest.RESULT_SUCCESS:
 		auth_completed.emit(false, "Network error")
 		return
-	
 	var response_json = JSON.parse_string(body.get_string_from_utf8())
-	
 	if response_code >= 200 and response_code < 300:
 		if response_json.has("access_token"):
 			_save_auth_data(response_json)
 			auth_completed.emit(true, "")
 		else:
-			# Potentially sign up success but needs email confirmation
 			auth_completed.emit(true, "Check your email for confirmation")
 	else:
 		var error_msg = "Auth error (" + str(response_code) + ")"
@@ -113,12 +171,10 @@ func _save_auth_data(data: Dictionary) -> void:
 	auth_token = data.get("access_token", "")
 	refresh_token = data.get("refresh_token", "")
 	expires_at = int(Time.get_unix_time_from_system()) + int(data.get("expires_in", 3600))
-	
 	if data.has("user"):
 		var user = data["user"]
 		user_id = user.get("id", "")
 		user_email = user.get("email", "")
-	
 	save_session()
 
 func save_session() -> void:
@@ -138,7 +194,6 @@ func load_session() -> void:
 	if not FileAccess.file_exists(SESSION_SAVE_PATH):
 		session_restored.emit(false)
 		return
-		
 	var file = FileAccess.open(SESSION_SAVE_PATH, FileAccess.READ)
 	if file:
 		var content = file.get_as_text()
@@ -150,12 +205,7 @@ func load_session() -> void:
 			user_id = data.get("user_id", "")
 			user_email = data.get("user_email", "")
 			expires_at = data.get("expires_at", 0)
-			
-			if is_logged_in():
-				session_restored.emit(true)
-			else:
-				# TODO: Implement token refresh logic here
-				session_restored.emit(false)
+			session_restored.emit(is_logged_in())
 		else:
 			session_restored.emit(false)
 

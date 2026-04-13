@@ -25,5 +25,8 @@ text = "Force Daytime"
 [node name="FastGrowthCheck" type="CheckButton" parent="VBox"]
 text = "Fast Growth (debug)"
 
+[node name="AuthBtn" type="Button" parent="VBox"]
+text = "☁️ Account & Cloud Sync"
+
 [node name="ResetBtn" type="Button" parent="VBox"]
 text = "Reset Game"

@@ -24,10 +24,3 @@ size_flags_vertical = 3
 
 [node name="List" type="VBoxContainer" parent="VBox/Scroll"]
 size_flags_horizontal = 3
-
-[node name="Footer" type="HBoxContainer" parent="VBox"]
-custom_minimum_size = Vector2(0, 48)
-
-[node name="CoinsLabel" type="Label" parent="VBox/Footer"]
-text = "🪙 100"
-size_flags_horizontal = 3
