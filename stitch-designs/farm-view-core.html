@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bee Farm - Main Field</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=Lexend:wght@400;600&amp;family=Space+Grotesk:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5c3f00",
+                        "secondary-container": "#c0ee87",
+                        "on-surface": "#1f1c0b",
+                        "inverse-on-surface": "#faf0d5",
+                        "on-surface-variant": "#50443f",
+                        "on-primary-fixed-variant": "#5f3f30",
+                        "surface-dim": "#e2dabf",
+                        "on-tertiary-container": "#eaa500",
+                        "surface-container": "#f7eed2",
+                        "surface-tint": "#795746",
+                        "outline": "#82746e",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-variant": "#ebe2c8",
+                        "secondary-fixed": "#c3f18a",
+                        "on-primary-container": "#d3a895",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "surface-container-low": "#fcf3d8",
+                        "background": "#fff9ed",
+                        "secondary": "#436910",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff9ed",
+                        "tertiary": "#402a00",
+                        "on-secondary-fixed": "#102000",
+                        "on-primary-fixed": "#2d1509",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#281900",
+                        "primary-fixed-dim": "#eabda9",
+                        "on-background": "#1f1c0b",
+                        "surface-container-highest": "#ebe2c8",
+                        "surface-bright": "#fff9ed",
+                        "inverse-primary": "#eabda9",
+                        "tertiary-fixed-dim": "#ffba35",
+                        "secondary-fixed-dim": "#a8d471",
+                        "outline-variant": "#d4c3bc",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#476d15",
+                        "inverse-surface": "#35301e",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdbcc",
+                        "primary": "#43271a",
+                        "surface-container-high": "#f1e8cd",
+                        "primary-container": "#5c3d2e",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "pixel-unit": "4px",
+                        "margin": "32px",
+                        "gutter": "16px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-md": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom pixelated rendering for a sharper retro feel */
+        * {
+            image-rendering: pixelated;
+        }
+        /* Simulated paper grain overlay */
+        .paper-texture {
+            background-image: 
+                radial-gradient(circle at 100% 150%, rgba(255,255,255,0.1) 24%, transparent 24%, transparent 28%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.1) 36%, transparent 36%, transparent 40%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.1) 48%, transparent 48%, transparent 52%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.1) 60%, transparent 60%, transparent 64%, rgba(255,255,255,0.1) 64%, rgba(255,255,255,0.1) 72%, transparent 72%, transparent 76%, rgba(255,255,255,0.1) 76%, rgba(255,255,255,0.1) 84%, transparent 84%, transparent 88%, rgba(255,255,255,0.1) 88%, rgba(255,255,255,0.1) 96%, transparent 96%, transparent 100%),
+                radial-gradient(circle at 0% 150%, rgba(255,255,255,0.1) 24%, transparent 24%, transparent 28%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.1) 36%, transparent 36%, transparent 40%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.1) 48%, transparent 48%, transparent 52%, rgba(255,255,255,0.1) 52%, rgba(255,255,255,0.1) 60%, transparent 60%, transparent 64%, rgba(255,255,255,0.1) 64%, rgba(255,255,255,0.1) 72%, transparent 72%, transparent 76%, rgba(255,255,255,0.1) 76%, rgba(255,255,255,0.1) 84%, transparent 84%, transparent 88%, rgba(255,255,255,0.1) 88%, rgba(255,255,255,0.1) 96%, transparent 96%, transparent 100%);
+            background-size: 20px 20px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="h-screen w-full flex flex-col bg-background font-body-md text-on-surface overflow-hidden select-none">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 docked full-width top-0 border-b-4 border-[#2A1B14] bg-[#5C3D2E] dark:bg-[#3E291F] shadow-[0_4px_0_0_rgba(0,0,0,0.3)] z-40 relative">
+<button class="text-[#F5E6D3] dark:text-[#DBCFB0] hover:bg-[#744F3C] transition-all active:translate-y-1 active:shadow-none p-2 flex items-center justify-center border-2 border-transparent focus:border-outline">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<h1 class="font-['Space_Grotesk'] font-bold uppercase tracking-wider text-xl text-[#F5E6D3] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+            Bee Farm
+        </h1>
+<div class="font-['Space_Grotesk'] font-bold uppercase tracking-wider text-[#F5E6D3] dark:text-[#DBCFB0] bg-primary border-2 border-on-surface px-3 py-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] text-sm flex gap-4">
+<span class="flex items-center gap-1 text-tertiary-fixed-dim drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+                Gold: 500
+            </span>
+<span class="flex items-center gap-1 text-secondary-fixed drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                Water: 10
+            </span>
+</div>
+</header>
+<!-- Main Canvas Area -->
+<main class="flex-1 relative bg-secondary-fixed-dim paper-texture flex items-center justify-center z-10 pt-4 pb-24 shadow-[inset_0_0_60px_rgba(0,0,0,0.2)]">
+<!-- Farm Grid Container (Wooden Planter Box Style) -->
+<div class="relative bg-surface-tint border-[4px] border-on-surface p-4 shadow-[8px_8px_0px_rgba(0,0,0,0.4)]">
+<!-- Inner Box Shadowing -->
+<div class="bg-primary-container border-[4px] border-[#a07455] border-b-[#4a2e1d] border-r-[#4a2e1d] p-3">
+<!-- 2x5 Soil Plot Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Plot 1: Lavender (Growing) -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative flex items-end justify-center group cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+<div class="absolute bottom-2 w-12 h-4 bg-[#2d1a10] rounded-[50%] blur-[1px]"></div>
+<span class="material-symbols-outlined text-[#b39ddb] text-4xl mb-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)] z-10 origin-bottom group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">eco</span>
+<!-- Growth progress indicator -->
+<div class="absolute top-1 left-1 flex gap-[2px]">
+<div class="w-1.5 h-1.5 bg-secondary-fixed"></div>
+<div class="w-1.5 h-1.5 bg-secondary-fixed"></div>
+<div class="w-1.5 h-1.5 bg-on-surface"></div>
+</div>
+</div>
+<!-- Plot 2: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+<!-- Plot 3: Sunflower (Mature) -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative flex items-end justify-center group cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+<div class="absolute bottom-2 w-12 h-4 bg-[#2d1a10] rounded-[50%] blur-[1px]"></div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[40px] mb-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)] z-10 origin-bottom group-hover:-translate-y-1 transition-transform" style="font-variation-settings: 'FILL' 1;">local_florist</span>
+</div>
+<!-- Plot 4: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+<!-- Plot 5: Lavender (Sprout) -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative flex items-end justify-center group cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+<div class="absolute bottom-2 w-8 h-3 bg-[#2d1a10] rounded-[50%] blur-[1px]"></div>
+<span class="material-symbols-outlined text-secondary-fixed text-2xl mb-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)] z-10" style="font-variation-settings: 'FILL' 1;">spa</span>
+<div class="absolute top-1 left-1 flex gap-[2px]">
+<div class="w-1.5 h-1.5 bg-secondary-fixed"></div>
+<div class="w-1.5 h-1.5 bg-on-surface"></div>
+<div class="w-1.5 h-1.5 bg-on-surface"></div>
+</div>
+</div>
+<!-- Plot 6: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+<!-- Plot 7: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+<!-- Plot 8: Sunflower (Sprout) -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative flex items-end justify-center group cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+<div class="absolute bottom-2 w-8 h-3 bg-[#2d1a10] rounded-[50%] blur-[1px]"></div>
+<span class="material-symbols-outlined text-secondary-fixed text-2xl mb-1 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)] z-10" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<!-- Plot 9: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+<!-- Plot 10: Empty -->
+<div class="w-20 h-20 bg-primary border-[4px] border-[#2d1a10] border-t-on-surface border-l-on-surface shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] relative cursor-pointer hover:border-tertiary-fixed-dim transition-colors">
+</div>
+</div>
+</div>
+<!-- Bee Hive Decor -->
+<div class="absolute -right-16 top-10 w-24 h-24 flex flex-col items-center justify-end z-20 group cursor-pointer drop-shadow-[4px_4px_0px_rgba(0,0,0,0.3)]">
+<!-- Stand -->
+<div class="w-2 h-4 bg-primary-container border-2 border-on-surface"></div>
+<!-- Hive Body -->
+<div class="w-16 h-4 bg-tertiary-fixed-dim border-4 border-on-surface rounded-t-full relative z-10"></div>
+<div class="w-20 h-5 bg-tertiary-fixed border-4 border-t-0 border-on-surface flex justify-center z-10">
+<div class="w-3 h-full bg-on-surface"></div>
+</div>
+<div class="w-16 h-4 bg-tertiary-fixed-dim border-4 border-t-0 border-on-surface rounded-b-full z-10"></div>
+<!-- Floating Bee (Pure CSS simulation) -->
+<div class="absolute top-0 right-2 w-2 h-2 bg-on-surface animate-bounce group-hover:translate-x-2 transition-transform">
+<div class="w-1 h-1 bg-tertiary-fixed-dim absolute top-0.5 left-0.5"></div>
+</div>
+</div>
+</div>
+<!-- Floating Tool Palette (Parchment/Wood style) -->
+<div class="absolute bottom-28 left-6 bg-surface-container border-[4px] border-on-surface p-2 flex flex-col gap-3 shadow-[6px_6px_0px_rgba(0,0,0,0.4)] z-30">
+<!-- Watering Can (Active) -->
+<button class="w-14 h-14 bg-surface border-[4px] border-tertiary-fixed-dim flex items-center justify-center relative active:translate-y-1 transition-transform">
+<!-- Highlight border inner -->
+<div class="absolute inset-0 border-2 border-surface-container-lowest"></div>
+<span class="material-symbols-outlined text-secondary text-3xl drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+<!-- Active Indicator Pip -->
+<div class="absolute -right-2 -top-2 w-4 h-4 bg-tertiary-fixed-dim border-2 border-on-surface rounded-full shadow-[2px_2px_0px_rgba(0,0,0,1)]"></div>
+</button>
+<!-- Hoe (Inactive) -->
+<button class="w-14 h-14 bg-surface-container-highest border-[4px] border-outline border-b-[6px] border-b-on-surface-variant flex items-center justify-center active:translate-y-1 active:border-b-[4px] transition-all hover:bg-surface-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#5C3D2E] dark:bg-[#3E291F] border-t-4 border-black font-['Space_Grotesk'] text-[10px] font-bold uppercase shadow-[0_-4px_0_0_rgba(0,0,0,0.2)]">
+<!-- Field (Active) -->
+<button class="flex flex-col items-center justify-center bg-[#744F3C] text-yellow-400 border-2 border-yellow-400 rounded-sm m-1 p-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined mb-1 text-2xl drop-shadow-[1px_1px_0px_rgba(0,0,0,0.8)]" style="font-variation-settings: 'FILL' 1;">grass</span>
+<span>Field</span>
+</button>
+<!-- Hives -->
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined mb-1 text-2xl">interests</span>
+<span>Hives</span>
+</button>
+<!-- Tools -->
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined mb-1 text-2xl">handyman</span>
+<span>Tools</span>
+</button>
+<!-- Seeds -->
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined mb-1 text-2xl">psychiatry</span>
+<span>Seeds</span>
+</button>
+<!-- Shop -->
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined mb-1 text-2xl">storefront</span>
+<span>Shop</span>
+</button>
+</nav>
+</body></html>

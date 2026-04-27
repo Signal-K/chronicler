@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Migros Market</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5c3f00",
+                        "secondary-container": "#c0ee87",
+                        "on-surface": "#1f1c0b",
+                        "inverse-on-surface": "#faf0d5",
+                        "on-surface-variant": "#50443f",
+                        "on-primary-fixed-variant": "#5f3f30",
+                        "surface-dim": "#e2dabf",
+                        "on-tertiary-container": "#eaa500",
+                        "surface-container": "#f7eed2",
+                        "surface-tint": "#795746",
+                        "outline": "#82746e",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-variant": "#ebe2c8",
+                        "secondary-fixed": "#c3f18a",
+                        "on-primary-container": "#d3a895",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "surface-container-low": "#fcf3d8",
+                        "background": "#fff9ed",
+                        "secondary": "#436910",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff9ed",
+                        "tertiary": "#402a00",
+                        "on-secondary-fixed": "#102000",
+                        "on-primary-fixed": "#2d1509",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#281900",
+                        "primary-fixed-dim": "#eabda9",
+                        "on-background": "#1f1c0b",
+                        "surface-container-highest": "#ebe2c8",
+                        "surface-bright": "#fff9ed",
+                        "inverse-primary": "#eabda9",
+                        "tertiary-fixed-dim": "#ffba35",
+                        "secondary-fixed-dim": "#a8d471",
+                        "outline-variant": "#d4c3bc",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#476d15",
+                        "inverse-surface": "#35301e",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdbcc",
+                        "primary": "#43271a",
+                        "surface-container-high": "#f1e8cd",
+                        "primary-container": "#5c3d2e",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "pixel-unit": "4px",
+                        "margin": "32px",
+                        "gutter": "16px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-md": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for a true app-like feel as requested */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md text-body-md h-screen w-screen overflow-hidden flex flex-col select-none">
+<!-- TopAppBar from JSON -->
+<header class="flex justify-between items-center w-full px-4 h-16 bg-[#5C3D2E] dark:bg-[#3E291F] text-[#F5E6D3] dark:text-[#DBCFB0] font-['Space_Grotesk'] font-bold uppercase tracking-wider docked full-width top-0 border-b-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] z-50 shrink-0">
+<div class="flex items-center gap-[12px]">
+<button class="hover:bg-[#744F3C] transition-all active:translate-y-1 active:shadow-none w-10 h-10 flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<h1 class="text-xl font-black text-[#F5E6D3] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">Bee Farm</h1>
+</div>
+<div class="flex items-center">
+<span class="font-label-sm text-label-sm">Gold: 500  Water: 10</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-container-max mx-auto px-[16px] pt-[24px] pb-[96px] flex flex-col gap-[24px] overflow-hidden">
+<!-- Market Banner (Wooden Plaque Style) -->
+<div class="bg-surface-tint text-inverse-on-surface border-[4px] border-on-surface shadow-[4px_4px_0_0_#1f1c0b] p-[16px] relative flex items-center justify-center shrink-0">
+<!-- Migros 'M' Badge -->
+<div class="absolute -top-[12px] -left-[12px] w-[48px] h-[48px] bg-tertiary-fixed-dim border-[4px] border-on-surface shadow-[4px_4px_0_0_#1f1c0b] flex items-center justify-center rotate-[-8deg] z-10">
+<span class="font-headline-lg text-headline-lg text-on-tertiary-fixed mt-1">M</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg uppercase text-center tracking-widest drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">Migros Market</h2>
+</div>
+<!-- Inventory Grid (Recessed Slots) -->
+<div class="flex-1 grid grid-cols-2 gap-[16px] min-h-0">
+<!-- Item 1: Wheat -->
+<div class="bg-surface-container border-[4px] border-on-surface shadow-[inset_4px_4px_0_0_rgba(92,63,0,0.15)] p-[12px] flex flex-col justify-between relative group">
+<div class="flex justify-between items-start mb-[8px]">
+<div class="w-[48px] h-[48px] bg-surface-dim border-[2px] border-outline shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="bg-surface-variant border-[2px] border-outline px-[8px] py-[4px] shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">x24</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-end">
+<h3 class="font-headline-md text-[20px] leading-tight text-on-surface mb-[4px]">Wheat</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[12px]">5 Gold / ea</p>
+<button class="w-full bg-secondary text-on-secondary border-[4px] border-on-surface font-headline-md text-[16px] uppercase py-[8px] shadow-[0_4px_0_0_#1f1c0b] active:translate-y-[4px] active:shadow-none transition-all">Sell</button>
+</div>
+</div>
+<!-- Item 2: Honey -->
+<div class="bg-surface-container border-[4px] border-on-surface shadow-[inset_4px_4px_0_0_rgba(92,63,0,0.15)] p-[12px] flex flex-col justify-between relative group">
+<div class="flex justify-between items-start mb-[8px]">
+<div class="w-[48px] h-[48px] bg-surface-dim border-[2px] border-outline shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">hive</span>
+</div>
+<div class="bg-surface-variant border-[2px] border-outline px-[8px] py-[4px] shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">x8</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-end">
+<h3 class="font-headline-md text-[20px] leading-tight text-on-surface mb-[4px]">Honey</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[12px]">45 Gold / ea</p>
+<button class="w-full bg-secondary text-on-secondary border-[4px] border-on-surface font-headline-md text-[16px] uppercase py-[8px] shadow-[0_4px_0_0_#1f1c0b] active:translate-y-[4px] active:shadow-none transition-all">Sell</button>
+</div>
+</div>
+<!-- Item 3: Carrots -->
+<div class="bg-surface-container border-[4px] border-on-surface shadow-[inset_4px_4px_0_0_rgba(92,63,0,0.15)] p-[12px] flex flex-col justify-between relative group">
+<div class="flex justify-between items-start mb-[8px]">
+<div class="w-[48px] h-[48px] bg-surface-dim border-[2px] border-outline shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">nutrition</span>
+</div>
+<div class="bg-surface-variant border-[2px] border-outline px-[8px] py-[4px] shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">x15</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-end">
+<h3 class="font-headline-md text-[20px] leading-tight text-on-surface mb-[4px]">Carrots</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[12px]">8 Gold / ea</p>
+<button class="w-full bg-secondary text-on-secondary border-[4px] border-on-surface font-headline-md text-[16px] uppercase py-[8px] shadow-[0_4px_0_0_#1f1c0b] active:translate-y-[4px] active:shadow-none transition-all">Sell</button>
+</div>
+</div>
+<!-- Item 4: Berries -->
+<div class="bg-surface-container border-[4px] border-on-surface shadow-[inset_4px_4px_0_0_rgba(92,63,0,0.15)] p-[12px] flex flex-col justify-between relative group">
+<div class="flex justify-between items-start mb-[8px]">
+<div class="w-[48px] h-[48px] bg-surface-dim border-[2px] border-outline shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-error" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<div class="bg-surface-variant border-[2px] border-outline px-[8px] py-[4px] shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]">
+<span class="font-label-sm text-label-sm text-on-surface-variant">x42</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-end">
+<h3 class="font-headline-md text-[20px] leading-tight text-on-surface mb-[4px]">Berries</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[12px]">2 Gold / ea</p>
+<button class="w-full bg-secondary text-on-secondary border-[4px] border-on-surface font-headline-md text-[16px] uppercase py-[8px] shadow-[0_4px_0_0_#1f1c0b] active:translate-y-[4px] active:shadow-none transition-all">Sell</button>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Action -->
+<div class="shrink-0 pt-[8px]">
+<button class="w-full bg-tertiary-fixed-dim text-on-tertiary-fixed border-[4px] border-on-surface font-headline-lg text-[24px] uppercase tracking-widest py-[16px] shadow-[4px_4px_0_0_#1f1c0b] active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all flex items-center justify-center gap-[12px]">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+                Sell All
+            </button>
+</div>
+</main>
+<!-- BottomNavBar from JSON (Shop is Active) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#5C3D2E] dark:bg-[#3E291F] text-[#F5E6D3] dark:text-[#DBCFB0] font-['Space_Grotesk'] text-[10px] font-bold uppercase border-t-4 border-black shadow-[0_-4px_0_0_rgba(0,0,0,0.2)]">
+<div class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-[64px] h-[64px]">
+<span class="material-symbols-outlined text-[28px] mb-1">grass</span>
+<span>Field</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-[64px] h-[64px]">
+<span class="material-symbols-outlined text-[28px] mb-1">interests</span>
+<span>Hives</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-[64px] h-[64px]">
+<span class="material-symbols-outlined text-[28px] mb-1">handyman</span>
+<span>Tools</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-[64px] h-[64px]">
+<span class="material-symbols-outlined text-[28px] mb-1">psychiatry</span>
+<span>Seeds</span>
+</div>
+<!-- Active Tab: Shop -->
+<div class="flex flex-col items-center justify-center bg-[#744F3C] text-yellow-400 border-2 border-yellow-400 rounded-sm m-1 p-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] active:scale-95 transition-transform w-[64px] h-[64px]">
+<span class="material-symbols-outlined text-[28px] mb-1" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span>Shop</span>
+</div>
+</nav>
+</body></html>

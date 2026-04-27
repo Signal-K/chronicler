@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bee Farm - NPC Request</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=Be+Vietnam+Pro:wght@400;600&amp;family=Lexend:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5c3f00",
+                        "secondary-container": "#c0ee87",
+                        "on-surface": "#1f1c0b",
+                        "inverse-on-surface": "#faf0d5",
+                        "on-surface-variant": "#50443f",
+                        "on-primary-fixed-variant": "#5f3f30",
+                        "surface-dim": "#e2dabf",
+                        "on-tertiary-container": "#eaa500",
+                        "surface-container": "#f7eed2",
+                        "surface-tint": "#795746",
+                        "outline": "#82746e",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-variant": "#ebe2c8",
+                        "secondary-fixed": "#c3f18a",
+                        "on-primary-container": "#d3a895",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "surface-container-low": "#fcf3d8",
+                        "background": "#fff9ed",
+                        "secondary": "#436910",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff9ed",
+                        "tertiary": "#402a00",
+                        "on-secondary-fixed": "#102000",
+                        "on-primary-fixed": "#2d1509",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#281900",
+                        "primary-fixed-dim": "#eabda9",
+                        "on-background": "#1f1c0b",
+                        "surface-container-highest": "#ebe2c8",
+                        "surface-bright": "#fff9ed",
+                        "inverse-primary": "#eabda9",
+                        "tertiary-fixed-dim": "#ffba35",
+                        "secondary-fixed-dim": "#a8d471",
+                        "outline-variant": "#d4c3bc",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#476d15",
+                        "inverse-surface": "#35301e",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdbcc",
+                        "primary": "#43271a",
+                        "surface-container-high": "#f1e8cd",
+                        "primary-container": "#5c3d2e",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "pixel-unit": "4px",
+                        "margin": "32px",
+                        "gutter": "16px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-md": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Pixel art specific overrides to ensure crispness */
+        img.pixelated {
+            image-rendering: pixelated;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-background selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-16 bg-[#5C3D2E] text-[#F5E6D3] border-b-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] shrink-0 relative z-20">
+<div class="flex items-center gap-4">
+<button class="hover:bg-[#744F3C] transition-all active:translate-y-1 active:shadow-none p-2 rounded flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<h1 class="font-['Space_Grotesk'] font-black uppercase tracking-wider text-xl drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">Bee Farm</h1>
+</div>
+<div class="font-['Space_Grotesk'] font-bold uppercase tracking-wider text-sm flex gap-4">
+<span class="flex items-center gap-1 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">Gold: 500</span>
+<span class="flex items-center gap-1 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] text-[#60A5FA]">Water: 10</span>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center p-gutter relative z-10">
+<!-- Scrim / Dimmer -->
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[1px] -z-10"></div>
+<!-- Parchment Quest Card -->
+<div class="bg-surface-variant border-[4px] border-primary shadow-[8px_8px_0_0_rgba(67,39,26,1)] max-w-[600px] w-full flex flex-col relative animate-fade-in-up">
+<!-- Pin decoration top -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-surface-tint border-[4px] border-primary shadow-[2px_2px_0_0_rgba(31,28,11,1)] rotate-45 z-20"></div>
+<div class="p-8 flex flex-col gap-6">
+<!-- Header -->
+<div class="text-center border-b-[4px] border-primary pb-4 border-dashed">
+<h2 class="font-headline-lg text-primary">New Request</h2>
+</div>
+<!-- Character & Dialogue Row -->
+<div class="flex flex-col md:flex-row gap-6 items-start">
+<!-- Portrait Box -->
+<div class="shrink-0 relative">
+<div class="w-24 h-24 bg-surface-container-highest border-[4px] border-primary shadow-[4px_4px_0_0_rgba(67,39,26,1)] overflow-hidden">
+<img alt="Farmer Sam Portrait" class="w-full h-full object-cover pixelated" data-alt="pixel art style portrait of an old rugged farmer with a straw hat and overalls, low resolution, 32x32 upscaled, limited warm earth tone palette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJfn8THpXQjrR7ohQWyCWCJMHo8CBpQ9gVAVeLZQ5y1TXEdyrGNGzx9fvkMtXlIwjhTzqzZn9hppg0BIGIfN00ru2BQ7ffd_Unsap6h8n1sB2crSRCsEpoyigTeLtdBBIHHH-EPTLCmKzNKhR16T7mC5fgsUqjsV_AF4YISB6__rotAqU6jKyHnuxCFrrCA09aWDZILfcEEjN7TBFPabz-DaanZpRNFH1vdQKIaoCqWzLBin2S79IVDvYhoneCFvWGwEr5FLDe7Tg"/>
+</div>
+<!-- Name Tag -->
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary border-[2px] border-surface-container font-label-sm text-label-sm px-2 py-1 whitespace-nowrap shadow-[2px_2px_0_0_rgba(31,28,11,1)]">
+                            Farmer Sam
+                        </div>
+</div>
+<!-- Dialogue Box -->
+<div class="flex-1 bg-surface border-[4px] border-primary p-4 shadow-[inset_2px_2px_0_rgba(0,0,0,0.1)] relative">
+<!-- Speech bubble arrow (CSS shape) -->
+<div class="absolute -left-3 top-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[12px] border-r-primary border-b-[8px] border-b-transparent hidden md:block"></div>
+<p class="font-body-lg text-on-surface leading-relaxed">
+                            "Mornin' to ya! I've been tryin' to craft some sturdy wax for a new project, but regular honey just ain't cuttin' it. Could you harvest me a batch of 
+                            <span class="group relative cursor-help inline-block">
+<span class="font-bold text-tertiary-container border-b-[3px] border-dashed border-tertiary-container pb-[1px]">Hard Honey</span>?
+                                
+                                <!-- Tooltip Tablet -->
+<span class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 bg-surface-tint text-on-primary border-[4px] border-primary p-4 z-50 shadow-[4px_4px_0_0_rgba(31,28,11,1)] cursor-default">
+<span class="font-headline-md text-sm uppercase block mb-1 text-tertiary-fixed">Item Info</span>
+<span class="font-body-md text-sm leading-snug block">Hard Honey is produced from Sunflower or Poppy pollen.</span>
+<!-- Tooltip arrow -->
+<span class="absolute -bottom-[8px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-primary border-r-[8px] border-r-transparent"></span>
+</span>
+</span>
+                            I'll make it worth your while with some extra coin."
+                        </p>
+</div>
+</div>
+<!-- Reward Details -->
+<div class="bg-surface-container-low border-[2px] border-outline p-3 flex justify-between items-center mt-2 shadow-[inset_2px_2px_0_rgba(0,0,0,0.05)]">
+<span class="font-body-md font-bold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">hive</span>
+                        Requires: 10 Hard Honey
+                    </span>
+<span class="font-body-md font-bold text-on-surface-variant flex items-center gap-2">
+                        Reward: 150 <span class="material-symbols-outlined text-tertiary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</span>
+</div>
+<!-- Action Buttons -->
+<div class="flex justify-end gap-4 mt-4">
+<button class="bg-error text-on-error border-[4px] border-primary shadow-[0_4px_0_0_rgba(67,39,26,1)] py-2 px-6 font-headline-md font-headline-md uppercase tracking-wider hover:brightness-110 active:translate-y-[4px] active:shadow-none transition-all">
+                        Decline
+                    </button>
+<button class="bg-secondary text-on-secondary border-[4px] border-primary shadow-[0_4px_0_0_rgba(67,39,26,1)] py-2 px-8 font-headline-md font-headline-md uppercase tracking-wider hover:brightness-110 active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check</span>
+                        Accept
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#5C3D2E] border-t-4 border-[#2A1B14] shadow-[0_-4px_0_0_rgba(0,0,0,0.2)] md:hidden pb-safe">
+<!-- Active: Field -->
+<button class="flex flex-col items-center justify-center bg-[#744F3C] text-yellow-400 border-2 border-yellow-400 rounded-sm m-1 p-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] w-16 h-16">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">grass</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase mt-1">Field</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">interests</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase mt-1">Hives</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">handyman</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase mt-1">Tools</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">psychiatry</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase mt-1">Seeds</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16 h-16">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase mt-1">Shop</span>
+</button>
+</nav>
+</body></html>

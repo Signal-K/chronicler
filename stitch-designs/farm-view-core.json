@@ -1,0 +1,238 @@
+{
+  "screenshot": {
+    "name": "projects/3110800879650472112/files/db7c24062dbc46b6bc44c5cdbd8efdf7",
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/ADBb0ugqruouz7gdubtcBaHmVy7F-lPKyTUNpKk6lSOUehUaiXbCf0axAdR94Gq189YMDCa1cBVUkuKqqHHiHDy4sVe4xZpaIvTQRE2mu7vdZQP5OUA3R-ZjrRPn1kKVvDgue2HlIMkURdWx2YXNnWKJOly-wEsciVqsJ1cP1FTGZ6YY1hmQ-PjMpx1fkOSYDgDW_RGnNrv59-Oy9kQL4m3rP5qTaRntpuJ-Ltb5nBH8jKkNkzY1WEZZcH7KEw"
+  },
+  "htmlCode": {
+    "name": "projects/3110800879650472112/files/c64434e8e8fa49e585b149715a32db96",
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzc1NWM5OThjNTNhNzRkYjNhNjYxNjUzMWJhYThmN2E0EgsSBxC459KjqwYYAZIBIwoKcHJvamVjdF9pZBIVQhMzMTEwODAwODc5NjUwNDcyMTEy&filename=&opi=89354086",
+    "mimeType": "text/html"
+  },
+  "id": "cf4b285dcf0c4749ad57683f3595bb63",
+  "generatedBy": "figaro_agent",
+  "width": "780",
+  "height": "1768",
+  "title": "1. Farm View (Core)",
+  "prompt": "1. Main Farm View. A 2x5 grid of soil plots. Some plots have growing crops (Lavender, Sunflower). A bee hive icon is visible nearby. Resource bars for 100G and 100/100W at the top. Tools (Hoe, Watering Can) are displayed in the UI. Pixel-art aesthetic, paper texture, no scrolling.",
+  "name": "projects/3110800879650472112/screens/cf4b285dcf0c4749ad57683f3595bb63",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "SPACE_GROTESK",
+    "customColor": "#5C3D2E",
+    "headlineFont": "SPACE_GROTESK",
+    "bodyFont": "BE_VIETNAM_PRO",
+    "labelFont": "LEXEND",
+    "namedColors": {
+      "tertiary_fixed": "#ffdeac",
+      "error": "#ba1a1a",
+      "secondary_container": "#c0ee87",
+      "on_tertiary": "#ffffff",
+      "on_secondary_fixed_variant": "#2f4f00",
+      "surface_container_high": "#f1e8cd",
+      "tertiary_container": "#5c3f00",
+      "outline": "#82746e",
+      "surface_variant": "#ebe2c8",
+      "outline_variant": "#d4c3bc",
+      "primary_fixed": "#ffdbcc",
+      "on_primary_fixed_variant": "#5f3f30",
+      "on_surface": "#1f1c0b",
+      "on_surface_variant": "#50443f",
+      "tertiary_fixed_dim": "#ffba35",
+      "on_primary": "#ffffff",
+      "on_primary_container": "#d3a895",
+      "surface_tint": "#795746",
+      "secondary": "#436910",
+      "on_tertiary_fixed": "#281900",
+      "on_secondary": "#ffffff",
+      "error_container": "#ffdad6",
+      "surface_bright": "#fff9ed",
+      "on_secondary_container": "#476d15",
+      "inverse_primary": "#eabda9",
+      "on_background": "#1f1c0b",
+      "on_error_container": "#93000a",
+      "on_error": "#ffffff",
+      "secondary_fixed_dim": "#a8d471",
+      "background": "#fff9ed",
+      "on_primary_fixed": "#2d1509",
+      "surface_container": "#f7eed2",
+      "primary": "#43271a",
+      "surface_container_lowest": "#ffffff",
+      "inverse_on_surface": "#faf0d5",
+      "inverse_surface": "#35301e",
+      "on_secondary_fixed": "#102000",
+      "surface": "#fff9ed",
+      "on_tertiary_fixed_variant": "#5f4100",
+      "primary_fixed_dim": "#eabda9",
+      "secondary_fixed": "#c3f18a",
+      "on_tertiary_container": "#eaa500",
+      "surface_container_highest": "#ebe2c8",
+      "surface_container_low": "#fcf3d8",
+      "tertiary": "#402a00",
+      "surface_dim": "#e2dabf",
+      "primary_container": "#5c3d2e"
+    },
+    "designMd": "---\nname: Rural Sanctuary\ncolors:\n  surface: '#fff9ed'\n  surface-dim: '#e2dabf'\n  surface-bright: '#fff9ed'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#fcf3d8'\n  surface-container: '#f7eed2'\n  surface-container-high: '#f1e8cd'\n  surface-container-highest: '#ebe2c8'\n  on-surface: '#1f1c0b'\n  on-surface-variant: '#50443f'\n  inverse-surface: '#35301e'\n  inverse-on-surface: '#faf0d5'\n  outline: '#82746e'\n  outline-variant: '#d4c3bc'\n  surface-tint: '#795746'\n  primary: '#43271a'\n  on-primary: '#ffffff'\n  primary-container: '#5c3d2e'\n  on-primary-container: '#d3a895'\n  inverse-primary: '#eabda9'\n  secondary: '#436910'\n  on-secondary: '#ffffff'\n  secondary-container: '#c0ee87'\n  on-secondary-container: '#476d15'\n  tertiary: '#402a00'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#5c3f00'\n  on-tertiary-container: '#eaa500'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#ffdbcc'\n  primary-fixed-dim: '#eabda9'\n  on-primary-fixed: '#2d1509'\n  on-primary-fixed-variant: '#5f3f30'\n  secondary-fixed: '#c3f18a'\n  secondary-fixed-dim: '#a8d471'\n  on-secondary-fixed: '#102000'\n  on-secondary-fixed-variant: '#2f4f00'\n  tertiary-fixed: '#ffdeac'\n  tertiary-fixed-dim: '#ffba35'\n  on-tertiary-fixed: '#281900'\n  on-tertiary-fixed-variant: '#5f4100'\n  background: '#fff9ed'\n  on-background: '#1f1c0b'\n  surface-variant: '#ebe2c8'\ntypography:\n  headline-lg:\n    fontFamily: Space Grotesk\n    fontSize: 32px\n    fontWeight: '700'\n    lineHeight: '1.2'\n    letterSpacing: -0.02em\n  headline-md:\n    fontFamily: Space Grotesk\n    fontSize: 24px\n    fontWeight: '700'\n    lineHeight: '1.2'\n  body-lg:\n    fontFamily: Be Vietnam Pro\n    fontSize: 18px\n    fontWeight: '400'\n    lineHeight: '1.6'\n  body-md:\n    fontFamily: Be Vietnam Pro\n    fontSize: 16px\n    fontWeight: '400'\n    lineHeight: '1.5'\n  label-sm:\n    fontFamily: Lexend\n    fontSize: 12px\n    fontWeight: '600'\n    lineHeight: '1.0'\nspacing:\n  pixel-unit: 4px\n  gutter: 16px\n  margin: 32px\n  container-max: 1200px\n---\n\n## Brand & Style\n\nThis design system is built to evoke the nostalgic warmth of a rural lifestyle, focusing on the concepts of growth, patience, and industrious peace. It targets players seeking an emotional refuge through tactile, \"low-fidelity\" interactions that feel crafted rather than manufactured.\n\nThe aesthetic follows a **Tactile / Retro** hybrid style. It leverages the constraints of pixel art to create a world that feels solid and physical. Every interface element is treated as a physical object found on a farm: wooden signposts, weathered parchment, and carved stone slabs. The goal is to move away from modern, slick digital interfaces and toward a \"crunchy,\" satisfyingly clunky experience that rewards every click with a sense of weight.\n\n## Colors\n\nThe palette is rooted in the natural world, emphasizing the cycle of the seasons and the richness of fertile soil.\n\n- **Primary (Deep Oak):** A rich, dark brown used for wooden frames, heavy borders, and primary text to provide grounding and structure.\n- **Secondary (Meadow Green):** A vibrant yet natural green used for progress bars, growth indicators, and \"success\" states.\n- **Tertiary (Sunny Yellow):** A warm, golden hue reserved for highlights, currency, and rare items, mimicking the glow of a summer afternoon.\n- **Neutral (Parchment):** The primary background color for menus and dialogue boxes, providing a soft, non-strained reading surface that feels like aged paper.\n- **Accent Tones:** \"Stone Blue\" for utility elements and \"Earth Black\" for deep shadows and pixel-perfect outlines.\n\n## Typography\n\nWhile the design system uses modern web fonts for accessibility and readability, they are styled to mimic the rhythm of pixelated type. \n\n**Space Grotesk** is used for headlines; its geometric and slightly quirky construction echoes the blocky nature of pixel fonts when rendered at large sizes. **Be Vietnam Pro** provides a friendly, warm tone for body copy, ensuring that long descriptions of crops or letters from villagers remain legible. **Lexend** is used for labels and \"clicky\" UI elements to provide a structured, athletic clarity to inventories and tooltips.\n\n*Note: All type should be rendered with anti-aliasing settings that favor crisp edges to maintain the pixel-art illusion.*\n\n## Layout & Spacing\n\nThis design system utilizes a **Fixed Grid** model based on a 4px \"pixel unit.\" All margins and paddings must be multiples of 4px to ensure that elements align perfectly with the pixel-art assets.\n\nThe layout philosophy is \"Container-First.\" Most content is housed within defined wooden plaques or parchment scrolls rather than floating freely. These containers use a 12-column grid for internal organization, but the containers themselves are often centered or staggered to feel like a collection of objects on a desk. Heavy gutters (16px) ensure that the detailed, textured borders of UI elements have room to breathe without overlapping.\n\n## Elevation & Depth\n\nDepth is conveyed through **Bold Borders** and **Isometric Offsets** rather than soft shadows.\n\n1.  **Outer Borders:** Every major UI panel has a 4px solid dark border (Earth Black) to define its silhouette.\n2.  **Inset Shadowing:** To create a \"carved\" look for input fields or inventory slots, use a 2px inner-shadow on the top and left sides using a darker shade of the container’s base color.\n3.  **Drop Shadows:** Use hard-edged, 100% opacity shadows offset by 4px or 8px (down and right) to lift \"active\" objects like hovered buttons or dragged items. \n4.  **Layering:** Parchment sits on top of Wood, and Wood sits on top of Stone. Each layer transition is marked by a clear, pixelated outline.\n\n## Shapes\n\nThe shape language is strictly **Sharp (0)**. In a pixel-art world, true curves do not exist. Instead, \"roundedness\" is achieved through \"stepping\"—using 4px or 8px blocks to create the suggestion of a corner.\n\nContainers should never use the CSS `border-radius` property. Instead, use \"9-slice\" scaling techniques where the corners are static pixel-art assets (like the decorative corners of a picture frame) and the edges repeat to fill the span. This maintains the integrity of the hand-drawn wood grain and stone chips.\n\n## Components\n\n- **Buttons:** Styled as thick wooden planks. The default state shows a 4px \"bottom-side\" thickness. On click, the element translates 4px down, and the bottom shadow disappears to simulate a physical press.\n- **Inventory Slots:** Square boxes with a recessed, \"inset\" feel. When a slot is highlighted, it should gain a glowing yellow 4px frame.\n- **Parchment Cards:** Used for letters and quests. The edges should be \"torn\" (pixelated jagged edges) and the background should feature a subtle paper grain texture.\n- **Progress Bars:** Styled as \"soil filling with water.\" The background is dark brown (Earth Black), and the fill is Secondary Green, moving in discrete pixel blocks rather than a smooth animation.\n- **Tooltips:** Small stone tablets that fade in with a slight \"pop\" scale animation. \n- **Icons:** All icons (tools, seeds, honey) must be 16x16 or 32x32 resolution, upscaled without blurring (Nearest Neighbor) to maintain their \"charming\" low-res character.\n- **Checkboxes:** Small wooden toggles that physically slide or \"flip\" a small stone marker when toggled.",
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#5C3D2E",
+    "overrideSecondaryColor": "#61892F",
+    "overrideTertiaryColor": "#FFB400",
+    "overrideNeutralColor": "#F4EBD0",
+    "spacingScale": 2,
+    "typography": {
+      "headline-md": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "1.2"
+      },
+      "label-sm": {
+        "fontFamily": "Lexend",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "1.0"
+      },
+      "body-md": {
+        "fontFamily": "Be Vietnam Pro",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "1.5"
+      },
+      "headline-lg": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": "32px",
+        "fontWeight": "700",
+        "lineHeight": "1.2",
+        "letterSpacing": "-0.02em"
+      },
+      "body-lg": {
+        "fontFamily": "Be Vietnam Pro",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "lineHeight": "1.6"
+      }
+    },
+    "spacing": {
+      "margin": "32px",
+      "container-max": "1200px",
+      "gutter": "16px",
+      "pixel-unit": "4px"
+    }
+  },
+  "deviceType": "MOBILE",
+  "screenType": "DESIGN",
+  "screenMetadata": {
+    "agentType": "PRO_AGENT",
+    "status": "COMPLETE"
+  },
+  "designSystem": {
+    "name": "assets/57837fe57464448f9103d98fb48eaa3a",
+    "designSystem": {
+      "displayName": "Rural Sanctuary",
+      "styleGuidelines": "## Brand & Style\n\nThis design system is built to evoke the nostalgic warmth of a rural lifestyle, focusing on the concepts of growth, patience, and industrious peace. It targets players seeking an emotional refuge through tactile, \"low-fidelity\" interactions that feel crafted rather than manufactured.\n\nThe aesthetic follows a **Tactile / Retro** hybrid style. It leverages the constraints of pixel art to create a world that feels solid and physical. Every interface element is treated as a physical object found on a farm: wooden signposts, weathered parchment, and carved stone slabs. The goal is to move away from modern, slick digital interfaces and toward a \"crunchy,\" satisfyingly clunky experience that rewards every click with a sense of weight.\n\n## Layout & Spacing\n\nThis design system utilizes a **Fixed Grid** model based on a 4px \"pixel unit.\" All margins and paddings must be multiples of 4px to ensure that elements align perfectly with the pixel-art assets.\n\nThe layout philosophy is \"Container-First.\" Most content is housed within defined wooden plaques or parchment scrolls rather than floating freely. These containers use a 12-column grid for internal organization, but the containers themselves are often centered or staggered to feel like a collection of objects on a desk. Heavy gutters (16px) ensure that the detailed, textured borders of UI elements have room to breathe without overlapping.\n\n## Elevation & Depth\n\nDepth is conveyed through **Bold Borders** and **Isometric Offsets** rather than soft shadows.\n\n1.  **Outer Borders:** Every major UI panel has a 4px solid dark border (Earth Black) to define its silhouette.\n2.  **Inset Shadowing:** To create a \"carved\" look for input fields or inventory slots, use a 2px inner-shadow on the top and left sides using a darker shade of the container’s base color.\n3.  **Drop Shadows:** Use hard-edged, 100% opacity shadows offset by 4px or 8px (down and right) to lift \"active\" objects like hovered buttons or dragged items. \n4.  **Layering:** Parchment sits on top of Wood, and Wood sits on top of Stone. Each layer transition is marked by a clear, pixelated outline.\n\n## Components\n\n- **Buttons:** Styled as thick wooden planks. The default state shows a 4px \"bottom-side\" thickness. On click, the element translates 4px down, and the bottom shadow disappears to simulate a physical press.\n- **Inventory Slots:** Square boxes with a recessed, \"inset\" feel. When a slot is highlighted, it should gain a glowing yellow 4px frame.\n- **Parchment Cards:** Used for letters and quests. The edges should be \"torn\" (pixelated jagged edges) and the background should feature a subtle paper grain texture.\n- **Progress Bars:** Styled as \"soil filling with water.\" The background is dark brown (Earth Black), and the fill is Secondary Green, moving in discrete pixel blocks rather than a smooth animation.\n- **Tooltips:** Small stone tablets that fade in with a slight \"pop\" scale animation. \n- **Icons:** All icons (tools, seeds, honey) must be 16x16 or 32x32 resolution, upscaled without blurring (Nearest Neighbor) to maintain their \"charming\" low-res character.\n- **Checkboxes:** Small wooden toggles that physically slide or \"flip\" a small stone marker when toggled.",
+      "theme": {
+        "colorMode": "LIGHT",
+        "font": "SPACE_GROTESK",
+        "customColor": "#5C3D2E",
+        "headlineFont": "SPACE_GROTESK",
+        "bodyFont": "BE_VIETNAM_PRO",
+        "labelFont": "LEXEND",
+        "namedColors": {
+          "on_secondary_fixed_variant": "#2f4f00",
+          "outline": "#82746e",
+          "surface_container_high": "#f1e8cd",
+          "tertiary_container": "#5c3f00",
+          "surface_variant": "#ebe2c8",
+          "tertiary_fixed": "#ffdeac",
+          "error": "#ba1a1a",
+          "secondary_container": "#c0ee87",
+          "on_tertiary": "#ffffff",
+          "on_primary_container": "#d3a895",
+          "on_primary": "#ffffff",
+          "surface_tint": "#795746",
+          "on_tertiary_fixed": "#281900",
+          "secondary": "#436910",
+          "outline_variant": "#d4c3bc",
+          "primary_fixed": "#ffdbcc",
+          "tertiary_fixed_dim": "#ffba35",
+          "on_primary_fixed_variant": "#5f3f30",
+          "on_surface": "#1f1c0b",
+          "on_surface_variant": "#50443f",
+          "secondary_fixed_dim": "#a8d471",
+          "background": "#fff9ed",
+          "surface_container": "#f7eed2",
+          "primary": "#43271a",
+          "on_primary_fixed": "#2d1509",
+          "surface_container_lowest": "#ffffff",
+          "inverse_on_surface": "#faf0d5",
+          "inverse_surface": "#35301e",
+          "on_secondary": "#ffffff",
+          "error_container": "#ffdad6",
+          "surface_bright": "#fff9ed",
+          "on_secondary_container": "#476d15",
+          "on_error_container": "#93000a",
+          "on_background": "#1f1c0b",
+          "inverse_primary": "#eabda9",
+          "on_error": "#ffffff",
+          "surface_container_highest": "#ebe2c8",
+          "tertiary": "#402a00",
+          "surface_container_low": "#fcf3d8",
+          "primary_container": "#5c3d2e",
+          "surface_dim": "#e2dabf",
+          "surface": "#fff9ed",
+          "on_secondary_fixed": "#102000",
+          "primary_fixed_dim": "#eabda9",
+          "on_tertiary_fixed_variant": "#5f4100",
+          "secondary_fixed": "#c3f18a",
+          "on_tertiary_container": "#eaa500"
+        },
+        "designMd": "---\nname: Rural Sanctuary\ncolors:\n  surface: '#fff9ed'\n  surface-dim: '#e2dabf'\n  surface-bright: '#fff9ed'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#fcf3d8'\n  surface-container: '#f7eed2'\n  surface-container-high: '#f1e8cd'\n  surface-container-highest: '#ebe2c8'\n  on-surface: '#1f1c0b'\n  on-surface-variant: '#50443f'\n  inverse-surface: '#35301e'\n  inverse-on-surface: '#faf0d5'\n  outline: '#82746e'\n  outline-variant: '#d4c3bc'\n  surface-tint: '#795746'\n  primary: '#43271a'\n  on-primary: '#ffffff'\n  primary-container: '#5c3d2e'\n  on-primary-container: '#d3a895'\n  inverse-primary: '#eabda9'\n  secondary: '#436910'\n  on-secondary: '#ffffff'\n  secondary-container: '#c0ee87'\n  on-secondary-container: '#476d15'\n  tertiary: '#402a00'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#5c3f00'\n  on-tertiary-container: '#eaa500'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#ffdbcc'\n  primary-fixed-dim: '#eabda9'\n  on-primary-fixed: '#2d1509'\n  on-primary-fixed-variant: '#5f3f30'\n  secondary-fixed: '#c3f18a'\n  secondary-fixed-dim: '#a8d471'\n  on-secondary-fixed: '#102000'\n  on-secondary-fixed-variant: '#2f4f00'\n  tertiary-fixed: '#ffdeac'\n  tertiary-fixed-dim: '#ffba35'\n  on-tertiary-fixed: '#281900'\n  on-tertiary-fixed-variant: '#5f4100'\n  background: '#fff9ed'\n  on-background: '#1f1c0b'\n  surface-variant: '#ebe2c8'\ntypography:\n  headline-lg:\n    fontFamily: Space Grotesk\n    fontSize: 32px\n    fontWeight: '700'\n    lineHeight: '1.2'\n    letterSpacing: -0.02em\n  headline-md:\n    fontFamily: Space Grotesk\n    fontSize: 24px\n    fontWeight: '700'\n    lineHeight: '1.2'\n  body-lg:\n    fontFamily: Be Vietnam Pro\n    fontSize: 18px\n    fontWeight: '400'\n    lineHeight: '1.6'\n  body-md:\n    fontFamily: Be Vietnam Pro\n    fontSize: 16px\n    fontWeight: '400'\n    lineHeight: '1.5'\n  label-sm:\n    fontFamily: Lexend\n    fontSize: 12px\n    fontWeight: '600'\n    lineHeight: '1.0'\nspacing:\n  pixel-unit: 4px\n  gutter: 16px\n  margin: 32px\n  container-max: 1200px\n---\n\n## Brand & Style\n\nThis design system is built to evoke the nostalgic warmth of a rural lifestyle, focusing on the concepts of growth, patience, and industrious peace. It targets players seeking an emotional refuge through tactile, \"low-fidelity\" interactions that feel crafted rather than manufactured.\n\nThe aesthetic follows a **Tactile / Retro** hybrid style. It leverages the constraints of pixel art to create a world that feels solid and physical. Every interface element is treated as a physical object found on a farm: wooden signposts, weathered parchment, and carved stone slabs. The goal is to move away from modern, slick digital interfaces and toward a \"crunchy,\" satisfyingly clunky experience that rewards every click with a sense of weight.\n\n## Colors\n\nThe palette is rooted in the natural world, emphasizing the cycle of the seasons and the richness of fertile soil.\n\n- **Primary (Deep Oak):** A rich, dark brown used for wooden frames, heavy borders, and primary text to provide grounding and structure.\n- **Secondary (Meadow Green):** A vibrant yet natural green used for progress bars, growth indicators, and \"success\" states.\n- **Tertiary (Sunny Yellow):** A warm, golden hue reserved for highlights, currency, and rare items, mimicking the glow of a summer afternoon.\n- **Neutral (Parchment):** The primary background color for menus and dialogue boxes, providing a soft, non-strained reading surface that feels like aged paper.\n- **Accent Tones:** \"Stone Blue\" for utility elements and \"Earth Black\" for deep shadows and pixel-perfect outlines.\n\n## Typography\n\nWhile the design system uses modern web fonts for accessibility and readability, they are styled to mimic the rhythm of pixelated type. \n\n**Space Grotesk** is used for headlines; its geometric and slightly quirky construction echoes the blocky nature of pixel fonts when rendered at large sizes. **Be Vietnam Pro** provides a friendly, warm tone for body copy, ensuring that long descriptions of crops or letters from villagers remain legible. **Lexend** is used for labels and \"clicky\" UI elements to provide a structured, athletic clarity to inventories and tooltips.\n\n*Note: All type should be rendered with anti-aliasing settings that favor crisp edges to maintain the pixel-art illusion.*\n\n## Layout & Spacing\n\nThis design system utilizes a **Fixed Grid** model based on a 4px \"pixel unit.\" All margins and paddings must be multiples of 4px to ensure that elements align perfectly with the pixel-art assets.\n\nThe layout philosophy is \"Container-First.\" Most content is housed within defined wooden plaques or parchment scrolls rather than floating freely. These containers use a 12-column grid for internal organization, but the containers themselves are often centered or staggered to feel like a collection of objects on a desk. Heavy gutters (16px) ensure that the detailed, textured borders of UI elements have room to breathe without overlapping.\n\n## Elevation & Depth\n\nDepth is conveyed through **Bold Borders** and **Isometric Offsets** rather than soft shadows.\n\n1.  **Outer Borders:** Every major UI panel has a 4px solid dark border (Earth Black) to define its silhouette.\n2.  **Inset Shadowing:** To create a \"carved\" look for input fields or inventory slots, use a 2px inner-shadow on the top and left sides using a darker shade of the container’s base color.\n3.  **Drop Shadows:** Use hard-edged, 100% opacity shadows offset by 4px or 8px (down and right) to lift \"active\" objects like hovered buttons or dragged items. \n4.  **Layering:** Parchment sits on top of Wood, and Wood sits on top of Stone. Each layer transition is marked by a clear, pixelated outline.\n\n## Shapes\n\nThe shape language is strictly **Sharp (0)**. In a pixel-art world, true curves do not exist. Instead, \"roundedness\" is achieved through \"stepping\"—using 4px or 8px blocks to create the suggestion of a corner.\n\nContainers should never use the CSS `border-radius` property. Instead, use \"9-slice\" scaling techniques where the corners are static pixel-art assets (like the decorative corners of a picture frame) and the edges repeat to fill the span. This maintains the integrity of the hand-drawn wood grain and stone chips.\n\n## Components\n\n- **Buttons:** Styled as thick wooden planks. The default state shows a 4px \"bottom-side\" thickness. On click, the element translates 4px down, and the bottom shadow disappears to simulate a physical press.\n- **Inventory Slots:** Square boxes with a recessed, \"inset\" feel. When a slot is highlighted, it should gain a glowing yellow 4px frame.\n- **Parchment Cards:** Used for letters and quests. The edges should be \"torn\" (pixelated jagged edges) and the background should feature a subtle paper grain texture.\n- **Progress Bars:** Styled as \"soil filling with water.\" The background is dark brown (Earth Black), and the fill is Secondary Green, moving in discrete pixel blocks rather than a smooth animation.\n- **Tooltips:** Small stone tablets that fade in with a slight \"pop\" scale animation. \n- **Icons:** All icons (tools, seeds, honey) must be 16x16 or 32x32 resolution, upscaled without blurring (Nearest Neighbor) to maintain their \"charming\" low-res character.\n- **Checkboxes:** Small wooden toggles that physically slide or \"flip\" a small stone marker when toggled.",
+        "colorVariant": "FIDELITY",
+        "overridePrimaryColor": "#5C3D2E",
+        "overrideSecondaryColor": "#61892F",
+        "overrideTertiaryColor": "#FFB400",
+        "overrideNeutralColor": "#F4EBD0",
+        "spacingScale": 2,
+        "typography": {
+          "body-lg": {
+            "fontFamily": "Be Vietnam Pro",
+            "fontSize": "18px",
+            "fontWeight": "400",
+            "lineHeight": "1.6"
+          },
+          "headline-lg": {
+            "fontFamily": "Space Grotesk",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": "1.2",
+            "letterSpacing": "-0.02em"
+          },
+          "body-md": {
+            "fontFamily": "Be Vietnam Pro",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "1.5"
+          },
+          "label-sm": {
+            "fontFamily": "Lexend",
+            "fontSize": "12px",
+            "fontWeight": "600",
+            "lineHeight": "1.0"
+          },
+          "headline-md": {
+            "fontFamily": "Space Grotesk",
+            "fontSize": "24px",
+            "fontWeight": "700",
+            "lineHeight": "1.2"
+          }
+        },
+        "spacing": {
+          "pixel-unit": "4px",
+          "gutter": "16px",
+          "container-max": "1200px",
+          "margin": "32px"
+        }
+      }
+    },
+    "version": "1"
+  }
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Seed Pouch - Bee Farm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600&amp;family=Be+Vietnam+Pro:wght@400&amp;family=Space+Grotesk:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5c3f00",
+                        "secondary-container": "#c0ee87",
+                        "on-surface": "#1f1c0b",
+                        "inverse-on-surface": "#faf0d5",
+                        "on-surface-variant": "#50443f",
+                        "on-primary-fixed-variant": "#5f3f30",
+                        "surface-dim": "#e2dabf",
+                        "on-tertiary-container": "#eaa500",
+                        "surface-container": "#f7eed2",
+                        "surface-tint": "#795746",
+                        "outline": "#82746e",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-variant": "#ebe2c8",
+                        "secondary-fixed": "#c3f18a",
+                        "on-primary-container": "#d3a895",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "surface-container-low": "#fcf3d8",
+                        "background": "#fff9ed",
+                        "secondary": "#436910",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff9ed",
+                        "tertiary": "#402a00",
+                        "on-secondary-fixed": "#102000",
+                        "on-primary-fixed": "#2d1509",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#281900",
+                        "primary-fixed-dim": "#eabda9",
+                        "on-background": "#1f1c0b",
+                        "surface-container-highest": "#ebe2c8",
+                        "surface-bright": "#fff9ed",
+                        "inverse-primary": "#eabda9",
+                        "tertiary-fixed-dim": "#ffba35",
+                        "secondary-fixed-dim": "#a8d471",
+                        "outline-variant": "#d4c3bc",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#476d15",
+                        "inverse-surface": "#35301e",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdbcc",
+                        "primary": "#43271a",
+                        "surface-container-high": "#f1e8cd",
+                        "primary-container": "#5c3d2e",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "pixel-unit": "4px",
+                        "margin": "32px",
+                        "gutter": "16px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Lexend"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-md": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom styles for pixel-art textures that can't be easily done with Tailwind utilities */
+        .wood-texture {
+            background-color: #795746;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(67, 39, 26, 0.1) 10px,
+                rgba(67, 39, 26, 0.1) 20px
+            );
+        }
+        .canvas-texture {
+            background-color: #ebe2c8;
+            background-image: 
+                radial-gradient(#d4c3bc 1px, transparent 1px),
+                radial-gradient(#d4c3bc 1px, transparent 1px);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background h-screen overflow-hidden flex flex-col font-body-md text-body-md text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="bg-[#5C3D2E] dark:bg-[#3E291F] text-[#F5E6D3] dark:text-[#DBCFB0] font-['Space_Grotesk'] font-bold uppercase tracking-wider docked full-width top-0 border-b-4 border-[#2A1B14] shadow-[0_4px_0_0_rgba(0,0,0,0.3)] flex justify-between items-center w-full px-4 h-16 z-20 shrink-0">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center p-1 hover:bg-[#744F3C] transition-all active:translate-y-1 active:shadow-none focus:outline-none">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+<h1 class="text-xl font-black text-[#F5E6D3] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] m-0 leading-none">Bee Farm</h1>
+</div>
+<!-- Web Navigation (Hidden on Mobile) -->
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-[#F5E6D3] hover:text-yellow-400 transition-colors py-2 border-b-4 border-transparent hover:border-yellow-400" href="#">Field</a>
+<a class="text-[#F5E6D3] hover:text-yellow-400 transition-colors py-2 border-b-4 border-transparent hover:border-yellow-400" href="#">Hives</a>
+<a class="text-[#F5E6D3] hover:text-yellow-400 transition-colors py-2 border-b-4 border-transparent hover:border-yellow-400" href="#">Tools</a>
+<a class="text-yellow-400 py-2 border-b-4 border-yellow-400" href="#">Seeds</a>
+<a class="text-[#F5E6D3] hover:text-yellow-400 transition-colors py-2 border-b-4 border-transparent hover:border-yellow-400" href="#">Shop</a>
+</nav>
+<div class="flex items-center bg-[#3E291F] px-3 py-1 border-2 border-[#2A1B14] shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)]">
+<span class="text-sm tracking-widest">Gold: 500  Water: 10</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full flex items-center justify-center p-gutter relative z-10 canvas-texture shadow-[inset_0_0_40px_rgba(67,39,26,0.2)]">
+<!-- The Seed Pouch Container (Wooden Board) -->
+<div class="w-full max-w-2xl bg-surface border-[4px] border-primary shadow-[8px_8px_0_0_theme(colors.primary)] p-2 md:p-gutter flex flex-col gap-gutter relative wood-texture">
+<!-- Screws/Nails decorative -->
+<div class="absolute top-2 left-2 w-3 h-3 bg-outline rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)]"></div>
+<div class="absolute top-2 right-2 w-3 h-3 bg-outline rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)]"></div>
+<div class="absolute bottom-2 left-2 w-3 h-3 bg-outline rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)]"></div>
+<div class="absolute bottom-2 right-2 w-3 h-3 bg-outline rounded-full shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)]"></div>
+<!-- Header Panel -->
+<div class="bg-surface-container-lowest border-[4px] border-primary shadow-[4px_4px_0_0_theme(colors.primary)] p-4 text-center mx-4 mt-2">
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase tracking-widest drop-shadow-[1px_1px_0_theme(colors.surface-variant)]">Seed Pouch</h2>
+</div>
+<!-- Inventory Grid Container (Inset Dark Area) -->
+<div class="bg-tertiary border-[4px] border-on-surface shadow-[inset_4px_4px_0_0_rgba(0,0,0,0.5)] p-4 flex-1">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+<!-- Seed Slot: Lavender -->
+<button class="group relative bg-surface-container-low border-[4px] border-outline hover:border-tertiary-fixed-dim focus:border-tertiary-fixed-dim hover:bg-surface-container transition-colors shadow-[4px_4px_0_0_theme(colors.on-surface)] active:translate-y-1 active:translate-x-1 active:shadow-[0_0_0_0_theme(colors.on-surface)] flex flex-col items-center justify-between p-3 h-full min-h-[140px] focus:outline-none">
+<div class="w-12 h-12 mb-2 flex items-center justify-center bg-surface-container-highest border-2 border-outline-variant rounded-sm shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-[#8E7CC3]" style="font-variation-settings: 'FILL' 1;">local_florist</span>
+</div>
+<div class="w-full text-center">
+<h3 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Lavender</h3>
+<div class="flex justify-center gap-1 mb-1">
+<span class="bg-primary-container text-on-primary font-label-sm text-[10px] px-1 py-0.5 border border-on-surface shadow-[1px_1px_0_0_theme(colors.on-surface)]">Sweet</span>
+</div>
+<div class="flex items-center justify-center gap-1 text-on-surface-variant font-label-sm text-[10px] bg-surface-container-lowest border border-outline px-1 rounded-sm">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 1h
+                            </div>
+</div>
+</button>
+<!-- Seed Slot: Sunflower -->
+<button class="group relative bg-surface-container-low border-[4px] border-outline hover:border-tertiary-fixed-dim focus:border-tertiary-fixed-dim hover:bg-surface-container transition-colors shadow-[4px_4px_0_0_theme(colors.on-surface)] active:translate-y-1 active:translate-x-1 active:shadow-[0_0_0_0_theme(colors.on-surface)] flex flex-col items-center justify-between p-3 h-full min-h-[140px] focus:outline-none">
+<div class="w-12 h-12 mb-2 flex items-center justify-center bg-surface-container-highest border-2 border-outline-variant rounded-sm shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-[#F1C232]" style="font-variation-settings: 'FILL' 1;">sunny</span>
+</div>
+<div class="w-full text-center">
+<h3 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Sunflower</h3>
+<div class="flex justify-center gap-1 mb-1">
+<span class="bg-tertiary text-on-tertiary font-label-sm text-[10px] px-1 py-0.5 border border-on-surface shadow-[1px_1px_0_0_theme(colors.on-surface)]">Hard</span>
+</div>
+<div class="flex items-center justify-center gap-1 text-on-surface-variant font-label-sm text-[10px] bg-surface-container-lowest border border-outline px-1 rounded-sm">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 4h
+                            </div>
+</div>
+</button>
+<!-- Seed Slot: Poppy -->
+<button class="group relative bg-surface-container-low border-[4px] border-outline hover:border-tertiary-fixed-dim focus:border-tertiary-fixed-dim hover:bg-surface-container transition-colors shadow-[4px_4px_0_0_theme(colors.on-surface)] active:translate-y-1 active:translate-x-1 active:shadow-[0_0_0_0_theme(colors.on-surface)] flex flex-col items-center justify-between p-3 h-full min-h-[140px] focus:outline-none">
+<div class="w-12 h-12 mb-2 flex items-center justify-center bg-surface-container-highest border-2 border-outline-variant rounded-sm shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-[#CC0000]" style="font-variation-settings: 'FILL' 1;">filter_vintage</span>
+</div>
+<div class="w-full text-center">
+<h3 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Poppy</h3>
+<div class="flex justify-center gap-1 mb-1">
+<span class="bg-primary-container text-on-primary font-label-sm text-[10px] px-1 py-0.5 border border-on-surface shadow-[1px_1px_0_0_theme(colors.on-surface)]">Sweet</span>
+</div>
+<div class="flex items-center justify-center gap-1 text-on-surface-variant font-label-sm text-[10px] bg-surface-container-lowest border border-outline px-1 rounded-sm">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 2h
+                            </div>
+</div>
+</button>
+<!-- Seed Slot: Clover -->
+<button class="group relative bg-surface-container-low border-[4px] border-outline hover:border-tertiary-fixed-dim focus:border-tertiary-fixed-dim hover:bg-surface-container transition-colors shadow-[4px_4px_0_0_theme(colors.on-surface)] active:translate-y-1 active:translate-x-1 active:shadow-[0_0_0_0_theme(colors.on-surface)] flex flex-col items-center justify-between p-3 h-full min-h-[140px] focus:outline-none">
+<div class="w-12 h-12 mb-2 flex items-center justify-center bg-surface-container-highest border-2 border-outline-variant rounded-sm shadow-[inset_2px_2px_0_0_rgba(0,0,0,0.1)] group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div class="w-full text-center">
+<h3 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Clover</h3>
+<div class="flex justify-center gap-1 mb-1">
+<span class="bg-tertiary text-on-tertiary font-label-sm text-[10px] px-1 py-0.5 border border-on-surface shadow-[1px_1px_0_0_theme(colors.on-surface)]">Hard</span>
+</div>
+<div class="flex items-center justify-center gap-1 text-on-surface-variant font-label-sm text-[10px] bg-surface-container-lowest border border-outline px-1 rounded-sm">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 30m
+                            </div>
+</div>
+</button>
+</div>
+</div>
+<!-- Action Area / Hint -->
+<div class="text-center font-label-sm text-label-sm text-surface-container-lowest drop-shadow-[1px_1px_0_theme(colors.primary)] tracking-wide">
+                Tap a seed to plant in selected field slot
+            </div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#5C3D2E] dark:bg-[#3E291F] border-t-4 border-black border-[#2A1B14] shadow-[0_-4px_0_0_rgba(0,0,0,0.2)] font-['Space_Grotesk'] text-[10px] font-bold uppercase shrink-0 pb-safe">
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-full h-full focus:outline-none" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">grass</span>
+<span>Field</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-full h-full focus:outline-none" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">interests</span>
+<span>Hives</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-full h-full focus:outline-none" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">handyman</span>
+<span>Tools</span>
+</a>
+<!-- ACTIVE TAB -->
+<a class="flex flex-col items-center justify-center bg-[#744F3C] text-yellow-400 border-2 border-yellow-400 rounded-sm m-1 p-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] active:scale-95 transition-transform w-full h-full focus:outline-none" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">psychiatry</span>
+<span>Seeds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-full h-full focus:outline-none" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span>Shop</span>
+</a>
+</nav>
+</body></html>

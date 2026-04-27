@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hive Interior Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=Lexend:wght@600&amp;family=Space+Grotesk:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#5c3f00",
+                    "secondary-container": "#c0ee87",
+                    "on-surface": "#1f1c0b",
+                    "inverse-on-surface": "#faf0d5",
+                    "on-surface-variant": "#50443f",
+                    "on-primary-fixed-variant": "#5f3f30",
+                    "surface-dim": "#e2dabf",
+                    "on-tertiary-container": "#eaa500",
+                    "surface-container": "#f7eed2",
+                    "surface-tint": "#795746",
+                    "outline": "#82746e",
+                    "on-tertiary-fixed-variant": "#5f4100",
+                    "tertiary-fixed": "#ffdeac",
+                    "surface-variant": "#ebe2c8",
+                    "secondary-fixed": "#c3f18a",
+                    "on-primary-container": "#d3a895",
+                    "on-secondary-fixed-variant": "#2f4f00",
+                    "surface-container-low": "#fcf3d8",
+                    "background": "#fff9ed",
+                    "secondary": "#436910",
+                    "on-primary": "#ffffff",
+                    "surface": "#fff9ed",
+                    "tertiary": "#402a00",
+                    "on-secondary-fixed": "#102000",
+                    "on-primary-fixed": "#2d1509",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#281900",
+                    "primary-fixed-dim": "#eabda9",
+                    "on-background": "#1f1c0b",
+                    "surface-container-highest": "#ebe2c8",
+                    "surface-bright": "#fff9ed",
+                    "inverse-primary": "#eabda9",
+                    "tertiary-fixed-dim": "#ffba35",
+                    "secondary-fixed-dim": "#a8d471",
+                    "outline-variant": "#d4c3bc",
+                    "error-container": "#ffdad6",
+                    "on-secondary-container": "#476d15",
+                    "inverse-surface": "#35301e",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#ffdbcc",
+                    "primary": "#43271a",
+                    "surface-container-high": "#f1e8cd",
+                    "primary-container": "#5c3d2e",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "pixel-unit": "4px",
+                    "margin": "32px",
+                    "gutter": "16px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Lexend"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-lg": ["Space Grotesk"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "headline-md": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                    "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                    "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                    "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base pixel art crispness */
+        * {
+            image-rendering: pixelated;
+        }
+        /* Custom scrollbar hiding for fixed layout */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-background h-screen w-screen flex flex-col overflow-hidden selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TopAppBar -->
+<header class="bg-[#5C3D2E] text-[#F5E6D3] font-['Space_Grotesk'] font-bold uppercase tracking-wider shadow-[0_4px_0_0_rgba(0,0,0,0.3)] flex justify-between items-center w-full px-4 h-16 z-50 flex-shrink-0 relative">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center hover:bg-[#744F3C] transition-all active:translate-y-1 active:shadow-none p-1 rounded-sm">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+<h1 class="text-xl font-black text-[#F5E6D3] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">Bee Farm</h1>
+</div>
+<div class="text-xs tracking-widest font-label-sm text-label-sm flex items-center bg-[#3E291F] px-3 py-1.5 border-2 border-[#2A1B14] shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)]">
+            Gold: 500    Water: 10
+        </div>
+</header>
+<!-- Main Content Canvas (No Scrolling) -->
+<main class="flex-grow flex items-center justify-center p-gutter relative z-10 w-full max-w-container-max mx-auto h-full">
+<!-- Background decorative elements for tactical feel -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface to-surface-container-high opacity-50 z-0"></div>
+<!-- Primary Hub Card (Parchment Style) -->
+<div class="relative w-full max-w-[400px] bg-inverse-on-surface border-4 border-on-surface shadow-[8px_8px_0_0_#1f1c0b] p-6 z-10 flex flex-col gap-6">
+<!-- Inner decorative border simulating paper inset -->
+<div class="absolute inset-0 border-[2px] border-surface-variant m-[2px] pointer-events-none"></div>
+<!-- Header Section -->
+<div class="relative z-10 border-b-4 border-on-surface pb-4 flex justify-between items-end">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest block mb-1">Status</span>
+<h2 class="font-headline-lg text-headline-lg text-primary m-0 leading-none">Hive #1</h2>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-fixed border-2 border-on-surface px-2 py-1 shadow-[2px_2px_0_0_#1f1c0b] font-label-sm text-label-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Active
+                </div>
+</div>
+<!-- Stats Grid -->
+<div class="relative z-10 grid grid-cols-2 gap-4">
+<!-- Population Bento Box -->
+<div class="bg-surface-container border-2 border-on-surface p-3 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.1)] flex flex-col justify-between">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant uppercase">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">group</span>
+                        Population
+                    </div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-on-surface">98</span>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim">%</span>
+</div>
+</div>
+<!-- Rainwater Tank Bento Box -->
+<div class="bg-surface-container border-2 border-on-surface p-3 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.1)] flex flex-col justify-between">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant uppercase">
+<span class="material-symbols-outlined text-[#4A90E2] text-[18px]" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                        Rainwater
+                    </div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-on-surface">100</span>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim">units</span>
+</div>
+</div>
+</div>
+<!-- Honey Production Progress -->
+<div class="relative z-10 bg-surface-container border-2 border-on-surface p-4 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.1)]">
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">
+<span class="material-symbols-outlined text-[#EAA500]" style="font-variation-settings: 'FILL' 1;">hive</span>
+                        Production
+                    </div>
+<span class="font-label-sm text-label-sm font-bold text-primary">80%</span>
+</div>
+<!-- Pixel Art Progress Bar -->
+<div class="h-6 w-full bg-tertiary border-2 border-on-surface p-[2px] relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNCIgaGVpZ2h0PSI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMzZTI5MWYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] opacity-50 z-10 pointer-events-none"></div>
+<div class="h-full bg-[#EAA500] w-[80%] border-r-2 border-[#5c3f00] relative z-0"></div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="relative z-10 mt-2">
+<button class="w-full bg-primary-container text-[#F5E6D3] font-headline-md text-headline-md uppercase py-4 border-4 border-on-surface shadow-[0_6px_0_0_#1f1c0b] active:translate-y-[6px] active:shadow-[0_0px_0_0_#1f1c0b] transition-all flex items-center justify-center gap-3 relative overflow-hidden group">
+<div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+<span class="material-symbols-outlined text-[28px]">deployed_code</span>
+                    Harvest Honey
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Layout Anchor) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 bg-[#5C3D2E] shadow-[0_-4px_0_0_rgba(0,0,0,0.2)] md:hidden">
+<!-- Inactive: Field -->
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">grass</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-wider">Field</span>
+</a>
+<!-- Active: Hives -->
+<a class="flex flex-col items-center justify-center bg-[#744F3C] text-yellow-400 border-2 border-yellow-400 rounded-sm m-1 p-1 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)] active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">interests</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-wider">Hives</span>
+</a>
+<!-- Inactive: Tools -->
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">handyman</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-wider">Tools</span>
+</a>
+<!-- Inactive: Seeds -->
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">psychiatry</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-wider">Seeds</span>
+</a>
+<!-- Inactive: Shop -->
+<a class="flex flex-col items-center justify-center text-[#F5E6D3] p-2 hover:bg-[#4E3427] active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">storefront</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-wider">Shop</span>
+</a>
+</nav>
+<!-- Desktop Nav Shim (To keep layout balanced on larger screens since BottomNavBar is hidden md:flex) -->
+<div class="hidden md:block h-8 w-full bg-surface-container-low border-t-2 border-outline-variant mt-auto"></div>
+</body></html>
