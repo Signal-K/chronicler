@@ -1,14 +1,14 @@
 ---
 id: swf002
 title: "Farm view grid (core gameplay screen)"
-status: todo
+status: in-progress
 priority: high
 labels:
   - swift
   - gameplay
   - farm
 createdAt: '2026-04-27T00:00:00+10:00'
-updatedAt: '2026-04-27T00:00:00+10:00'
+updatedAt: "2026-05-04T13:04:18Z"
 timeSpent: 0
 assignee: '@me'
 ---

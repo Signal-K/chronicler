@@ -86,12 +86,14 @@ struct TabBarItem: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
         .background(
-            isSelected
-                ? Color.beeGold.opacity(0.2)
-                    .overlay(alignment: .top) {
-                        Rectangle().frame(height: 3).foregroundStyle(Color.beeGold)
-                    }
-                : Color.clear
+            ZStack(alignment: .top) {
+                if isSelected {
+                    Color.beeGold.opacity(0.2)
+                    Rectangle().frame(height: 3).foregroundStyle(Color.beeGold)
+                } else {
+                    Color.clear
+                }
+            }
         )
     }
 }

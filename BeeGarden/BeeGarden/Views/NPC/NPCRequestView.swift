@@ -36,7 +36,7 @@ struct NPCRequestSheet: View {
                     .padding(8)
                     .beeCard(background: Color.beeSurfaceContainer)
 
-                    Text(""\(request.dialogue)"")
+                    Text("\(request.dialogue)")
                         .font(.bodyMd)
                         .foregroundStyle(Color.beeOnSurface)
                         .frame(maxWidth: .infinity, alignment: .leading)
